@@ -21,10 +21,6 @@
 // Qt includes
 #include <QtPlugin>
 
-// PythonQT includes
-#include <PythonQt.h>
-
-
 // SlicerQt includes
 #include <qSlicerCoreApplication.h>
 
@@ -33,8 +29,6 @@
 
 // EMSegment QTModule includes
 #include "qSlicerEMSegmentModule.h"
-
-void PythonQt_init_org_slicer_module_qSlicerEMSegmentModuleWidgets(PyObject*);
 
 //-----------------------------------------------------------------------------
 Q_EXPORT_PLUGIN2(qSlicerEMSegmentModule, qSlicerEMSegmentModule);
@@ -63,8 +57,6 @@ qSlicerEMSegmentModule::~qSlicerEMSegmentModule()
 void qSlicerEMSegmentModule::setup()
 {
   this->Superclass::setup();
-
-  PythonQt_init_org_slicer_module_qSlicerEMSegmentModuleWidgets(0);
 }
 
 //-----------------------------------------------------------------------------

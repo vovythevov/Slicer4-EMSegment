@@ -42,7 +42,6 @@ SET(qt_module_UI_SRCS
 SET(qt_module_target_libraries
   vtkSlicerEMSegmentModuleLogic
   qSlicerEMSegmentModuleWidgets
-  qSlicerEMSegmentModuleWidgetsPythonQt
   vtkCharts
   MRMLLogic
   )
