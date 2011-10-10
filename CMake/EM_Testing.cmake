@@ -14,6 +14,7 @@ install(DIRECTORY
     Testing/TestData
     DESTINATION ${EM_INSTALL_SHARE_DIR}/${PROJECT_NAME}/Testing
     FILES_MATCHING PATTERN "*"
+    PATTERN ".svn" EXCLUDE
     )
 
 # include subdirectory
