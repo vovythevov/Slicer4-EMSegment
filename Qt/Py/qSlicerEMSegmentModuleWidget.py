@@ -16,9 +16,8 @@ class qSlicerEMSegmentModuleWidget:
     # this flag is 1 if there is an update in progress
     self.__updating = 1
 
-    # Reference to the logic and the mrmlManager
+    # Reference to the logic
     self.__logic = None
-    self.__mrmlManager = None
 
     if not parent:
       self.__logic = slicer.modulelogic.vtkEMSegmentLogic()
@@ -38,14 +37,13 @@ class qSlicerEMSegmentModuleWidget:
     # Use the logic associated with the module
     if not self.__logic:
       self.__logic = self.parent.module().logic()
-    self.__mrmlManager = self.__logic.GetMRMLManager()
 
     self.parent.connect('mrmlSceneChanged(vtkMRMLScene*)', self.onMRMLSceneChanged)
 
-    self.workflow = ctk.ctkWorkflow()
+    workflow = ctk.ctkWorkflow()
 
     workflowWidget = ctk.ctkWorkflowStackedWidget()
-    workflowWidget.setWorkflow( self.workflow )
+    workflowWidget.setWorkflow( workflow )
 
     workflowWidget.buttonBoxWidget().nextButtonDefaultText = ""
     workflowWidget.buttonBoxWidget().backButtonDefaultText = ""
@@ -81,31 +79,30 @@ class qSlicerEMSegmentModuleWidget:
     allSteps.append( segmentStep )
 
     # Add transition for the first step which let's the user choose between simple and advanced mode
-    self.workflow.addTransition( selectTaskStep, defineInputChannelsSimpleStep, 'SimpleMode' )
-    self.workflow.addTransition( selectTaskStep, defineInputChannelsAdvancedStep, 'AdvancedMode' )
+    workflow.addTransition( selectTaskStep, defineInputChannelsSimpleStep, 'SimpleMode' )
+    workflow.addTransition( selectTaskStep, defineInputChannelsAdvancedStep, 'AdvancedMode' )
 
     # Add transitions associated to the simple mode
-    self.workflow.addTransition( defineInputChannelsSimpleStep, defineAnatomicalTreeStep )
+    workflow.addTransition( defineInputChannelsSimpleStep, defineAnatomicalTreeStep )
 
     # Add transitions associated to the advanced mode
-    self.workflow.addTransition( defineInputChannelsAdvancedStep, defineAnatomicalTreeStep )
+    workflow.addTransition( defineInputChannelsAdvancedStep, defineAnatomicalTreeStep )
 
     # .. add transitions for the rest of the advanced mode steps
     for i in range( 3, len( allSteps ) - 1 ):
-      self.workflow.addTransition( allSteps[i], allSteps[i + 1] )
+      workflow.addTransition( allSteps[i], allSteps[i + 1] )
 
     # Propagate the workflow, the logic and the MRML Manager to the steps
     for s in allSteps:
-      s.setWorkflow( self.workflow )
       s.setLogic( self.__logic )
-      s.setMRMLManager( self.__mrmlManager )
+      s.setMRMLManager( self.__logic.GetMRMLManager() )
 
     # Disable the error text which showed up when jumping to the (invisible) segment step
     workflowWidget.workflowGroupBox().errorTextEnabled = False
-    self.workflow.goBackToOriginStepUponSuccess = False
+    workflow.goBackToOriginStepUponSuccess = False
 
     # start the workflow and show the widget
-    self.workflow.start()
+    workflow.start()
     workflowWidget.visible = True
     self.layout.addWidget( workflowWidget )
 
@@ -114,15 +111,16 @@ class qSlicerEMSegmentModuleWidget:
     slicer.modules.emsegmentSimpleDynamicFrame = defineInputChannelsSimpleStep.dynamicFrame()
     slicer.modules.emsegmentPreprocessingStep = definePreprocessingStep
 
-    # compress the layout
-    #self.layout.addStretch(1)
+    # Keep track of workflow and workflowWidget references
+    self.__workflow = workflow
+    self.__workflowWidget = workflowWidget
 
   def onMRMLSceneChanged(self, mrmlScene):
     if mrmlScene != self.__logic.GetMRMLScene():
       self.__logic.SetMRMLScene(mrmlScene)
       self.__logic.RegisterNodes()
       self.__logic.InitializeEventListeners()
-    self.__mrmlManager.SetMRMLScene(mrmlScene)
+    self.__logic.GetMRMLManager().SetMRMLScene(mrmlScene)
 
   def GetDynamicFrame( self ):
     '''

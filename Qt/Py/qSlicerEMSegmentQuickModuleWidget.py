@@ -11,13 +11,10 @@ class qSlicerEMSegmentQuickModuleWidget:
     else:
       self.parent = parent
 
-    self.layout = self.parent.layout()
-
     # this flag is 1 if there is an update in progress
     self.__updating = 1
 
     # the pointer to the logic and the mrmlManager
-    self.__mrmlManager = None
     self.__logic = None
 
     if not parent:
@@ -37,14 +34,13 @@ class qSlicerEMSegmentQuickModuleWidget:
     # Use the logic associated with the module
     if not self.__logic:
       self.__logic = self.parent.module().logic()
-    self.__mrmlManager = self.__logic.GetMRMLManager()
 
     self.parent.connect('mrmlSceneChanged(vtkMRMLScene*)', self.onMRMLSceneChanged)
 
-    self.workflow = ctk.ctkWorkflow()
+    workflow = ctk.ctkWorkflow()
 
     workflowWidget = ctk.ctkWorkflowStackedWidget()
-    workflowWidget.setWorkflow( self.workflow )
+    workflowWidget.setWorkflow( workflow )
 
     workflowWidget.buttonBoxWidget().nextButtonDefaultText = ""
     workflowWidget.buttonBoxWidget().backButtonDefaultText = ""
@@ -69,35 +65,35 @@ class qSlicerEMSegmentQuickModuleWidget:
 
     # Add transitions
     for i in range( 0, len( allSteps ) - 1 ):
-      self.workflow.addTransition( allSteps[i], allSteps[i + 1] )
+      workflow.addTransition( allSteps[i], allSteps[i + 1] )
 
     # Propagate the workflow, the logic and the MRML Manager to the steps
     for s in allSteps:
-      s.setWorkflow( self.workflow )
       s.setLogic( self.__logic )
-      s.setMRMLManager( self.__mrmlManager )
+      s.setMRMLManager( self.__logic.GetMRMLManager() )
 
     # Disable the error text which showed up when jumping to the (invisible) segment step
     workflowWidget.workflowGroupBox().errorTextEnabled = False
-    self.workflow.goBackToOriginStepUponSuccess = False
+    workflow.goBackToOriginStepUponSuccess = False
 
     slicer.modules.emsegmenteasystep1 = step1
     slicer.modules.emsegmenteasystep2 = step2
 
     # Start the workflow and show the widget
-    self.workflow.start()
+    workflow.start()
     workflowWidget.visible = True
-    self.layout.addWidget( workflowWidget )
+    self.parent.layout().addWidget( workflowWidget )
 
-    # compress the layout
-    #self.layout.addStretch(1)
+    # Keep track of workflow and workflowWidget references
+    self.__workflow = workflow
+    self.__workflowWidget = workflowWidget
 
   def onMRMLSceneChanged(self, mrmlScene):
     if mrmlScene != self.__logic.GetMRMLScene():
       self.__logic.SetMRMLScene(mrmlScene)
       self.__logic.RegisterNodes()
       self.__logic.InitializeEventListeners()
-    self.__mrmlManager.SetMRMLScene(mrmlScene)
+    self.__logic.GetMRMLManager().SetMRMLScene(mrmlScene)
 
   def GetDynamicFrame( self ):
     '''

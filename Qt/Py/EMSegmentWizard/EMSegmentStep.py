@@ -7,12 +7,6 @@ class EMSegmentStep( ctk.ctkWorkflowWidgetStep ) :
 
     self.__mrmlManager = None
     self.__logic = None
-    self.__workflow = None
-
-  def setWorkflow( self, workflow ):
-    '''
-    '''
-    self.__workflow = workflow
 
   def setMRMLManager( self, mrmlManager ):
     self.__mrmlManager = mrmlManager
@@ -25,9 +19,6 @@ class EMSegmentStep( ctk.ctkWorkflowWidgetStep ) :
 
   def logic( self ):
     return self.__logic
-
-  def workflow( self ):
-    return self.__workflow
 
   def getBoldFont( self ):
     '''
