@@ -1,5 +1,4 @@
-from __main__ import qt, ctk
-import PythonQt
+from __main__ import qt, ctk, slicer
 import math
 
 from EMSegmentStep import *
@@ -44,7 +43,7 @@ class EMSegmentEditNodeBasedParametersStep( EMSegmentStep ) :
 
     self.__anatomicalTreeGroupBoxLayout = qt.QFormLayout( self.__anatomicalTreeGroupBox )
 
-    self.__anatomicalTree = PythonQt.qSlicerEMSegmentModuleWidgets.qSlicerEMSegmentAnatomicalTreeWidget()
+    self.__anatomicalTree = slicer.modulewidget.qSlicerEMSegmentAnatomicalTreeWidget()
     self.__anatomicalTree.structureNameEditable = False
     self.__anatomicalTree.labelColumnVisible = False
     self.__anatomicalTree.probabilityMapColumnVisible = False
@@ -409,7 +408,7 @@ class EMSegmentEditNodeBasedParametersStep( EMSegmentStep ) :
           self.mrmlManager().SetTreeNodeInputChannelWeight( vtkId, curVolumeIndex, i.value )
 
 
-        # 
+        #
         # stopping conditions panel
         #
         if isLeaf:
@@ -557,7 +556,7 @@ class EMSegmentEditNodeBasedParametersStep( EMSegmentStep ) :
           self.__inputChannelWeights[-1].connect( 'valueChanged(double)', self.propagateToMRML )
           self.__inputChannelWeightsBoxLayout.addRow( globalNode.GetNthTargetInputChannelName( i ), self.__inputChannelWeights[-1] )
 
-        # 
+        #
         # stopping conditions panel
         #
         if isLeaf:

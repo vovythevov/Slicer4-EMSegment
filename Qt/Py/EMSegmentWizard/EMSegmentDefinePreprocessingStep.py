@@ -1,5 +1,4 @@
-from __main__ import qt, ctk, tcl
-import PythonQt
+from __main__ import qt, ctk, slicer, tcl
 
 from EMSegmentStep import *
 from Helper import *

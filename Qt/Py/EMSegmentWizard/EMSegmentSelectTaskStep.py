@@ -1,4 +1,4 @@
-from __main__ import qt, ctk
+from __main__ import qt, ctk, slicer
 
 from EMSegmentStep import *
 from Helper import *
@@ -253,7 +253,7 @@ class EMSegmentSelectTaskStep( EMSegmentStep ) :
     else:
 
       # there was no relevant template node in the scene, so let's import the mrml file
-      # this is the normal behavior!      
+      # this is the normal behavior!
       Helper.Info( "Attempting to load task '" + taskName + "' from file '" + taskFile + "'" )
 
       # only load if no relevant node exists

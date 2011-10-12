@@ -1,5 +1,4 @@
-from __main__ import qt, ctk, vtk
-import PythonQt
+from __main__ import qt, ctk, slicer
 import os
 import math
 
@@ -82,7 +81,7 @@ class EMSegmentLabelStatisticsStep( EMSegmentStep ) :
     '''
     self.workflow().goBackward() # 9
     self.workflow().goBackward() # 8
-    self.workflow().goBackward() # 7 
+    self.workflow().goBackward() # 7
     self.workflow().goBackward() # 6
     self.workflow().goBackward() # 5
     self.workflow().goBackward() # 4

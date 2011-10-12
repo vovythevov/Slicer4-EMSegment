@@ -1,5 +1,4 @@
 from __main__ import qt, ctk, slicer
-import PythonQt
 
 from Helper import *
 from EMSegmentStep import *
@@ -54,7 +53,7 @@ class EMSegmentQuickStep2( EMSegmentStep ) :
 
     anatomicalTreeGroupBoxLayout = qt.QFormLayout( anatomicalTreeGroupBox )
 
-    self.__anatomicalTree = PythonQt.qSlicerEMSegmentModuleWidgets.qSlicerEMSegmentAnatomicalTreeWidget()
+    self.__anatomicalTree = slicer.modulewidget.qSlicerEMSegmentAnatomicalTreeWidget()
     self.__anatomicalTree.structureNameEditable = True
     self.__anatomicalTree.labelColumnVisible = True
     self.__anatomicalTree.addDeleteSubclassesEnabled = True

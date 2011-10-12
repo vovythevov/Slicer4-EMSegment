@@ -1,5 +1,4 @@
-from __main__ import qt, ctk, tcl
-import PythonQt
+from __main__ import qt, ctk, slicer, tcl
 
 from EMSegmentStep import *
 from Helper import *
@@ -60,7 +59,7 @@ class EMSegmentDefineInputChannelsStep( EMSegmentStep ) :
 
     inputChannelGroupBoxLayout = qt.QFormLayout( inputChannelGroupBox )
 
-    self.__inputChannelList = PythonQt.qSlicerEMSegmentModuleWidgets.qSlicerEMSegmentInputChannelListWidget()
+    self.__inputChannelList = slicer.modulewidget.qSlicerEMSegmentInputChannelListWidget()
     self.__inputChannelList.setMRMLManager( self.mrmlManager() )
     inputChannelGroupBoxLayout.addWidget( self.__inputChannelList )
 

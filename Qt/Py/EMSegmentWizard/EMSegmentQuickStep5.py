@@ -1,5 +1,4 @@
-from __main__ import qt, ctk, vtk
-import PythonQt
+from __main__ import qt, ctk
 import os
 import math
 

@@ -1,5 +1,4 @@
-from __main__ import qt, ctk
-import PythonQt
+from __main__ import qt, ctk, vtk
 
 import math
 
@@ -56,7 +55,7 @@ class EMSegmentQuickStep3( EMSegmentStep ) :
 
     anatomicalTreeGroupBoxLayout = qt.QFormLayout( anatomicalTreeGroupBox )
 
-    self.__anatomicalTree = PythonQt.qSlicerEMSegmentModuleWidgets.qSlicerEMSegmentAnatomicalTreeWidget()
+    self.__anatomicalTree = slicer.modulewidget.qSlicerEMSegmentAnatomicalTreeWidget()
     self.__anatomicalTree.structureNameEditable = False
     self.__anatomicalTree.labelColumnVisible = False
     self.__anatomicalTree.probabilityMapColumnVisible = False
@@ -137,7 +136,7 @@ class EMSegmentQuickStep3( EMSegmentStep ) :
     '''
     self.__d = qt.QDialog()
     self.__dLayout = qt.QHBoxLayout( self.__d )
-    self.__graphWidget = PythonQt.qSlicerEMSegmentModuleWidgets.qSlicerEMSegmentGraphWidget()
+    self.__graphWidget = slicer.modulewidget.qSlicerEMSegmentGraphWidget()
     self.__graphWidget.setMRMLManager( self.mrmlManager() )
     self.__dLayout.addWidget( self.__graphWidget )
     self.__d.setModal( True )

@@ -1,70 +1,42 @@
-# slicer imports
-from __main__ import vtk, slicer
-
-# python includes
 import sys
 import time
 
 class Helper( object ):
-  '''
-  classdocs
-  '''
+
+  @staticmethod
+  def GenericMessage( message, type = ""):
+    if not type == "": type = " %s:" % type
+    str_time = time.strftime( "%m/%d/%Y %H:%M:%S" )
+    print "[EMSegmentPy %s]:%s %s" %(str_time, type, str(message))
+    sys.stdout.flush()
 
   @staticmethod
   def Info( message ):
-    '''
-    
-    '''
-
-    print "[EMSegmentPy " + time.strftime( "%m/%d/%Y %H:%M:%S" ) + "]: " + str( message )
-    sys.stdout.flush()
+    Helper.GenericMessage(message)
 
   @staticmethod
   def Warning( message ):
-    '''
-    
-    '''
-
-    print "[EMSegmentPy " + time.strftime( "%m/%d/%Y %H:%M:%S" ) + "]: WARNING: " + str( message )
-    sys.stdout.flush()
+    Helper.GenericMessage(message, "WARNING")
 
   @staticmethod
   def Error( message ):
-    '''
-    
-    '''
-
-    print "[EMSegmentPy " + time.strftime( "%m/%d/%Y %H:%M:%S" ) + "]: ERROR: " + str( message )
-    sys.stdout.flush()
-
+    Helper.GenericMessage(message, "ERROR")
 
   @staticmethod
   def Debug( message ):
-    '''
-    
-    '''
-
     showDebugOutput = 0
-    from time import strftime
     if showDebugOutput:
-        print "[EMSegmentPy " + time.strftime( "%m/%d/%Y %H:%M:%S" ) + "] DEBUG: " + str( message )
-        sys.stdout.flush()
+      Helper.GenericMessage(message, "DEBUG")
 
   @staticmethod
   def CreateSpace( n ):
-    '''
-    '''
     spacer = ""
     for s in range( n ):
       spacer += " "
-
     return spacer
-
 
   @staticmethod
   def GetNthStepId( n ):
-    '''
-    '''
     steps = [None, # 0
              'SelectTask', # 1
              'DefineInputChannels', # 2
@@ -85,32 +57,22 @@ class Helper( object ):
 
   @staticmethod
   def GetRegistrationTypes():
-    '''
-    '''
     return ['None', 'Fast', 'Accurate']
 
   @staticmethod
   def GetInterpolationTypes():
-    '''
-    '''
     return ['Linear', 'Nearest Neighbor', 'Cubic' ]
 
   @staticmethod
   def GetPackages():
-    '''
-    '''
     return ['CMTK', 'BRAINS', 'PLASTIMATCH', 'DEMONS', 'DRAMMS', 'ANTS']
 
   @staticmethod
   def GetSpecificationTypes():
-    '''
-    '''
     return ['Manual', 'Manual Sampling']#, 'Auto Sampling']
 
   @staticmethod
   def GetStoppingConditionTypes():
-    '''
-    '''
     return ['Iterations', 'LabelMap', 'Weights']
 
   @staticmethod
@@ -136,5 +98,3 @@ class Helper( object ):
       rasPos = xyToRas.MultiplyPoint( coordinates )
 
       return [rasPos[0], rasPos[1], rasPos[2]]
-
-

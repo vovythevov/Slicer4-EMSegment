@@ -1,5 +1,4 @@
 from __main__ import qt, ctk
-import PythonQt
 
 from EMSegmentStep import *
 
