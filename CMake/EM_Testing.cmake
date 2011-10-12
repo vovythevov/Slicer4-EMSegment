@@ -20,4 +20,4 @@ install(DIRECTORY
 # include subdirectory
 if(BUILD_TESTING)
     ADD_SUBDIRECTORY(Testing)
-endif(BUILD_TESTING)
+endif()
