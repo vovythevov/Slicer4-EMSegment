@@ -18,6 +18,7 @@
 
 // CTK includes
 #include <ctkErrorLogModel.h>
+#include <ctkScopedCurrentDir.h>
 
 // PythonQT includes
 #include <PythonQt.h>
@@ -105,6 +106,23 @@ Tcl_Interp* vtkSlicerCommonInterface::Startup(int& argc, char *argv[], ostream *
     // to the environment initialized in python, let's make sure 'os.environ' is updated.
     app->updatePythonOsEnviron();
 #endif
+
+    // Load EMSegment Python module(s)
+    QString emsegmentModulePath = QString::fromStdString(
+        vtkSlicerApplicationLogic::GetModuleSlicerXYLibDirectory(argv[0]));
+    emsegmentModulePath.append("/" Slicer_QTLOADABLEMODULES_SUBDIR);
+    app->pythonManager()->appendPythonPath(emsegmentModulePath);
+    // Update current application directory, so that *PythonD modules can be loaded
+    ctkScopedCurrentDir scopedCurrentDir(emsegmentModulePath);
+
+    QString emsegmentModulePythonPath = emsegmentModulePath + "/Python";
+    std::cout << "emsegmentModulePythonPath:" << qPrintable(emsegmentModulePythonPath) << std::endl;
+    app->pythonManager()->executeString(QString(
+      "from slicer.util import importVTKClassesFromDirectory;"
+      "importVTKClassesFromDirectory('%1', 'slicer.modulelogic', filematch='vtkSlicer%2ModuleLogic.py');"
+      "importVTKClassesFromDirectory('%1', 'slicer.modulemrml', filematch='vtkSlicer%2ModuleMRML.py');"
+      ).arg(emsegmentModulePythonPath).arg("EMSegment"));
+
     }
 #endif
   // we don't need this here!
@@ -562,7 +580,7 @@ const char* vtkSlicerCommonInterface::GetPluginsDirectory()
 
   // Slicer4
   QString slicerDir = qSlicerApplication::application()->slicerHome();
-  slicerDir += "/plugins/";
+  slicerDir += "/" Slicer_CLIMODULES_LIB_DIR "/";
   return slicerDir.toLatin1();
 
 #endif
