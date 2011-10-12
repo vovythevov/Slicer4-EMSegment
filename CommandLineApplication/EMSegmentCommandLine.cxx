@@ -192,10 +192,21 @@ int main(int argc, char** argv)
 
   // create an instance of vtkEMSegmentLogic and connect it with theMRML scene
   vtkEMSegmentLogic* EMSLogic = vtkEMSegmentLogic::New();
+#ifdef Slicer3_USE_KWWIDGETS
   EMSLogic->SetModuleName("EMSegment");
+#endif
   EMSLogic->SetAndObserveMRMLScene(mrmlScene);
   EMSLogic->SetMRMLScene(mrmlScene);
   EMSLogic->InitializeEventListeners();
+
+#ifndef Slicer3_USE_KWWIDGETS
+  // Path to EMSegment Qt loadable module
+  std::string emsegmentModuleShareDirectory =
+      vtkSlicerApplicationLogic::GetModuleSlicerXYShareDirectory(argv[0]);
+  emsegmentModuleShareDirectory.append("/" Slicer_QTLOADABLEMODULES_SUBDIR);
+  emsegmentModuleShareDirectory.append("/EMSegment");
+  EMSLogic->SetModuleShareDirectory(emsegmentModuleShareDirectory);
+#endif
 
   EMSLogic->RegisterMRMLNodesWithScene();
   std::string EMSLogicTcl = vtksys::SystemTools::DuplicateString(slicerCommon->GetTclNameFromPointer(EMSLogic));
