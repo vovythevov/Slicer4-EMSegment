@@ -1,4 +1,4 @@
-from __main__ import qt, ctk, vtk
+from __main__ import qt, ctk, vtk, slicer
 
 import math
 
@@ -12,7 +12,6 @@ class EMSegmentQuickStep3( EMSegmentStep ) :
     self.setName( '3. Sampling and Class Weights' )
     self.setDescription( 'Define seeds for each anatomical structure and define probability relations between them.' )
 
-    self.__parent = super( EMSegmentQuickStep3, self )
     self.__layout = None
     self.__anatomicalTree = None
     self.__classLabel = None
@@ -43,7 +42,7 @@ class EMSegmentQuickStep3( EMSegmentStep ) :
   def createUserInterface( self ):
     '''
     '''
-    self.__layout = self.__parent.createUserInterface()
+    self.__layout = super( EMSegmentQuickStep3, self ).createUserInterface()
 
     self.__top = qt.QWidget()
     self.__topLayout = qt.QHBoxLayout( self.__top )
@@ -110,7 +109,7 @@ class EMSegmentQuickStep3( EMSegmentStep ) :
   def onEntry( self, comingFrom, transitionType ):
     '''
     '''
-    self.__parent.onEntry( comingFrom, transitionType )
+    super( EMSegmentQuickStep3, self ).onEntry( comingFrom, transitionType )
 
     if self.__anatomicalTree:
       self.__anatomicalTree.setMRMLManager( self.mrmlManager() )
@@ -123,13 +122,13 @@ class EMSegmentQuickStep3( EMSegmentStep ) :
   def validate( self, desiredBranchId ):
     '''
     '''
-    self.__parent.validate( desiredBranchId )
+    super( EMSegmentQuickStep3, self ).validate( desiredBranchId )
 
     if self.__noSamples:
-      self.__parent.validationFailed( desiredBranchId, 'Sampling Error', 'Please specify at least one sample!' )
+      self.validationFailed( desiredBranchId, 'Sampling Error', 'Please specify at least one sample!' )
       return
 
-    self.__parent.validationSucceeded( desiredBranchId )
+    self.validationSucceeded( desiredBranchId )
 
   def plotDistribution( self ):
     '''

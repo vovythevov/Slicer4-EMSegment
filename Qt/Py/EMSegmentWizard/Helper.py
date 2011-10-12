@@ -50,9 +50,7 @@ class Helper( object ):
              'Segment', # 10
              'Statistics'] # 11
 
-    if n < 0 or n > len( steps ):
-      n = 0
-
+    if n < 0 or n > len( steps ): n = 0
     return steps[n]
 
   @staticmethod

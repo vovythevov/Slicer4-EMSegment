@@ -11,8 +11,6 @@ class EMSegmentQuickStep1( EMSegmentStep ) :
     self.setName( '1. Define Input Datasets' )
     self.setDescription( 'Name how many volumes should be segmented and select the set of scans for segmentation.' )
 
-    self.__parent = super( EMSegmentQuickStep1, self )
-
     self.__stepid = stepid
     self.__dynamicFrame = None
     self.__updating = 0
@@ -35,10 +33,10 @@ class EMSegmentQuickStep1( EMSegmentStep ) :
     # just call to copy the emsegmenter task to a temp dir
     self.logic().GetTasks()
 
-    self.__layout = self.__parent.createUserInterface()
+    self.__layout = super( EMSegmentQuickStep1, self ).createUserInterface()
 
     infoLabel = qt.QLabel( 'This module provides EM segmentation without an atlas.\nIt is possible to segment different structures by manual sampling.\n\n' )
-    infoLabel.setFont( self.__parent.getBoldFont() )
+    infoLabel.setFont( self.getBoldFont() )
     self.__layout.addWidget( infoLabel )
 
     # the input channels
@@ -148,7 +146,7 @@ class EMSegmentQuickStep1( EMSegmentStep ) :
   def onEntry( self, comingFrom, transitionType ):
     '''
     '''
-    self.__parent.onEntry( comingFrom, transitionType )
+    super( EMSegmentQuickStep1, self ).onEntry( comingFrom, transitionType )
 
     slicer.modules.emsegmentAdvancedDynamicFrame = self.dynamicFrame()
 
@@ -200,36 +198,34 @@ class EMSegmentQuickStep1( EMSegmentStep ) :
     #self.mrmlManager().GetWorkingDataNode().SetAlignedTargetNodeIsValid( 0 )
     #self.mrmlManager().GetWorkingDataNode().SetAlignedAtlasNodeIsValid( 0 )
 
-    self.__parent.onExit( goingTo, transitionType )
+    super( EMSegmentQuickStep1, self ).onExit( goingTo, transitionType )
 
 
 
   def validate( self, desiredBranchId ):
     '''
     '''
-    self.__parent.validate( desiredBranchId )
+    super( EMSegmentQuickStep1, self ).validate( desiredBranchId )
 
     # we need at least one input channel
     if self.__inputChannelList.inputChannelCount() == 0:
-      self.__parent.validationFailed( desiredBranchId, 'Input Channel Error', 'Please add at least one input channel!' )
+      self.validationFailed( desiredBranchId, 'Input Channel Error', 'Please add at least one input channel!' )
       return
 
     # we need an assigned volume for each channel
     for c in range( self.__inputChannelList.inputChannelCount() ):
       if not self.__inputChannelList.inputChannelVolume( c ):
-        self.__parent.validationFailed( desiredBranchId, 'Input Channel Error', 'Please assign a volume to each input channel!' )
+        self.validationFailed( desiredBranchId, 'Input Channel Error', 'Please assign a volume to each input channel!' )
         return
 
     # check if all channels have different volumes assigned
     if self.__inputChannelList.identicalInputVolumes():
-      self.__parent.validationFailed( desiredBranchId, 'Input Channel Error', 'Please assign different volumes to individual input channel!' )
+      self.validationFailed( desiredBranchId, 'Input Channel Error', 'Please assign different volumes to individual input channel!' )
       return
 
     # check if all channels have different names
     if self.__inputChannelList.identicalInputChannelNames():
-      self.__parent.validationFailed( desiredBranchId, 'Input Channel Error', 'Please assign different names to individual input channel!' )
+      self.validationFailed( desiredBranchId, 'Input Channel Error', 'Please assign different names to individual input channel!' )
       return
 
-    self.__parent.validationSucceeded( desiredBranchId )
-
-
+    self.validationSucceeded( desiredBranchId )

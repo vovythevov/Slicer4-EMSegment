@@ -11,7 +11,6 @@ class EMSegmentEditNodeBasedParametersStep( EMSegmentStep ) :
     self.setName( '8. Edit Node-based Parameters' )
     self.setDescription( 'Specify node-based segmentation parameters.' )
 
-    self.__parent = super( EMSegmentEditNodeBasedParametersStep, self )
     self.__layout = None
     self.__anatomicalTree = None
     self.__classLabel = None
@@ -31,7 +30,7 @@ class EMSegmentEditNodeBasedParametersStep( EMSegmentStep ) :
   def createUserInterface( self ):
     '''
     '''
-    self.__layout = self.__parent.createUserInterface()
+    self.__layout = super( EMSegmentEditNodeBasedParametersStep, self ).createUserInterface()
 
     self.__top = qt.QWidget()
     self.__topLayout = qt.QHBoxLayout( self.__top )
@@ -322,7 +321,7 @@ class EMSegmentEditNodeBasedParametersStep( EMSegmentStep ) :
   def onEntry( self, comingFrom, transitionType ):
     '''
     '''
-    self.__parent.onEntry( comingFrom, transitionType )
+    super( EMSegmentEditNodeBasedParametersStep, self ).onEntry( comingFrom, transitionType )
 
     if self.__anatomicalTree:
       self.__anatomicalTree.setMRMLManager( self.mrmlManager() )
@@ -335,7 +334,7 @@ class EMSegmentEditNodeBasedParametersStep( EMSegmentStep ) :
   def validate( self, desiredBranchId ):
     '''
     '''
-    self.__parent.validate( desiredBranchId )
+    super( EMSegmentEditNodeBasedParametersStep, self ).validate( desiredBranchId )
 
     if self.mrmlManager().GetTreeRootNode:
 
@@ -352,9 +351,9 @@ class EMSegmentEditNodeBasedParametersStep( EMSegmentStep ) :
         message += " children nodes of "
         message += str( self.mrmlManager().GetTreeNodeName( firstBadTreeID ) ) + "."
 
-        self.__parent.validationFailed( desiredBranchId, 'Node Parameters Error', message, True )
+        self.validationFailed( desiredBranchId, 'Node Parameters Error', message, True )
       else:
-        self.__parent.validationSucceeded( desiredBranchId )
+        self.validationSucceeded( desiredBranchId )
 
 
   def onTreeSelectionChanged( self ):

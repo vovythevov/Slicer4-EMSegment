@@ -12,8 +12,7 @@ class EMSegmentDummyStep( EMSegmentStep ) :
   def createUserInterface( self ):
     '''
     '''
-    self.__parent = super( EMSegmentDummyStep, self )
-    self.__layout = self.__parent.createUserInterface()
+    self.__layout = super( EMSegmentDummyStep, self ).createUserInterface()
 
 
     label = qt.QLabel( "PLACEHOLDER: " + self.id() )
@@ -23,7 +22,6 @@ class EMSegmentDummyStep( EMSegmentStep ) :
   def validate( self, desiredBranchId ):
     '''
     '''
-    self.__parent.validate( desiredBranchId )
+    super( EMSegmentDummyStep, self ).validate( desiredBranchId )
 
-    self.__parent.validationSucceeded( desiredBranchId )
-
+    self.validationSucceeded( desiredBranchId )

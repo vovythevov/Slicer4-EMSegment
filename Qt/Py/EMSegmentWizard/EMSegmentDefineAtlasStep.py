@@ -9,14 +9,13 @@ class EMSegmentDefineAtlasStep( EMSegmentStep ) :
     self.setName( '4. Define Atlas' )
     self.setDescription( 'Assign structure-specific atlases to each anatomical structure listed in the tree.' )
 
-    self.__parent = super( EMSegmentDefineAtlasStep, self )
     self.__layout = None
     self.__anatomicalTree = None
 
   def createUserInterface( self ):
     '''
     '''
-    self.__layout = self.__parent.createUserInterface()
+    self.__layout = super( EMSegmentDefineAtlasStep, self ).createUserInterface()
 
 
     infoLabel = qt.QLabel( 'It is possible to assign an individual atlas to each structure in the tree below.' )
@@ -44,7 +43,7 @@ class EMSegmentDefineAtlasStep( EMSegmentStep ) :
   def onEntry( self, comingFrom, transitionType ):
     '''
     '''
-    self.__parent.onEntry( comingFrom, transitionType )
+    super( EMSegmentDefineAtlasStep, self ).onEntry( comingFrom, transitionType )
 
     if self.__anatomicalTree:
       self.__anatomicalTree.setMRMLManager( self.mrmlManager() )
@@ -54,6 +53,5 @@ class EMSegmentDefineAtlasStep( EMSegmentStep ) :
   def validate( self, desiredBranchId ):
     '''
     '''
-    self.__parent.validate( desiredBranchId )
-
-    self.__parent.validationSucceeded( desiredBranchId )
+    super( EMSegmentDefineAtlasStep, self ).validate( desiredBranchId )
+    self.validationSucceeded( desiredBranchId )

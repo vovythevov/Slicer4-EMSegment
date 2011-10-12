@@ -9,7 +9,6 @@ class EMSegmentDefineAnatomicalTreeStep( EMSegmentStep ) :
     self.setName( '3. Define Anatomical Tree' )
     self.setDescription( 'Define a hierarchy of structures.' )
 
-    self.__parent = super( EMSegmentDefineAnatomicalTreeStep, self )
     self.__layout = None
     self.__colorTableComboBox = None
     self.__anatomicalTree = None
@@ -17,7 +16,7 @@ class EMSegmentDefineAnatomicalTreeStep( EMSegmentStep ) :
   def createUserInterface( self ):
     '''
     '''
-    self.__layout = self.__parent.createUserInterface()
+    self.__layout = super( EMSegmentDefineAnatomicalTreeStep, self ).createUserInterface()
 
     # the colorpicker combobox
     self.__colorTableComboBox = slicer.qMRMLColorTableComboBox()
@@ -71,7 +70,7 @@ class EMSegmentDefineAnatomicalTreeStep( EMSegmentStep ) :
   def onEntry( self, comingFrom, transitionType ):
     '''
     '''
-    self.__parent.onEntry( comingFrom, transitionType )
+    super( EMSegmentDefineAnatomicalTreeStep, self ).onEntry( comingFrom, transitionType )
 
     if self.__anatomicalTree:
       self.__anatomicalTree.setMRMLManager( self.mrmlManager() )
@@ -81,6 +80,6 @@ class EMSegmentDefineAnatomicalTreeStep( EMSegmentStep ) :
   def validate( self, desiredBranchId ):
     '''
     '''
-    self.__parent.validate( desiredBranchId )
+    super( EMSegmentDefineAnatomicalTreeStep, self ).validate( desiredBranchId )
 
-    self.__parent.validationSucceeded( desiredBranchId )
+    self.validationSucceeded( desiredBranchId )

@@ -13,8 +13,6 @@ class EMSegmentQuickStep4( EMSegmentStep ) :
     self.setName( '4. Miscellaneous' )
     self.setDescription( 'Define miscellaneous parameters before performing segmentation' )
 
-    self.__parent = super( EMSegmentQuickStep4, self )
-
     self.__saveButton = None
     self.__saveIntermediateResultsCheckBox = None
     self.__selectDirectoryButton = None
@@ -33,7 +31,7 @@ class EMSegmentQuickStep4( EMSegmentStep ) :
   def createUserInterface( self ):
     '''
     '''
-    self.__layout = self.__parent.createUserInterface()
+    self.__layout = super( EMSegmentQuickStep4, self ).createUserInterface()
 
     # deactivate next button since it is the last step
     self.buttonBoxHints = self.NextButtonDisabled
@@ -60,7 +58,7 @@ class EMSegmentQuickStep4( EMSegmentStep ) :
   def onEntry( self, comingFrom, transitionType ):
     '''
     '''
-    self.__parent.onEntry( comingFrom, transitionType )
+    super( EMSegmentQuickStep4, self ).onEntry( comingFrom, transitionType )
 
     self.loadFromMRML()
 
@@ -68,9 +66,9 @@ class EMSegmentQuickStep4( EMSegmentStep ) :
   def validate( self, desiredBranchId ):
     '''
     '''
-    self.__parent.validate( desiredBranchId )
+    super( EMSegmentQuickStep4, self ).validate( desiredBranchId )
 
-    self.__parent.validationSucceeded( desiredBranchId )
+    self.validationSucceeded( desiredBranchId )
 
 
   def propagateToMRML( self ):

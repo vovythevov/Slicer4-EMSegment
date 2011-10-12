@@ -12,18 +12,16 @@ class EMSegmentStartSegmentationStep( EMSegmentStep ) :
     self.setDescription( '' )
     self.icon = qt.QIcon( ":/Icons/EMSegment.png" )
 
-    self.__parent = super( EMSegmentStartSegmentationStep, self )
-
   def createUserInterface( self ):
     '''
     '''
-    self.__layout = self.__parent.createUserInterface()
+    self.__layout = super( EMSegmentStartSegmentationStep, self ).createUserInterface()
 
 
   def onEntry( self, comingFrom, transitionType ):
     '''
     '''
-    self.__parent.onEntry( comingFrom, transitionType )
+    super( EMSegmentStartSegmentationStep, self ).onEntry( comingFrom, transitionType )
 
     targetNode = self.mrmlManager().GetWorkingDataNode().GetInputTargetNode()
     alignedAtlasNode = self.mrmlManager().GetWorkingDataNode().GetAlignedAtlasNode()
@@ -106,6 +104,6 @@ class EMSegmentStartSegmentationStep( EMSegmentStep ) :
   def validate( self, desiredBranchId ):
     '''
     '''
-    self.__parent.validate( desiredBranchId )
+    super( EMSegmentStartSegmentationStep, self ).validate( desiredBranchId )
 
-    self.__parent.validationSucceeded( desiredBranchId )
+    self.validationSucceeded( desiredBranchId )

@@ -10,7 +10,6 @@ class EMSegmentQuickStep2( EMSegmentStep ) :
     self.setName( '2. Define Structures' )
     self.setDescription( 'Define a hierarchy of structures to be segmented.' )
 
-    self.__parent = super( EMSegmentQuickStep2, self )
     self.__layout = None
     self.__colorTableComboBox = None
     self.__anatomicalTree = None
@@ -20,7 +19,7 @@ class EMSegmentQuickStep2( EMSegmentStep ) :
   def createUserInterface( self ):
     '''
     '''
-    self.__layout = self.__parent.createUserInterface()
+    self.__layout = super( EMSegmentQuickStep2, self ).createUserInterface()
 
     # the colorpicker combobox
     self.__colorTableComboBox = slicer.qMRMLColorTableComboBox()
@@ -84,7 +83,7 @@ class EMSegmentQuickStep2( EMSegmentStep ) :
   def onEntry( self, comingFrom, transitionType ):
     '''
     '''
-    self.__parent.onEntry( comingFrom, transitionType )
+    super( EMSegmentQuickStep2, self ).onEntry( comingFrom, transitionType )
 
     if comingFrom.id() == Helper.GetNthStepId( 7 ):
       return
@@ -117,6 +116,6 @@ class EMSegmentQuickStep2( EMSegmentStep ) :
   def validate( self, desiredBranchId ):
     '''
     '''
-    self.__parent.validate( desiredBranchId )
+    super( EMSegmentQuickStep2, self ).validate( desiredBranchId )
 
-    self.__parent.validationSucceeded( desiredBranchId )
+    self.validationSucceeded( desiredBranchId )

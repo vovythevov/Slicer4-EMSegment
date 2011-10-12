@@ -1,4 +1,4 @@
-from __main__ import qt, ctk
+from __main__ import qt, ctk, slicer
 import os
 import math
 
@@ -13,18 +13,16 @@ class EMSegmentQuickStep5( EMSegmentStep ) :
     self.setName( 'Segmentation finished' )
     self.setDescription( 'View after-segmentation statistics or reset the module.' )
 
-    self.__parent = super( EMSegmentQuickStep5, self )
-
     self.__updating = 0;
 
 
   def createUserInterface( self ):
     '''
     '''
-    self.__layout = self.__parent.createUserInterface()
+    self.__layout = super( EMSegmentQuickStep5, self ).createUserInterface()
 
     infoLabel = qt.QLabel( 'The segmentation finished!\n\nThe results are displayed as labelMaps in the slice viewers.\n\n' )
-    infoLabel.setFont( self.__parent.getBoldFont() )
+    infoLabel.setFont( self.getBoldFont() )
     self.__layout.addWidget( infoLabel )
 
     self.__top = qt.QGroupBox()
@@ -65,7 +63,7 @@ class EMSegmentQuickStep5( EMSegmentStep ) :
     labelStatisticsWidget.onApply()
 
     infoLabel2 = qt.QLabel( '\n\nIt is now possible to change parameters and click "Segment" again or to reset the module.' )
-    #infoLabel2.setFont( self.__parent.getBoldFont() )
+    #infoLabel2.setFont( self.getBoldFont() )
     self.__layout.addWidget( infoLabel2 )
 
     resetButton = qt.QPushButton( 'Reset Module' )
@@ -86,13 +84,10 @@ class EMSegmentQuickStep5( EMSegmentStep ) :
     slicer.modules.emsegmenteasystep2.reset()
 
 
-
-
-
   def onEntry( self, comingFrom, transitionType ):
     '''
     '''
-    self.__parent.onEntry( comingFrom, transitionType )
+    super( EMSegmentQuickStep5, self ).onEntry( comingFrom, transitionType )
 
     self.loadFromMRML()
 
@@ -100,10 +95,9 @@ class EMSegmentQuickStep5( EMSegmentStep ) :
   def validate( self, desiredBranchId ):
     '''
     '''
-    self.__parent.validate( desiredBranchId )
+    super( EMSegmentQuickStep5, self ).validate( desiredBranchId )
 
-    self.__parent.validationSucceeded( desiredBranchId )
-
+    self.validationSucceeded( desiredBranchId )
 
 
   def propagateToMRML( self ):
@@ -125,6 +119,4 @@ class EMSegmentQuickStep5( EMSegmentStep ) :
       self.__updating = 1
 
       self.__updating = 0
-
-
 

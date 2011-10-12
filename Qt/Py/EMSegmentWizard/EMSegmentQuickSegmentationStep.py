@@ -13,12 +13,10 @@ class EMSegmentQuickSegmentationStep( EMSegmentStep ) :
     self.setDescription( '' )
     self.icon = qt.QIcon( ":/Icons/EMSegmentQuick.png" )
 
-    self.__parent = super( EMSegmentQuickSegmentationStep, self )
-
   def createUserInterface( self ):
     '''
     '''
-    self.__layout = self.__parent.createUserInterface()
+    self.__layout = super( EMSegmentQuickSegmentationStep, self ).createUserInterface()
 
   def runPreProcessing( self ):
     '''
@@ -65,7 +63,7 @@ class EMSegmentQuickSegmentationStep( EMSegmentStep ) :
   def onEntry( self, comingFrom, transitionType ):
     '''
     '''
-    self.__parent.onEntry( comingFrom, transitionType )
+    super( EMSegmentQuickSegmentationStep, self ).onEntry( comingFrom, transitionType )
 
     self.runPreProcessing()
 
@@ -146,6 +144,6 @@ class EMSegmentQuickSegmentationStep( EMSegmentStep ) :
   def validate( self, desiredBranchId ):
     '''
     '''
-    self.__parent.validate( desiredBranchId )
+    super( EMSegmentQuickSegmentationStep, self ).validate( desiredBranchId )
 
-    self.__parent.validationSucceeded( desiredBranchId )
+    self.validationSucceeded( desiredBranchId )

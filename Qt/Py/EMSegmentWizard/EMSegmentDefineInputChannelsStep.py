@@ -11,8 +11,6 @@ class EMSegmentDefineInputChannelsStep( EMSegmentStep ) :
     self.setName( '2. Define Input Datasets' )
     self.setDescription( 'Name how many volumes should be segmented and select the set of scans for segmentation.' )
 
-    self.__parent = super( EMSegmentDefineInputChannelsStep, self )
-
     self.__stepid = stepid
     self.__dynamicFrame = None
     self.__updating = 0
@@ -49,7 +47,7 @@ class EMSegmentDefineInputChannelsStep( EMSegmentStep ) :
       slicer.modules.emsegmentsimplemode = False
       slicer.modules.emsegmentsimplestep2 = None
 
-    self.__layout = self.__parent.createUserInterface()
+    self.__layout = super( EMSegmentDefineInputChannelsStep, self ).createUserInterface()
 
     # the input channels
     inputChannelGroupBox = qt.QGroupBox()
@@ -142,7 +140,7 @@ class EMSegmentDefineInputChannelsStep( EMSegmentStep ) :
   def onEntry( self, comingFrom, transitionType ):
     '''
     '''
-    self.__parent.onEntry( comingFrom, transitionType )
+    super( EMSegmentDefineInputChannelsStep, self ).onEntry( comingFrom, transitionType )
 
     if self.isSimpleMode():
       self.logic().SourceTaskFiles()
@@ -189,43 +187,41 @@ class EMSegmentDefineInputChannelsStep( EMSegmentStep ) :
         preProcessingStep.enableQuestions()
 
 
-    self.__parent.onExit( goingTo, transitionType )
+    super( EMSegmentDefineInputChannelsStep, self ).onExit( goingTo, transitionType )
 
 
 
   def validate( self, desiredBranchId ):
     '''
     '''
-    self.__parent.validate( desiredBranchId )
+    super( EMSegmentDefineInputChannelsStep, self ).validate( desiredBranchId )
 
     # we need at least one input channel
     if self.__inputChannelList.inputChannelCount() == 0:
-      self.__parent.validationFailed( desiredBranchId, 'Input Channel Error', 'Please add at least one input channel!' )
+      self.validationFailed( desiredBranchId, 'Input Channel Error', 'Please add at least one input channel!' )
       return
 
     # we need an assigned volume for each channel
     for c in range( self.__inputChannelList.inputChannelCount() ):
       if not self.__inputChannelList.inputChannelVolume( c ):
-        self.__parent.validationFailed( desiredBranchId, 'Input Channel Error', 'Please assign a volume to each input channel!' )
+        self.validationFailed( desiredBranchId, 'Input Channel Error', 'Please assign a volume to each input channel!' )
         return
 
     # check if all channels have different volumes assigned
     if self.__inputChannelList.identicalInputVolumes():
-      self.__parent.validationFailed( desiredBranchId, 'Input Channel Error', 'Please assign different volumes to individual input channel!' )
+      self.validationFailed( desiredBranchId, 'Input Channel Error', 'Please assign different volumes to individual input channel!' )
       return
 
     # number of input channels changed
     if self.__inputChannelList.inputChannelCount() != self.mrmlManager().GetGlobalParametersNode().GetNumberOfTargetInputChannels():
       answer = qt.QMessageBox.question( self, "Change the number of input channels?", "Are you sure you want to change the number of input images?", qt.QMessageBox.Yes | qt.QMessageBox.No )
       if answer == qt.QMessageBox.No:
-        self.__parent.validationFailed( desiredBranchId, '', '', False )
+        self.validationFailed( desiredBranchId, '', '', False )
         return
 
     # check if all channels have different names
     if self.__inputChannelList.identicalInputChannelNames():
-      self.__parent.validationFailed( desiredBranchId, 'Input Channel Error', 'Please assign different names to individual input channel!' )
+      self.validationFailed( desiredBranchId, 'Input Channel Error', 'Please assign different names to individual input channel!' )
       return
 
-    self.__parent.validationSucceeded( desiredBranchId )
-
-
+    self.validationSucceeded( desiredBranchId )

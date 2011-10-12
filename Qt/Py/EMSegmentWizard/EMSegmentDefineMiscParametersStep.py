@@ -13,8 +13,6 @@ class EMSegmentDefineMiscParametersStep( EMSegmentStep ) :
     self.setName( '9. Define Miscellaneous Parameters' )
     self.setDescription( 'Define miscellaneous parameters before performing segmentation' )
 
-    self.__parent = super( EMSegmentDefineMiscParametersStep, self )
-
     self.__saveButton = None
     self.__saveIntermediateResultsCheckBox = None
     self.__selectDirectoryButton = None
@@ -32,7 +30,7 @@ class EMSegmentDefineMiscParametersStep( EMSegmentStep ) :
   def createUserInterface( self ):
     '''
     '''
-    self.__layout = self.__parent.createUserInterface()
+    self.__layout = super( EMSegmentDefineMiscParametersStep, self ).createUserInterface()
 
     # deactivate next button since it is the last step
     self.buttonBoxHints = self.NextButtonDisabled
@@ -150,7 +148,7 @@ class EMSegmentDefineMiscParametersStep( EMSegmentStep ) :
   def onEntry( self, comingFrom, transitionType ):
     '''
     '''
-    self.__parent.onEntry( comingFrom, transitionType )
+    super( EMSegmentDefineMiscParametersStep, self ).onEntry( comingFrom, transitionType )
 
     self.loadFromMRML()
 
@@ -158,9 +156,8 @@ class EMSegmentDefineMiscParametersStep( EMSegmentStep ) :
   def validate( self, desiredBranchId ):
     '''
     '''
-    self.__parent.validate( desiredBranchId )
-
-    self.__parent.validationSucceeded( desiredBranchId )
+    super( EMSegmentDefineMiscParametersStep, self ).validate( desiredBranchId )
+    self.validationSucceeded( desiredBranchId )
 
   def saveTemplate( self ):
     '''

@@ -10,7 +10,6 @@ class EMSegmentSpecifyIntensityDistributionStep( EMSegmentStep ) :
     self.setName( '7. Specify Intensity Distributions' )
     self.setDescription( 'Define the intensity distribution for each anatomical structure.' )
 
-    self.__parent = super( EMSegmentSpecifyIntensityDistributionStep, self )
     self.__layout = None
     self.__anatomicalTree = None
     self.__classLabel = None
@@ -32,7 +31,7 @@ class EMSegmentSpecifyIntensityDistributionStep( EMSegmentStep ) :
   def createUserInterface( self ):
     '''
     '''
-    self.__layout = self.__parent.createUserInterface()
+    self.__layout = super( EMSegmentSpecifyIntensityDistributionStep, self ).createUserInterface()
 
     # the anatomical tree
     anatomicalTreeGroupBox = qt.QGroupBox()
@@ -129,7 +128,7 @@ class EMSegmentSpecifyIntensityDistributionStep( EMSegmentStep ) :
   def onEntry( self, comingFrom, transitionType ):
     '''
     '''
-    self.__parent.onEntry( comingFrom, transitionType )
+    super( EMSegmentSpecifyIntensityDistributionStep, self ).onEntry( comingFrom, transitionType )
 
     if self.__anatomicalTree:
       self.__anatomicalTree.setMRMLManager( self.mrmlManager() )
@@ -142,9 +141,9 @@ class EMSegmentSpecifyIntensityDistributionStep( EMSegmentStep ) :
   def validate( self, desiredBranchId ):
     '''
     '''
-    self.__parent.validate( desiredBranchId )
+    super( EMSegmentSpecifyIntensityDistributionStep, self ).validate( desiredBranchId )
 
-    self.__parent.validationSucceeded( desiredBranchId )
+    self.validationSucceeded( desiredBranchId )
 
   def plotDistribution( self ):
     '''

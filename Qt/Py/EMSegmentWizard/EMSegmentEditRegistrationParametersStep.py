@@ -10,7 +10,6 @@ class EMSegmentEditRegistrationParametersStep( EMSegmentStep ) :
     self.setName( '5. Edit Registration Parameters' )
     self.setDescription( 'Specify atlas-to-dataset registration parameters.' )
 
-    self.__parent = super( EMSegmentEditRegistrationParametersStep, self )
     self.__layout = None
     self.__channelComboBoxList = []
     self.__affineRegistrationComboBox = None
@@ -22,7 +21,7 @@ class EMSegmentEditRegistrationParametersStep( EMSegmentStep ) :
   def createUserInterface( self ):
     '''
     '''
-    self.__layout = self.__parent.createUserInterface()
+    self.__layout = super( EMSegmentEditRegistrationParametersStep, self ).createUserInterface()
 
     infoLabel = qt.QLabel( 'If applicable, please select an atlas for each input dataset. Additionally, configure the registration speed and other parameters.' )
 
@@ -141,7 +140,7 @@ class EMSegmentEditRegistrationParametersStep( EMSegmentStep ) :
   def onEntry( self, comingFrom, transitionType ):
     '''
     '''
-    self.__parent.onEntry( comingFrom, transitionType )
+    super( EMSegmentEditRegistrationParametersStep, self ).onEntry( comingFrom, transitionType )
     # Load all values from MRML
     self.loadFromMRML()
 
@@ -151,6 +150,6 @@ class EMSegmentEditRegistrationParametersStep( EMSegmentStep ) :
   def validate( self, desiredBranchId ):
     '''
     '''
-    self.__parent.validate( desiredBranchId )
+    super( EMSegmentEditRegistrationParametersStep, self ).validate( desiredBranchId )
 
-    self.__parent.validationSucceeded( desiredBranchId )
+    self.validationSucceeded( desiredBranchId )

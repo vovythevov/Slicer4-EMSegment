@@ -11,8 +11,6 @@ class EMSegmentDefinePreprocessingStep( EMSegmentStep ) :
     self.setName( '6. Define Preprocessing' )
     self.setDescription( 'Answer questions for preprocessing of input images' )
 
-    self.__parent = super( EMSegmentDefinePreprocessingStep, self )
-
     self.__stepid = stepid
     self.__dynamicFrame = None
     self.__askQuestionsBeforeRunningPreprocessing = True
@@ -42,7 +40,7 @@ class EMSegmentDefinePreprocessingStep( EMSegmentStep ) :
   def createUserInterface( self ):
     '''
     '''
-    self.__layout = self.__parent.createUserInterface()
+    self.__layout = super( EMSegmentDefinePreprocessingStep, self ).createUserInterface()
 
     #
     # dynamic frame
@@ -88,7 +86,7 @@ class EMSegmentDefinePreprocessingStep( EMSegmentStep ) :
   def onEntry( self, comingFrom, transitionType ):
     '''
     '''
-    self.__parent.onEntry( comingFrom, transitionType )
+    super( EMSegmentDefinePreprocessingStep, self ).onEntry( comingFrom, transitionType )
 
     slicer.modules.emsegmentAdvancedDynamicFrame = self.dynamicFrame()
 
@@ -122,7 +120,7 @@ class EMSegmentDefinePreprocessingStep( EMSegmentStep ) :
       if self.__performCalculation:
         self.runPreProcessing()
 
-    self.__parent.onExit( goingTo, transitionType )
+    super( EMSegmentDefinePreprocessingStep, self ).onExit( goingTo, transitionType )
 
 
   def runPreProcessing( self ):
@@ -172,7 +170,7 @@ class EMSegmentDefinePreprocessingStep( EMSegmentStep ) :
   def validate( self, desiredBranchId ):
     '''
     '''
-    self.__parent.validate( desiredBranchId )
+    super( EMSegmentDefinePreprocessingStep, self ).validate( desiredBranchId )
 
     # check if CMTK should be used,
     # then try to find it
@@ -186,7 +184,7 @@ class EMSegmentDefinePreprocessingStep( EMSegmentStep ) :
         answer = qt.QMessageBox.question( self, "CMTK is not installed", "CMTK is not installed. Do you want to proceed with BRAINSTools instead?", qt.QMessageBox.Yes | qt.QMessageBox.No )
         if answer == qt.QMessageBox.No:
           # if no, exit here and stay at this step
-          self.__parent.validationFailed( desiredBranchId, '', '', False )
+          self.validationFailed( desiredBranchId, '', '', False )
           return
 
     # same for plastimatch
@@ -199,7 +197,7 @@ class EMSegmentDefinePreprocessingStep( EMSegmentStep ) :
         answer = qt.QMessageBox.question( self, "PLASTIMATCH is not installed", "PLASTIMATCH is not installed. Do you want to proceed with BRAINSTools instead?", qt.QMessageBox.Yes | qt.QMessageBox.No )
         if answer == qt.QMessageBox.No:
           # if no, exit here and stay at this step
-          self.__parent.validationFailed( desiredBranchId, '', '', False )
+          self.validationFailed( desiredBranchId, '', '', False )
           return
 
     # same for DEMONS
@@ -212,7 +210,7 @@ class EMSegmentDefinePreprocessingStep( EMSegmentStep ) :
         answer = qt.QMessageBox.question( self, "DEMONS is not installed", "DEMONS is not installed. Do you want to proceed with BRAINSTools instead?", qt.QMessageBox.Yes | qt.QMessageBox.No )
         if answer == qt.QMessageBox.No:
           # if no, exit here and stay at this step
-          self.__parent.validationFailed( desiredBranchId, '', '', False )
+          self.validationFailed( desiredBranchId, '', '', False )
           return
 
     # same for DRAMMS
@@ -225,7 +223,7 @@ class EMSegmentDefinePreprocessingStep( EMSegmentStep ) :
         answer = qt.QMessageBox.question( self, "DRAMMS is not installed", "DRAMMS is not installed. Do you want to proceed with BRAINSTools instead?", qt.QMessageBox.Yes | qt.QMessageBox.No )
         if answer == qt.QMessageBox.No:
           # if no, exit here and stay at this step
-          self.__parent.validationFailed( desiredBranchId, '', '', False )
+          self.validationFailed( desiredBranchId, '', '', False )
           return
 
     # same for ANTS
@@ -238,7 +236,7 @@ class EMSegmentDefinePreprocessingStep( EMSegmentStep ) :
         answer = qt.QMessageBox.question( self, "ANTS is not installed", "ANTS is not installed. Do you want to proceed with BRAINSTools instead?", qt.QMessageBox.Yes | qt.QMessageBox.No )
         if answer == qt.QMessageBox.No:
           # if no, exit here and stay at this step
-          self.__parent.validationFailed( desiredBranchId, '', '', False )
+          self.validationFailed( desiredBranchId, '', '', False )
           return
 
     #
@@ -246,7 +244,7 @@ class EMSegmentDefinePreprocessingStep( EMSegmentStep ) :
     #
     if not self.__askQuestionsBeforeRunningPreprocessing:
       # no questions, just run it
-      self.__parent.validationSucceeded( desiredBranchId )
+      self.validationSucceeded( desiredBranchId )
       return
 
     # check if preprocessing already ran
@@ -271,13 +269,10 @@ class EMSegmentDefinePreprocessingStep( EMSegmentStep ) :
       answer = qt.QMessageBox.question( self, "Start Pre-processing of images?", "Pre-processing of images might take a while. Do you want to proceed?", qt.QMessageBox.Yes | qt.QMessageBox.No )
       if answer == qt.QMessageBox.No:
         # if no, exit here and stay at this step
-        self.__parent.validationFailed( desiredBranchId, '', '', False )
+        self.validationFailed( desiredBranchId, '', '', False )
         return
       else:
         # perform the calculation!
         self.__performCalculation = True
 
-
-    self.__parent.validationSucceeded( desiredBranchId )
-
-
+    self.validationSucceeded( desiredBranchId )

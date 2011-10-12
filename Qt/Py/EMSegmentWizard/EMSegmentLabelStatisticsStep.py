@@ -13,18 +13,16 @@ class EMSegmentLabelStatisticsStep( EMSegmentStep ) :
     self.setName( 'Segmentation finished' )
     self.setDescription( 'View after-segmentation statistics.' )
 
-    self.__parent = super( EMSegmentLabelStatisticsStep, self )
-
     self.__updating = 0;
 
 
   def createUserInterface( self ):
     '''
     '''
-    self.__layout = self.__parent.createUserInterface()
+    self.__layout = super( EMSegmentLabelStatisticsStep, self ).createUserInterface()
 
     infoLabel = qt.QLabel( 'The segmentation finished!\n\nThe results are displayed as labelMaps in the slice viewers.\n\n' )
-    infoLabel.setFont( self.__parent.getBoldFont() )
+    infoLabel.setFont( self.getBoldFont() )
     self.__layout.addWidget( infoLabel )
 
     self.__top = qt.QGroupBox()
@@ -69,7 +67,7 @@ class EMSegmentLabelStatisticsStep( EMSegmentStep ) :
 
     if slicer.modules.emsegmentsimplemode:
       infoLabel2 = qt.QLabel( '\n\nIt is now possible to reset the module.' )
-      #infoLabel2.setFont( self.__parent.getBoldFont() )
+      #infoLabel2.setFont( self.getBoldFont() )
       self.__layout.addWidget( infoLabel2 )
 
       resetButton = qt.QPushButton( 'Reset Module' )
@@ -96,7 +94,7 @@ class EMSegmentLabelStatisticsStep( EMSegmentStep ) :
   def onEntry( self, comingFrom, transitionType ):
     '''
     '''
-    self.__parent.onEntry( comingFrom, transitionType )
+    super( EMSegmentLabelStatisticsStep, self ).onEntry( comingFrom, transitionType )
 
     self.loadFromMRML()
 
@@ -104,9 +102,9 @@ class EMSegmentLabelStatisticsStep( EMSegmentStep ) :
   def validate( self, desiredBranchId ):
     '''
     '''
-    self.__parent.validate( desiredBranchId )
+    super( EMSegmentLabelStatisticsStep, self ).validate( desiredBranchId )
 
-    self.__parent.validationSucceeded( desiredBranchId )
+    self.validationSucceeded( desiredBranchId )
 
 
 

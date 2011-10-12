@@ -14,7 +14,6 @@ class EMSegmentSelectTaskStep( EMSegmentStep ) :
     self.__tasksList = dict()
     self.__preprocessingTasksList = dict()
     self.__newTaskString = 'Create new task..'
-    self.__parent = super( EMSegmentSelectTaskStep, self )
 
   def createUserInterface( self ):
     '''
@@ -22,18 +21,18 @@ class EMSegmentSelectTaskStep( EMSegmentStep ) :
 
     self.buttonBoxHints = self.ButtonBoxHidden
 
-    self.__layout = self.__parent.createUserInterface()
+    self.__layout = super( EMSegmentSelectTaskStep, self ).createUserInterface()
 
     # let's load all tasks
     self.loadTasks()
     self.loadPreprocessingTasks()
 
     eminfoLabel = qt.QLabel( 'This module provides EM segmentation based on an atlas.\nBy defining an anatomical tree, different structures can be segmented.\n\n' )
-    eminfoLabel.setFont( self.__parent.getBoldFont() )
+    eminfoLabel.setFont( self.getBoldFont() )
     self.__layout.addRow( eminfoLabel )
 
     selectTaskLabel = qt.QLabel( 'Select Task' )
-    selectTaskLabel.setFont( self.__parent.getBoldFont() )
+    selectTaskLabel.setFont( self.getBoldFont() )
     self.__layout.addRow( selectTaskLabel )
 
     self.__taskComboBox = qt.QComboBox()
@@ -62,7 +61,7 @@ class EMSegmentSelectTaskStep( EMSegmentStep ) :
     self.__layout.addRow( "", qt.QWidget() )
 
     chooseModeLabel = qt.QLabel( 'Choose Mode' )
-    chooseModeLabel.setFont( self.__parent.getBoldFont() )
+    chooseModeLabel.setFont( self.getBoldFont() )
     self.__layout.addRow( chooseModeLabel )
 
     self.__buttonBox = qt.QDialogButtonBox()
@@ -323,11 +322,11 @@ class EMSegmentSelectTaskStep( EMSegmentStep ) :
   def validate( self, desiredBranchId ):
     '''
     '''
-    self.__parent.validate( desiredBranchId )
+    super( EMSegmentSelectTaskStep, self ).validate( desiredBranchId )
 
     # we will try to load the selected task
     if self.loadTask():
-      self.__parent.validationSucceeded( desiredBranchId )
+      self.validationSucceeded( desiredBranchId )
     else:
-      self.__parent.validationFailed( desiredBranchId, 'Load Task Error', 'There was an error loading the selected task!' )
+      self.validationFailed( desiredBranchId, 'Load Task Error', 'There was an error loading the selected task!' )
 
