@@ -61,6 +61,9 @@
 #include <io.h>
 #endif
 
+#define VTK_CREATE(type, var) \
+  vtkSmartPointer<type> var = vtkSmartPointer<type>::New()
+
 // A helper class to compare two maps
 template<class T>
 class MapCompare
@@ -99,9 +102,8 @@ vtkEMSegmentLogic::vtkEMSegmentLogic()
   //this->DebugOn();
 
   this->MRMLManager = 0; // NB: must be set before SetMRMLManager is called
-  vtkEMSegmentMRMLManager* manager = vtkEMSegmentMRMLManager::New();
-  vtkSetObjectBodyMacro(MRMLManager,vtkEMSegmentMRMLManager,manager);
-  manager->Delete();
+  VTK_CREATE(vtkEMSegmentMRMLManager, manager);
+  vtkSetObjectBodyMacro(MRMLManager,vtkEMSegmentMRMLManager, manager);
 
   this->SlicerCommonInterface = NULL;
 }
@@ -146,7 +148,7 @@ vtkEMSegmentLogic::AddArchetypeScalarVolume(const char* filename, const char* vo
 vtkMRMLScalarVolumeNode*
 vtkEMSegmentLogic::AddArchetypeScalarVolume(const char* filename, const char* volname, vtkSlicerApplicationLogic* appLogic, vtkMRMLScene* mrmlScene, bool centered)
 {
-  vtkSlicerVolumesLogic* volLogic = vtkSlicerVolumesLogic::New();
+  VTK_CREATE(vtkSlicerVolumesLogic, volLogic);
   volLogic->SetMRMLScene(mrmlScene);
   volLogic->SetApplicationLogic(appLogic);
   vtkMRMLScalarVolumeNode* volNode = NULL;
@@ -158,7 +160,6 @@ vtkEMSegmentLogic::AddArchetypeScalarVolume(const char* filename, const char* vo
     {
     volNode = volLogic->AddArchetypeScalarVolume(filename, volname, 0);
     }
-  volLogic->Delete();
   return volNode;
 }
 
@@ -247,7 +248,7 @@ void vtkEMSegmentLogic::PrintImageInfo(vtkMRMLVolumeNode* volumeNode)
       << extent[3] << " " << extent[4] << " " << extent[5] << std::endl;
 
   // ijkToRAS
-  vtkMatrix4x4* matrix = vtkMatrix4x4::New();
+  VTK_CREATE(vtkMatrix4x4, matrix);
   volumeNode->GetIJKToRASMatrix(matrix);
   std::cout << "IJKtoRAS Matrix: " << std::endl;
   for (unsigned int r = 0; r < 4; ++r)
@@ -259,7 +260,6 @@ void vtkEMSegmentLogic::PrintImageInfo(vtkMRMLVolumeNode* volumeNode)
       }
     std::cout << std::endl;
     }
-  matrix->Delete();
 }
 
 // a utility to print out a vtk image origin, spacing, and extent
@@ -314,7 +314,7 @@ void vtkEMSegmentLogic::InitializeEventListeners()
     }
 
   // a good time to add the observed events!
-  vtkSmartPointer<vtkIntArray> events = vtkSmartPointer<vtkIntArray>::New();
+  VTK_CREATE(vtkIntArray, events);
   events->InsertNextValue(vtkMRMLScene::NodeAddedEvent);
   events->InsertNextValue(vtkMRMLScene::NodeRemovedEvent);
 
@@ -328,8 +328,8 @@ void vtkEMSegmentLogic::InitializeEventListeners()
 }
 
 //----------------------------------------------------------------------------
-void vtkEMSegmentLogic::ProcessMRMLEvents(vtkObject *caller, 
-                                          unsigned long event, 
+void vtkEMSegmentLogic::ProcessMRMLEvents(vtkObject *caller,
+                                          unsigned long event,
                                           void *callData)
 {
   this->MRMLManager->ProcessMRMLEvents(caller, event, callData);
@@ -352,9 +352,9 @@ bool vtkEMSegmentLogic::IsVolumeGeometryEqual(vtkMRMLVolumeNode* lhs, vtkMRMLVol
   bool equalExent = std::equal(extentLHS, extentLHS + 6, extentRHS);
 
   // check ijkToRAS
-  vtkMatrix4x4* matrixLHS = vtkMatrix4x4::New();
+  VTK_CREATE(vtkMatrix4x4, matrixLHS);
   lhs->GetIJKToRASMatrix(matrixLHS);
-  vtkMatrix4x4* matrixRHS = vtkMatrix4x4::New();
+  VTK_CREATE(vtkMatrix4x4, matrixRHS);
   rhs->GetIJKToRASMatrix(matrixRHS);
   bool equalMatrix = true;
   for (int r = 0; r < 4; ++r)
@@ -370,9 +370,6 @@ bool vtkEMSegmentLogic::IsVolumeGeometryEqual(vtkMRMLVolumeNode* lhs, vtkMRMLVol
         }
       }
     }
-
-  matrixLHS->Delete();
-  matrixRHS->Delete();
   return equalExent && equalMatrix;
 }
 
@@ -607,7 +604,7 @@ void vtkEMSegmentLogic::SlicerImageReslice(vtkMRMLVolumeNode* inputVolumeNode, v
     outputGeometryData = outputVolumeGeometryNode->GetImageData();
     }
 
-  vtkImageReslice* resliceFilter = vtkImageReslice::New();
+  VTK_CREATE(vtkImageReslice, resliceFilter);
 
   //
   // set inputs
@@ -624,15 +621,15 @@ void vtkEMSegmentLogic::SlicerImageReslice(vtkMRMLVolumeNode* inputVolumeNode, v
   //
   // setup total transform
   // ijk of output -> RAS -> XFORM -> RAS -> ijk of input
-  vtkTransform* totalTransform = vtkTransform::New();
+  VTK_CREATE(vtkTransform, totalTransform);
   if (outputRASToInputRASTransform != NULL)
     {
     totalTransform->DeepCopy(outputRASToInputRASTransform);
     }
 
-  vtkMatrix4x4* outputIJKToRAS = vtkMatrix4x4::New();
+  VTK_CREATE(vtkMatrix4x4, outputIJKToRAS);
   outputVolumeNode->GetIJKToRASMatrix(outputIJKToRAS);
-  vtkMatrix4x4* inputRASToIJK = vtkMatrix4x4::New();
+  VTK_CREATE(vtkMatrix4x4, inputRASToIJK);
   inputVolumeNode->GetRASToIJKMatrix(inputRASToIJK);
 
   totalTransform->PreMultiply();
@@ -661,13 +658,6 @@ void vtkEMSegmentLogic::SlicerImageReslice(vtkMRMLVolumeNode* inputVolumeNode, v
 
   resliceFilter->Update();
   outputImageData->ShallowCopy(resliceFilter->GetOutput());
-
-  //
-  // clean up
-  outputIJKToRAS->Delete();
-  inputRASToIJK->Delete();
-  resliceFilter->Delete();
-  totalTransform->Delete();
 }
 
 // Assume geometry is already specified, create
@@ -719,7 +709,7 @@ void vtkEMSegmentLogic::SlicerImageResliceWithGrid(vtkMRMLVolumeNode* inputVolum
     outputGeometryData = outputVolumeGeometryNode->GetImageData();
     }
 
-  vtkImageReslice* resliceFilter = vtkImageReslice::New();
+  VTK_CREATE(vtkImageReslice, resliceFilter);
 
   //
   // set inputs
@@ -727,11 +717,10 @@ void vtkEMSegmentLogic::SlicerImageResliceWithGrid(vtkMRMLVolumeNode* inputVolum
 
   //
   // create total transform
-  vtkTransformToGrid* gridSource = vtkTransformToGrid::New();
-  vtkIdentityTransform* idTransform = vtkIdentityTransform::New();
+  VTK_CREATE(vtkTransformToGrid, gridSource);
+  VTK_CREATE(vtkIdentityTransform, idTransform);
   gridSource->SetInput(idTransform);
   //gridSource->SetGridScalarType(VTK_FLOAT);
-  idTransform->Delete();
 
   //
   // set geometry
@@ -751,17 +740,16 @@ void vtkEMSegmentLogic::SlicerImageResliceWithGrid(vtkMRMLVolumeNode* inputVolum
     gridSource->SetGridOrigin(outputImageData->GetOrigin());
     }
   gridSource->Update();
-  vtkGridTransform* totalTransform = vtkGridTransform::New();
+  VTK_CREATE(vtkGridTransform, totalTransform);
   totalTransform->SetDisplacementGrid(gridSource->GetOutput());
   //  totalTransform->SetInterpolationModeToCubic();
-  gridSource->Delete();
 
   //
   // fill in total transform
   // ijk of output -> RAS -> XFORM -> RAS -> ijk of input
-  vtkMatrix4x4* outputIJKToRAS = vtkMatrix4x4::New();
+  VTK_CREATE(vtkMatrix4x4, outputIJKToRAS);
   outputVolumeNode->GetIJKToRASMatrix(outputIJKToRAS);
-  vtkMatrix4x4* inputRASToIJK = vtkMatrix4x4::New();
+  VTK_CREATE(vtkMatrix4x4, inputRASToIJK);
   inputVolumeNode->GetRASToIJKMatrix(inputRASToIJK);
   vtkEMSegmentLogic::ComposeGridTransform(outputRASToInputRASTransform,
       outputIJKToRAS, inputRASToIJK, totalTransform);
@@ -787,13 +775,6 @@ void vtkEMSegmentLogic::SlicerImageResliceWithGrid(vtkMRMLVolumeNode* inputVolum
 
   resliceFilter->Update();
   outputImageData->ShallowCopy(resliceFilter->GetOutput());
-
-  //
-  // clean up
-  outputIJKToRAS->Delete();
-  inputRASToIJK->Delete();
-  resliceFilter->Delete();
-  totalTransform->Delete();
 }
 
 //----------------------------------------------------------------------------
@@ -833,12 +814,11 @@ void vtkEMSegmentLogic::StartPreprocessingResampleAndCastToTarget(vtkMRMLVolumeN
       != movingVolumeNode->GetImageData()->GetScalarType())
     {
     //cast
-    vtkImageCast* cast = vtkImageCast::New();
+    VTK_CREATE(vtkImageCast, cast);
     cast->SetInput(outputVolumeNode->GetImageData());
     cast->SetOutputScalarType(fixedVolumeNode->GetImageData()->GetScalarType());
     cast->Update();
     outputVolumeNode->GetImageData()->DeepCopy(cast->GetOutput());
-    cast->Delete();
     }
   std::cout << "Resampling and casting output volume \""
       << outputVolumeNode->GetName() << "\" to reference target \""
@@ -856,7 +836,7 @@ double vtkEMSegmentLogic::GuessRegistrationBackgroundLevel(vtkMRMLVolumeNode* vo
     return -1;
     }
 
-  // guess background level    
+  // guess background level
   double backgroundLevel = 0;
   switch (volumeNode->GetImageData()->GetScalarType())
     {
@@ -894,7 +874,7 @@ void vtkEMSegmentLogic::CopyDataToSegmenter(vtkImageEMLocalSegmenter* segmenter)
   this->CopyTargetDataToSegmenter(segmenter);
 
   //
-  // copy global parameters to algorithm 
+  // copy global parameters to algorithm
   //
   vtkstd::cout << "global data...";
   this->CopyGlobalDataToSegmenter(segmenter);
@@ -903,7 +883,7 @@ void vtkEMSegmentLogic::CopyDataToSegmenter(vtkImageEMLocalSegmenter* segmenter)
   // copy tree base parameters to algorithm
   //
   vtkstd::cout << "tree data...";
-  vtkImageEMLocalSuperClass* rootNode = vtkImageEMLocalSuperClass::New();
+  VTK_CREATE(vtkImageEMLocalSuperClass, rootNode);
   this->CopyTreeDataToSegmenter(rootNode,
       this->MRMLManager->GetTreeRootNodeID());
   segmenter->SetHeadClass(rootNode);
@@ -911,8 +891,6 @@ void vtkEMSegmentLogic::CopyDataToSegmenter(vtkImageEMLocalSegmenter* segmenter)
   //cout << "====  vtkEMSegmentLogic::CopyDataToSegmenter: Print out  entire tree " << endl;
   // vtkIndent indent;
   // rootNode->PrintSelf(cout , indent);
-
-  rootNode->Delete();
 }
 
 //-----------------------------------------------------------------------------
@@ -1019,7 +997,7 @@ void vtkEMSegmentLogic::CopyTreeDataToSegmenter(vtkImageEMLocalSuperClass* node,
 
     if (isLeaf)
       {
-      vtkImageEMLocalClass* childNode = vtkImageEMLocalClass::New();
+      VTK_CREATE(vtkImageEMLocalClass, childNode);
       // need this here because the vtkImageEM* classes don't use
       // virtual functions and so failed initializations lead to
       // memory errors
@@ -1028,14 +1006,12 @@ void vtkEMSegmentLogic::CopyTreeDataToSegmenter(vtkImageEMLocalSuperClass* node,
       this->CopyTreeGenericDataToSegmenter(childNode, childID);
       this->CopyTreeLeafDataToSegmenter(childNode, childID);
       node->AddSubClass(childNode, i);
-      childNode->Delete();
       }
     else
       {
-      vtkImageEMLocalSuperClass* childNode = vtkImageEMLocalSuperClass::New();
+      VTK_CREATE(vtkImageEMLocalSuperClass, childNode);
       this->CopyTreeDataToSegmenter(childNode, childID);
       node->AddSubClass(childNode, i);
-      childNode->Delete();
       }
 
     totalProbability += this->MRMLManager->GetTreeNodeClassProbability(childID);
@@ -1050,7 +1026,7 @@ void vtkEMSegmentLogic::CopyTreeDataToSegmenter(vtkImageEMLocalSuperClass* node,
     }
 
   // copy other parent specific tree node data to segmenter
-  // Do it after all classes are added so that number of children are set correctly - Important for mrf 
+  // Do it after all classes are added so that number of children are set correctly - Important for mrf
   this->CopyTreeParentDataToSegmenter(node, nodeID);
 
   node->Update();
@@ -1150,9 +1126,8 @@ void vtkEMSegmentLogic::CopyTreeGenericDataToSegmenter(vtkImageEMLocalGenericCla
     // Set up posterior image data !
     if (!node->GetPosteriorImageData())
       {
-      vtkImageData* imgData = vtkImageData::New();
+      VTK_CREATE(vtkImageData, imgData);
       node->SetPosteriorImageData(imgData);
-      imgData->Delete();
       }
 
     }
@@ -1231,7 +1206,7 @@ void vtkEMSegmentLogic::CopyTreeParentDataToSegmenter(vtkImageEMLocalSuperClass*
   node->SetAlpha(this->MRMLManager->GetTreeNodeAlpha(nodeID));
 
   // Set Markov matrices
-  // this should already be set correctly 
+  // this should already be set correctly
   int numChildren = node->GetNumClasses();
   if (this->MRMLManager->GetTreeNodeNumberOfChildren(nodeID) != numChildren)
     {
@@ -1348,7 +1323,7 @@ vtkstd::string vtkEMSegmentLogic::GetTclGeneralDirectory()
 //----------------------------------------------------------------------------
 void vtkEMSegmentLogic::TransferIJKToRAS(vtkMRMLVolumeNode* volumeNode, int ijk[3], double ras[3])
 {
-  vtkMatrix4x4* matrix = vtkMatrix4x4::New();
+  VTK_CREATE(vtkMatrix4x4, matrix);
   volumeNode->GetIJKToRASMatrix(matrix);
   float input[4] =
   { ijk[0], ijk[1], ijk[2], 1 };
@@ -1362,7 +1337,7 @@ void vtkEMSegmentLogic::TransferIJKToRAS(vtkMRMLVolumeNode* volumeNode, int ijk[
 //----------------------------------------------------------------------------
 void vtkEMSegmentLogic::TransferRASToIJK(vtkMRMLVolumeNode* volumeNode, double ras[3], int ijk[3])
 {
-  vtkMatrix4x4* matrix = vtkMatrix4x4::New();
+  VTK_CREATE(vtkMatrix4x4, matrix);
   volumeNode->GetRASToIJKMatrix(matrix);
   double input[4] =
   { ras[0], ras[1], ras[2], 1 };
@@ -1374,7 +1349,7 @@ void vtkEMSegmentLogic::TransferRASToIJK(vtkMRMLVolumeNode* volumeNode, double r
 }
 
 //----------------------------------------------------------------------------
-// works for running stuff in TCL so that you do not need to look in two windows 
+// works for running stuff in TCL so that you do not need to look in two windows
 void vtkEMSegmentLogic::PrintText(char *TEXT)
 {
   cout << TEXT << endl;
@@ -1417,7 +1392,7 @@ void vtkEMSegmentLogic::CreatePackageFilenames(vtkMRMLScene* scene, const char* 
 {
   //
   // set up mrml manager for this new scene
-  vtkEMSegmentMRMLManager* newSceneManager = vtkEMSegmentMRMLManager::New();
+  VTK_CREATE(vtkEMSegmentMRMLManager, newSceneManager);
   newSceneManager->SetMRMLScene(scene);
   vtkMRMLEMSTemplateNode* newEMSTemplateNode =
       dynamic_cast<vtkMRMLEMSTemplateNode*> (scene->GetNthNodeByClass(0,
@@ -1425,13 +1400,11 @@ void vtkEMSegmentLogic::CreatePackageFilenames(vtkMRMLScene* scene, const char* 
   if (newEMSTemplateNode == NULL)
     {
     vtkWarningMacro("CreatePackageFilenames: no EMSSegmenter node!");
-    newSceneManager->Delete();
     return;
     }
   if (newSceneManager->SetNodeWithCheck(newEMSTemplateNode))
     {
     vtkWarningMacro("CreatePackageFilenames: not a valid template node!");
-    newSceneManager->Delete();
     return;
     }
 
@@ -1714,9 +1687,6 @@ void vtkEMSegmentLogic::CreatePackageFilenames(vtkMRMLScene* scene, const char* 
         }
       }
     }
-
-  // clean up
-  newSceneManager->Delete();
 }
 
 //-----------------------------------------------------------------------------
@@ -1842,10 +1812,10 @@ void vtkEMSegmentLogic::SubParcelateSegmentation(vtkImageData* segmentation, vtk
         }
       int childLabel = this->MRMLManager->GetTreeNodeIntensityLabel(childID);
       cout << "==> Subparcellate " << childLabel << endl;
-      vtkImageData* input = vtkImageData::New();
+      VTK_CREATE(vtkImageData, input);
       input->DeepCopy(segmentation);
 
-      vtkImageThreshold* roiMap = vtkImageThreshold::New();
+      VTK_CREATE(vtkImageThreshold, roiMap);
       roiMap->SetInput(input);
       roiMap->ThresholdBetween(childLabel, childLabel);
       roiMap->ReplaceOutOn();
@@ -1853,38 +1823,30 @@ void vtkEMSegmentLogic::SubParcelateSegmentation(vtkImageData* segmentation, vtk
       roiMap->SetOutValue(0);
       roiMap->Update();
 
-      vtkImageCast* castParcellation = vtkImageCast::New();
+      VTK_CREATE(vtkImageCast, castParcellation);
       castParcellation->SetInput(parcellationNode->GetImageData());
       castParcellation->SetOutputScalarType(
           roiMap->GetOutput()->GetScalarType());
       castParcellation->Update();
 
-      vtkImageMathematics* roiParcellation = vtkImageMathematics::New();
+      VTK_CREATE(vtkImageMathematics, roiParcellation);
       roiParcellation->SetInput1(roiMap->GetOutput());
       roiParcellation->SetInput2(castParcellation->GetOutput());
       roiParcellation->SetOperationToMultiply();
       roiParcellation->Update();
 
-      vtkImageThreshold* changedSeg = vtkImageThreshold::New();
+      VTK_CREATE(vtkImageThreshold, changedSeg);
       changedSeg->SetInput(input);
       changedSeg->ThresholdBetween(childLabel, childLabel);
       changedSeg->ReplaceOutOff();
       changedSeg->SetInValue(0);
       changedSeg->Update();
 
-      vtkImageMathematics* parcellatedSeg = vtkImageMathematics::New();
+      VTK_CREATE(vtkImageMathematics, parcellatedSeg);
       parcellatedSeg->SetInput1(changedSeg->GetOutput());
       parcellatedSeg->SetInput2(roiParcellation->GetOutput());
       parcellatedSeg->SetOperationToAdd();
       parcellatedSeg->Update();
-
-      segmentation->DeepCopy(parcellatedSeg->GetOutput());
-      parcellatedSeg->Delete();
-      changedSeg->Delete();
-      roiParcellation->Delete();
-      castParcellation->Delete();
-      roiMap->Delete();
-      input->Delete();
       }
     else
       {
@@ -1899,13 +1861,12 @@ void vtkEMSegmentLogic::AddDefaultTasksToList(const char* FilePath, std::vector<
     std::string> & DefaultTasksName, std::vector<std::string> & DefaultTasksFile, std::vector<
     std::string> & DefinePreprocessingTasksName, std::vector<std::string> & DefinePreprocessingTasksFile)
 {
-  vtkDirectory *dir = vtkDirectory::New();
-  // Do not give out an error message here bc it otherwise comes up when loading slicer 
+  VTK_CREATE(vtkDirectory, dir);
+  // Do not give out an error message here bc it otherwise comes up when loading slicer
   // the path might simply not be created !
 
   if (!dir->Open(FilePath))
     {
-    dir->Delete();
     return;
     }
 
@@ -1915,7 +1876,7 @@ void vtkEMSegmentLogic::AddDefaultTasksToList(const char* FilePath, std::vector<
     {
     vtksys_stl::string filename = dir->GetFile(i);
 
-    // do nothing if file is ".", ".." 
+    // do nothing if file is ".", ".."
     if (strcmp(filename.c_str(), ".") && strcmp(filename.c_str(), ".."))
       {
       //  {
@@ -1986,8 +1947,6 @@ void vtkEMSegmentLogic::AddDefaultTasksToList(const char* FilePath, std::vector<
         } // check if it is not a directory
       } // check if the file is .,.. or does not have a .mrml extension
     } // loop through all the files
-
-  dir->Delete();
 }
 
 //----------------------------------------------------------------------------
@@ -1995,17 +1954,17 @@ void vtkEMSegmentLogic::CreateOutputVolumeNode()
 {
 
   // Version 1 - It is a little bit slower bc it creates image data that we do not need
-  // (vtkSlicerApplication* app) 
+  // (vtkSlicerApplication* app)
   // vtkSlicerVolumesGUI *vgui = vtkSlicerVolumesGUI::SafeDownCast (app->GetModuleGUIByName ( "Volumes"));
-  // if (!vgui)  
+  // if (!vgui)
   // {
-  //   vtkErrorMacro("CreateOutputVolumeNode: could not find vtkSlicerVolumesGUI "); 
+  //   vtkErrorMacro("CreateOutputVolumeNode: could not find vtkSlicerVolumesGUI ");
   //   return;
   // }
   // vtkSlicerVolumesLogic* volLogic  = vgui->GetLogic();
-  // if (!volLogic)  
+  // if (!volLogic)
   // {
-  //   vtkErrorMacro("CreateOutputVolumeNode: could not find vtkSlicerVolumesLogic "); 
+  //   vtkErrorMacro("CreateOutputVolumeNode: could not find vtkSlicerVolumesLogic ");
   //   return;
   // }
   //
@@ -2020,22 +1979,19 @@ void vtkEMSegmentLogic::CreateOutputVolumeNode()
   //  vtkMRMLScalarVolumeNode* outputNode = volLogic->CreateLabelVolume (this->GetMRMLScene(), vNode, "EM_MAP");
 
   // My version
-  vtkMRMLScalarVolumeNode* outputNode = vtkMRMLScalarVolumeNode::New();
+  VTK_CREATE(vtkMRMLScalarVolumeNode, outputNode);
   outputNode->SetLabelMap(1);
   std::string uname = this->GetMRMLScene()->GetUniqueNameByString("EM_Map");
   outputNode->SetName(uname.c_str());
   this->GetMRMLScene()->AddNode(outputNode);
 
-  vtkMRMLLabelMapVolumeDisplayNode* displayNode =
-      vtkMRMLLabelMapVolumeDisplayNode::New();
+  VTK_CREATE(vtkMRMLLabelMapVolumeDisplayNode, displayNode);
   displayNode->SetScene(this->GetMRMLScene());
   this->GetMRMLScene()->AddNode(displayNode);
   displayNode->SetAndObserveColorNodeID(this->MRMLManager->GetColorNodeID());
   outputNode->SetAndObserveDisplayNodeID(displayNode->GetID());
-  displayNode->Delete();
 
   this->MRMLManager->SetOutputVolumeMRMLID(outputNode->GetID());
-  outputNode->Delete();
 }
 
 //----------------------------------------------------------------------------
@@ -2090,7 +2046,7 @@ int vtkEMSegmentLogic::StartSegmentationWithoutPreprocessingAndSaving()
   outVolume->CopyOrientation(inVolume);
   outVolume->SetAndObserveTransformNodeID(inVolume->GetTransformNodeID());
 
-  // if AMF flag is activated make sure that the segmentations of the first level are written out 
+  // if AMF flag is activated make sure that the segmentations of the first level are written out
   int AMFFlag =
       this->GetMRMLManager()->GetGlobalParametersNode()->GetAMFSmoothing();
   if (AMFFlag)
@@ -2108,7 +2064,7 @@ int vtkEMSegmentLogic::StartSegmentationWithoutPreprocessingAndSaving()
   //
   // create segmenter class
   //
-  vtkImageEMLocalSegmenter* segmenter = vtkImageEMLocalSegmenter::New();
+  VTK_CREATE(vtkImageEMLocalSegmenter, segmenter);
   if (segmenter == NULL)
     {
     ErrorMsg = "Could not create vtkImageEMLocalSegmenter pointer";
@@ -2162,17 +2118,16 @@ int vtkEMSegmentLogic::StartSegmentationWithoutPreprocessingAndSaving()
     vtkstd::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << vtkstd::endl;
     }
 
-  // POST PROCESSING 
+  // POST PROCESSING
   vtkstd::cout << "[Start] Postprocessing ..." << vtkstd::endl;
-  vtkImageData* postProcessing = vtkImageData::New();
+  VTK_CREATE(vtkImageData, postProcessing);
   postProcessing->ShallowCopy(segmenter->GetOutput());
 
-  // AMF Smoothing 
+  // AMF Smoothing
   if (AMFFlag)
     {
     if (this->ActiveMeanField(segmenter, postProcessing) == EXIT_FAILURE)
       {
-      postProcessing->Delete();
       return EXIT_FAILURE;
       }
     }
@@ -2188,9 +2143,9 @@ int vtkEMSegmentLogic::StartSegmentationWithoutPreprocessingAndSaving()
   if (this->GetMRMLManager()->GetMinimumIslandSize() > 1)
     {
     vtkstd::cout << "=== Island removal === " << vtkstd::endl;
-    vtkImageData* input = vtkImageData::New();
+    VTK_CREATE(vtkImageData, input);
     input->DeepCopy(postProcessing);
-    vtkImageIslandFilter* islandFilter = vtkImageIslandFilter::New();
+    VTK_CREATE(vtkImageIslandFilter, islandFilter);
     islandFilter->SetInput(input);
     islandFilter->SetIslandMinSize(
         this->GetMRMLManager()->GetMinimumIslandSize());
@@ -2206,8 +2161,6 @@ int vtkEMSegmentLogic::StartSegmentationWithoutPreprocessingAndSaving()
     islandFilter->SetPrintInformation(1);
     islandFilter->Update();
     postProcessing->DeepCopy(islandFilter->GetOutput());
-    islandFilter->Delete();
-    input->Delete();
     }
   vtkstd::cout << "[Done] Postprocessing" << vtkstd::endl;
   //
@@ -2217,7 +2170,6 @@ int vtkEMSegmentLogic::StartSegmentationWithoutPreprocessingAndSaving()
   // set output of the filter to VolumeNode's ImageData
 
   outVolume->SetAndObserveImageData(postProcessing);
-  postProcessing->Delete();
   // make sure the output volume is a labelmap
 
   if (!outVolume->GetLabelMap())
@@ -2245,10 +2197,7 @@ int vtkEMSegmentLogic::StartSegmentationWithoutPreprocessingAndSaving()
 
   // vtkstd::cout << "=== Cleanup  === " << vtkstd::endl;
   outVolume->SetModifiedSinceRead(1);
-  //
-  // clean up
-  //
-  segmenter->Delete();
+
   return EXIT_SUCCESS;
 }
 
@@ -2307,12 +2256,11 @@ bool vtkEMSegmentLogic::PackageAndWriteData(vtkSlicerApplicationLogic* appLogic,
   std::string outputDirectory(packageDirectory);
   std::string mrmlURL(outputDirectory + "/_EMSegmenterScene.mrml");
 
-  vtkMRMLScene* newScene = vtkMRMLScene::New();
+  VTK_CREATE(vtkMRMLScene, newScene);
   newScene->SetRootDirectory(packageDirectory);
   newScene->SetURL(mrmlURL.c_str());
 
-  vtkDataIOManagerLogic* dataIOManagerLogic = vtkDataIOManagerLogic::New();
-  cout << " DEBUG" << endl;
+  VTK_CREATE(vtkDataIOManagerLogic, dataIOManagerLogic);
 
   this->GetSlicerCommonInterface()->AddDataIOToScene(newScene, appLogic,
       dataIOManagerLogic);
@@ -2341,12 +2289,7 @@ bool vtkEMSegmentLogic::PackageAndWriteData(vtkSlicerApplicationLogic* appLogic,
       }
     }
 
-  this->GetSlicerCommonInterface()->RemoveDataIOFromScene(newScene,
-      dataIOManagerLogic);
-
-  dataIOManagerLogic->Delete();
-  dataIOManagerLogic = NULL;
-  newScene->Delete();
+  this->GetSlicerCommonInterface()->RemoveDataIOFromScene(newScene, dataIOManagerLogic);
 
   return !errorFlag;
 }
@@ -3238,13 +3181,13 @@ int vtkEMSegmentLogic::ActiveMeanField(vtkImageEMLocalSegmenter* segmenter, vtkI
   // Turn Probabilities into LogOdds
   //
 
-  vtkImageLogOdds* logOdds = vtkImageLogOdds::New();
+  VTK_CREATE(vtkImageLogOdds, logOdds);
   logOdds->SetMode_Prob2Log();
   logOdds->SetDimProbSpace(probDim);
   logOdds->SetLogOddsInsidePositive();
 
   // Background  - dummy map - necessary so that real background pushes against foreground
-  vtkImageEllipsoidSource* bgProbability = vtkImageEllipsoidSource::New();
+  VTK_CREATE(vtkImageEllipsoidSource, bgProbability);
   bgProbability->SetCenter(0, 0, 0);
   bgProbability->SetRadius(1, 1, 1);
   bgProbability->SetOutValue(0);
@@ -3296,7 +3239,7 @@ int vtkEMSegmentLogic::ActiveMeanField(vtkImageEMLocalSegmenter* segmenter, vtkI
   int* extent = logOdds->GetLogOdds(0) ->GetExtent();
   int numSlices = extent[5] - extent[4] + 1;
 
-  vtkImageMultiLevelSets* aMF = vtkImageMultiLevelSets::New();
+  VTK_CREATE(vtkImageMultiLevelSets, aMF);
   aMF->SetMultiLevelVersion(0);
   aMF->SetNumberOfCurves(numCurves);
   aMF->SetprobCondWeightMin(0.05);
@@ -3397,7 +3340,7 @@ int vtkEMSegmentLogic::ActiveMeanField(vtkImageEMLocalSegmenter* segmenter, vtkI
   // Copy resulting Segmentation to result
   //
 
-  vtkImageLogOdds* outcomeProb = vtkImageLogOdds::New();
+  VTK_CREATE(vtkImageLogOdds, outcomeProb);
   outcomeProb->SetMode_Log2Map();
   outcomeProb->SetLabelList(labelList);
 
@@ -3419,9 +3362,6 @@ int vtkEMSegmentLogic::ActiveMeanField(vtkImageEMLocalSegmenter* segmenter, vtkI
   //
   // Clean up
   //
-  // Delete  AMF
-  outcomeProb->Delete();
-
   for (int i = 0; i < numCurves; i++)
     {
 
@@ -3443,10 +3383,6 @@ int vtkEMSegmentLogic::ActiveMeanField(vtkImageEMLocalSegmenter* segmenter, vtkI
   levelSetInCurves.clear();
   logOddsInSlice.clear();
   logOddsInShiftExtent.clear();
-
-  aMF->Delete();
-  bgProbability->Delete();
-  logOdds->Delete();
 
   // Set ImageData to null
   for (unsigned int i = 0; i < numChildren; i++)
@@ -3480,9 +3416,8 @@ void vtkEMSegmentLogic::InitializeLevelSet(vtkImageLevelSets* levelset, vtkImage
   levelset->SetDoMean(1);
   levelset->SetStepDt(0.8);
 
-  vtkMultiThreader *thread = vtkMultiThreader::New();
+  VTK_CREATE(vtkMultiThreader, thread);
   levelset->SetEvolveThreads(thread->GetGlobalDefaultNumberOfThreads());
-  thread->Delete();
 
   levelset->SetBand(200);
   levelset->SetTube(199);
@@ -3510,15 +3445,13 @@ void vtkEMSegmentLogic::WriteImage(vtkImageData* Volume, const char* FileName)
 {
   std::string name = std::string(FileName) + std::string(".nhdr");
   std::cout << "Write to file " << name.c_str() << endl;
-  vtkITKImageWriter* export_iwriter = vtkITKImageWriter::New();
+  VTK_CREATE(vtkITKImageWriter, export_iwriter);
   export_iwriter->SetInput(Volume);
   export_iwriter->SetFileName(name.c_str());
-  vtkMatrix4x4* mat = vtkMatrix4x4::New();
+  VTK_CREATE(vtkMatrix4x4, mat);
   export_iwriter->SetRasToIJKMatrix(mat);
   export_iwriter->SetUseCompression(1);
   export_iwriter->Write();
-  mat->Delete();
-  export_iwriter->Delete();
 }
 
 //-----------------------------------------------------------------------------
