@@ -16,7 +16,7 @@ SET(module_logic_include_directories
   )
 
 # Source files
-SET(module_logic_SRCS 
+SET(module_logic_SRCS
   ${EMSegment_BASE_SRCS}
   )
 
@@ -26,7 +26,6 @@ SET(module_logic_target_libraries
   #EMSegmentRegistration
   vtkSlicerVolumesModuleLogic
   )
-
 
 SlicerMacroBuildModuleLogic(
   NAME ${module_logic_name}
