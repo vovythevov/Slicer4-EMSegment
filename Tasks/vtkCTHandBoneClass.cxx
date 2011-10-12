@@ -505,8 +505,9 @@ int vtkCTHandBoneClass::largest_component(
 /**
  *
  */
-void vtkCTHandBoneClass::PrintSelf(ostream& os, vtkIndent indent) {
-  os << indent << "-----------vtkCTHandBoneClass------- CLASS ------------------" << endl;
+void vtkCTHandBoneClass::PrintSelf(ostream& os, vtkIndent indent)
+{
+  this->Superclass::PrintSelf(os, indent);
 }
 
 
