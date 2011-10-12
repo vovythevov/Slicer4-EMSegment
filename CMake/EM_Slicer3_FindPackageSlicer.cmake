@@ -4,7 +4,6 @@
 
 # Since 'project()' shouldn't be used with Slicer4 extension and since 'project()' statement
 # can't be conditionnally invoked, let's set the following variables manually.
-set(PROJECT_NAME "EMSegment")
 set(EMSegment_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(EMSegment_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
 

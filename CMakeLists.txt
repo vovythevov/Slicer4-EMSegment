@@ -12,6 +12,9 @@ if(POLICY CMP0017)
   CMAKE_POLICY(SET CMP0017 OLD)
 endif()
 
+#-----------------------------------------------------------------------------
+set(EXTENSION_NAME EMSegment)
+
 # --------------------------------------------------------------------------
 if(Slicer3_SOURCE_DIR)
   include(CMake/EM_Slicer3_FindPackageSlicer.cmake)
@@ -50,12 +53,12 @@ include(CMake/EM_InstallTasks.cmake)
 add_custom_target(copytesting ALL
   ${CMAKE_COMMAND}
   -DSRC=${CMAKE_CURRENT_SOURCE_DIR}/Testing/TestData
-  -DDST=${CMAKE_BINARY_DIR}/${EM_SHARE_DIR}/${PROJECT_NAME}/Testing
+  -DDST=${CMAKE_BINARY_DIR}/${EM_SHARE_DIR}/${EXTENSION_NAME}/Testing
   -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/EM_InstallTasksSubScript.cmake
   )
 install(DIRECTORY
   Testing/TestData
-  DESTINATION ${EM_INSTALL_SHARE_DIR}/${PROJECT_NAME}/Testing
+  DESTINATION ${EM_INSTALL_SHARE_DIR}/${EXTENSION_NAME}/Testing
   FILES_MATCHING PATTERN "*"
   PATTERN ".svn" EXCLUDE
   )

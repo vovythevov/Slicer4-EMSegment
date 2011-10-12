@@ -1,6 +1,4 @@
 
-set(EXTENSION_NAME EMSegment)
-
 #
 # Note: If we are outside Slicer4's source-tree we assume that we build an extension.
 #

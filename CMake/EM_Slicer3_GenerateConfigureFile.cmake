@@ -10,5 +10,5 @@ configure_file(
 install(FILES 
   ${headers} 
   "${CMAKE_CURRENT_BINARY_DIR}/vtkEMSegmentConfigure.h"
-  DESTINATION ${Slicer3_INSTALL_MODULES_INCLUDE_DIR}/${PROJECT_NAME} COMPONENT Development
+  DESTINATION ${Slicer3_INSTALL_MODULES_INCLUDE_DIR}/${EXTENSION_NAME} COMPONENT Development
   )
