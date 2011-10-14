@@ -103,7 +103,7 @@ vtkEMSegmentLogic::vtkEMSegmentLogic()
 
   this->MRMLManager = 0; // NB: must be set before SetMRMLManager is called
   VTK_CREATE(vtkEMSegmentMRMLManager, manager);
-  vtkSetObjectBodyMacro(MRMLManager,vtkEMSegmentMRMLManager, manager);
+  vtkSetObjectBodyMacro(MRMLManager,vtkEMSegmentMRMLManager, manager.GetPointer());
 
   this->SlicerCommonInterface = NULL;
 }
