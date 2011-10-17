@@ -60,7 +60,7 @@ install(DIRECTORY
   Testing/TestData
   DESTINATION ${EM_INSTALL_SHARE_DIR}/${EXTENSION_NAME}/Testing
   FILES_MATCHING PATTERN "*"
-  PATTERN ".svn" EXCLUDE
+  REGEX "/\\.svn" EXCLUDE
   )
 
 # --------------------------------------------------------------------------
