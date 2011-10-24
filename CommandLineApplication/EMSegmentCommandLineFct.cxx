@@ -123,22 +123,22 @@ bool ImageDiff(vtkImageData* resultData, std::string standardFilename)
         {
           //
           // display spacing and origin info for resultData
-          std::cerr << "Error: EMSegmenter: Image spacing and/or origin does not match standard!" 
+          std::cerr << "Error: EMSegmenter: Image spacing and/or origin does not match standard!"
                     << std::endl;
-          std::cerr << "Error: EMSegmenter: result origin: " 
+          std::cerr << "Error: EMSegmenter: result origin: "
                     << resultData->GetOrigin()[0] << " "
                     << resultData->GetOrigin()[1] << " "
                     << resultData->GetOrigin()[2] << std::endl;
-          std::cerr << "Error: EMSegmenter: result spacing: " 
+          std::cerr << "Error: EMSegmenter: result spacing: "
                     << resultData->GetSpacing()[0] << " "
                     << resultData->GetSpacing()[1] << " "
                     << resultData->GetSpacing()[2] << std::endl;
 
-          std::cerr << "Error: EMSegmenter: Standard origin: " 
+          std::cerr << "Error: EMSegmenter: Standard origin: "
                     << standardReader->GetOutput()->GetOrigin()[0] << " "
                     << standardReader->GetOutput()->GetOrigin()[1] << " "
                     << standardReader->GetOutput()->GetOrigin()[2] << std::endl;
-          std::cerr << "Error: EMSegmenter: Standard spacing: " 
+          std::cerr << "Error: EMSegmenter: Standard spacing: "
                     << standardReader->GetOutput()->GetSpacing()[0] << " "
                     << standardReader->GetOutput()->GetSpacing()[1] << " "
                     << standardReader->GetOutput()->GetSpacing()[2] << std::endl;
@@ -169,7 +169,7 @@ bool ImageDiff(vtkImageData* resultData, std::string standardFilename)
 
   if (imagesDiffer)
     {
-      std::cerr << "Error: EMSegmenter: ((temporarily not) ignoring zero) Num / Min / Max / Mean difference = " 
+      std::cerr << "Error: EMSegmenter: ((temporarily not) ignoring zero) Num / Min / Max / Mean difference = "
                 << differenceAccumulator->GetVoxelCount()  << " / "
                 << differenceAccumulator->GetMin()[0]      << " / "
                 << differenceAccumulator->GetMax()[0]      << " / "
@@ -192,15 +192,15 @@ bool ImageDiff(vtkImageData* resultData, std::string standardFilename)
 int LoadMRMLScene ( vtkEMSegmentMRMLManager* emMRMLManager, vtkMRMLScene* mrmlScene,  int verbose) {
     try
       {
-         if (verbose) std::cout << "Reading MRML scene...";  
+         if (verbose) std::cout << "Reading MRML scene...";
          mrmlScene->Connect();
          if (verbose) std::cout << "DONE" << std::endl;
       }
     catch (...)
       {
-    return 1; 
+    return 1;
       }
-   
+
     if (verbose) {
         std::cout << "=============== Print EMSegmentMRMLManager" << std::endl;
         emMRMLManager->Print(std::cout);
@@ -238,15 +238,15 @@ int DefineTargetVolume ( int useDefaultTarget,  std::vector<std::string>  target
 
       // remove default target node
       mrmlScene->RemoveNode(emMRMLManager->GetTargetInputNode());
-   
+
       // connect target node to segmenter
       emMRMLManager->GetWorkingDataNode()->SetInputTargetNodeID(targetNode->GetID());
-   
+
       if (verbose) std::cout << targetNode->GetID() << " DONE" << std::endl;
-   
+
       targetNode->Delete();
-   
-      if (verbose) 
+
+      if (verbose)
         {
           std::cout << "Segmenter's target node is now: " << emMRMLManager->GetTargetInputNode()->GetID() << std::endl;
           std::cout << "Adding " << targetVolumeFileNames.size()  << " target images..." << std::endl;
@@ -287,7 +287,7 @@ int DefineTargetVolume ( int useDefaultTarget,  std::vector<std::string>  target
   else
     {
       if (verbose)
-        std::cout << "Number of input channels (" << emMRMLManager->GetTargetInputNode()->GetNumberOfVolumes() << ") matches expected value from parameters (" 
+        std::cout << "Number of input channels (" << emMRMLManager->GetTargetInputNode()->GetNumberOfVolumes() << ") matches expected value from parameters ("
                   << emMRMLManager->GetGlobalParametersNode()->GetNumberOfTargetInputChannels() << ")" << std::endl;
     }
   return 0;
@@ -374,11 +374,11 @@ int LoadUserDefinedAtlas (std::vector<std::string> atlasVolumeFileNames,  vtkEMS
 }
 
 // -------------------------------------------------------------------------------------------
-int DefineEMSTemplate (int useDefaultParametersNode, std::string parametersMRMLNodeName, vtkEMSegmentMRMLManager* emMRMLManager, int verbose) 
+int DefineEMSTemplate (int useDefaultParametersNode, std::string parametersMRMLNodeName, vtkEMSegmentMRMLManager* emMRMLManager, int verbose)
 {
     //
     // make sure there is at least one parameter set
-    // this also modifies mrml to new mrml structure 
+    // this also modifies mrml to new mrml structure
     //
     int numParameterSets = emMRMLManager->GetNumberOfParameterSets();
     if (numParameterSets < 1)
@@ -421,13 +421,13 @@ int DefineEMSTemplate (int useDefaultParametersNode, std::string parametersMRMLN
       if (!foundParameters)
         {
       std::cerr << "ERROR: no EMSegment parameters found in scene with name " << parametersMRMLNodeName << endl;
-          return 1; 
+          return 1;
         }
       }
 
     //
     // populate the mrmlManager with the parameters
-    //  
+    //
     try
       {
       emMRMLManager->SetLoadedParameterSetIndex(parameterNodeIndex);
@@ -441,7 +441,7 @@ int DefineEMSTemplate (int useDefaultParametersNode, std::string parametersMRMLN
 }
 
 // -------------------------------------------------------------------------------------------
-int DefineFinalOutput(  int useDefaultOutput, std::string resultVolumeFileName, vtkEMSegmentMRMLManager* emMRMLManager, vtkMRMLScene* mrmlScene, int verbose) 
+int DefineFinalOutput(  int useDefaultOutput, std::string resultVolumeFileName, vtkEMSegmentMRMLManager* emMRMLManager, vtkMRMLScene* mrmlScene, int verbose)
 {
     if (useDefaultOutput)
       {
@@ -459,9 +459,9 @@ int DefineFinalOutput(  int useDefaultOutput, std::string resultVolumeFileName, 
         {
         // create volume node
         if (verbose) std::cout << "Creating output volume node...";
-   
+
         vtkstd::string absolutePath = resultVolumeFileName;
-   
+
         // the gui uses <image>, the command line uses actual files
         //
         // Set up the filename so that a relative filename will be
@@ -472,23 +472,23 @@ int DefineFinalOutput(  int useDefaultOutput, std::string resultVolumeFileName, 
           absolutePath = vtksys::SystemTools::
             CollapseFullPath(resultVolumeFileName.c_str());
           }
-   
+
         vtkMRMLVolumeNode* outputNode =
           AddNewScalarArchetypeVolume(mrmlScene,
                                       absolutePath.c_str(),
                                       true,
                                       true,
                                       NULL);
-   
+
         if (!outputNode)
           {
            std::cerr << "ERROR: failed to create output image" << endl;
             return 1;
           }
-   
+
           // connect output volume node to segmenter
           emMRMLManager->SetOutputVolumeMRMLID(outputNode->GetID());
-   
+
          if (verbose)  std::cout << "DONE" << std::endl;
         }
       catch (...)
@@ -531,7 +531,7 @@ int RunPreprocessing(vtkEMSegmentLogic* EMSLogic, std::string EMSLogicTcl, std::
       {
           std::cerr << e.what() << std::endl;
           std::cerr << "Errors detected.  Writing failed." << std::endl;
-          return 1;  
+          return 1;
       }
 
       emMRMLManager->GetWorkingDataNode()->SetAlignedTargetNodeIsValid(1);
@@ -544,7 +544,7 @@ int RunPreprocessing(vtkEMSegmentLogic* EMSLogic, std::string EMSLogicTcl, std::
 // -------------------------------------------------------------------------------------------
 bool WriteResultsToFile(int disableCompression, vtkEMSegmentMRMLManager* emMRMLManager, int verbose)
 {
-   
+
      if (verbose) std::cout << "Saving segmentation results..." << std::endl;
     try
       {
@@ -574,7 +574,10 @@ bool WriteResultsToFile(int disableCompression, vtkEMSegmentMRMLManager* emMRMLM
 
 
 // -------------------------------------------------------------------------------------------
-bool CompareResultsToStandard(std::string resultStandardVolumeFileName, int disableCompression, vtkEMSegmentMRMLManager* emMRMLManager, vtkMRMLScene* mrmlScene, int verbose)
+bool CompareResultsToStandard(std::string resultStandardVolumeFileName,
+                              /*int disableCompression, */
+                              vtkEMSegmentMRMLManager* emMRMLManager,
+                              vtkMRMLScene* mrmlScene, int verbose)
 {
    if (verbose) cout << "Comparing results with standard..." << std::endl;
 

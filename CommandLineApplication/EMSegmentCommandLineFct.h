@@ -70,7 +70,9 @@ bool WriteResultsToFile(int disableCompression, vtkEMSegmentMRMLManager* emMRMLM
 
 
 // -------------------------------------------------------------------------------------------
-bool CompareResultsToStandard(std::string resultStandardVolumeFileName, int disableCompression, vtkEMSegmentMRMLManager* emMRMLManager, vtkMRMLScene* mrmlScene, int verbose);
+bool CompareResultsToStandard(std::string resultStandardVolumeFileName, /*int disableCompression,*/
+                              vtkEMSegmentMRMLManager* emMRMLManager,
+                              vtkMRMLScene* mrmlScene, int verbose);
 
 // -------------------------------------------------------------------------------------------
 void GenerateEmptyMRMLScene(const char* filename);

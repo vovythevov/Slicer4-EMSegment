@@ -151,7 +151,7 @@ int main(int argc, char** argv)
       return EXIT_FAILURE;
     }
 #endif
-   
+
 #ifdef Slicer3_USE_KWWIDGETS
   Atlascreatorcxxmodule_Init(interp);
   Slicerbasegui_Init(interp);
@@ -309,15 +309,15 @@ int main(int argc, char** argv)
             emMRMLManager->SetRegistrationPackageType(2); // PLASTIMATCH
           }
         else if (registrationPackage == "DEMONS")
-          { 
+          {
             emMRMLManager->SetRegistrationPackageType(3); // DEMONS
           }
         else if (registrationPackage == "DRAMMS")
-          { 
+          {
             emMRMLManager->SetRegistrationPackageType(4); // DRAMMS
           }
         else if (registrationPackage == "ANTS")
-          { 
+          {
             emMRMLManager->SetRegistrationPackageType(5); // ANTS
           }
         else
@@ -460,7 +460,9 @@ int main(int argc, char** argv)
   // ================== Compare To Standard==================
   if (segmentationSucceeded && !resultStandardVolumeFileName.empty())
     {
-      segmentationSucceeded =  CompareResultsToStandard(resultStandardVolumeFileName,  disableCompression, emMRMLManager, mrmlScene, verbose);
+      segmentationSucceeded =  CompareResultsToStandard(resultStandardVolumeFileName,
+                                                        /*disableCompression,*/ emMRMLManager,
+                                                        mrmlScene, verbose);
     }
 
   // ==================Write Out MRML ==================
