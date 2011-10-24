@@ -2793,6 +2793,10 @@ vtkstd::string vtkEMSegmentLogic::GetTclTaskDirectory()
     // Later do automatically
     vtkstd::string orig_task_dir = vtkstd::string(
         this->GetModuleShareDirectory()) + vtkstd::string("/Tasks");
+    
+    std::cout << "GetTclTaskDirectory::Copying task files ...\n"
+              << "\tfrom: " << orig_task_dir << "\n"
+              << "\tto: " << copied_task_dir << std::endl;
 
     if (!vtksys::SystemTools::CopyADirectory(orig_task_dir.c_str(),
         copied_task_dir.c_str(), false))
@@ -3035,8 +3039,6 @@ void vtkEMSegmentLogic::CreateDefaultTasksList(std::vector<std::string> & Defaul
   DefinePreprocessingTasksName.clear();
   DefinePreprocessingTasksFile.clear();
 
-  std::cout << "this->GetTclTaskDirectory() " << this->GetTclTaskDirectory() << std::endl;
-  std::cout << "this->GetTemporaryTaskDirectory() " << this->GetTemporaryTaskDirectory() << std::endl;
   this->AddDefaultTasksToList(this->GetTclTaskDirectory().c_str(),
       DefaultTasksName, DefaultTasksFile, DefinePreprocessingTasksName,
       DefinePreprocessingTasksFile);

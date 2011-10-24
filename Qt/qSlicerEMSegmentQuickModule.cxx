@@ -19,12 +19,14 @@
 ==============================================================================*/
 
 // Qt includes
+#include <QDebug>
 #include <QFileInfo>
 #include <QScopedPointer>
 #include <QtPlugin>
 
 // SlicerQt includes
 #include <qSlicerCoreApplication.h>
+#include <qSlicerModuleManager.h>
 #include <qSlicerScriptedLoadableModuleWidget.h>
 
 // EMSegment Logic includes
@@ -90,6 +92,31 @@ QString qSlicerEMSegmentQuickModule::acknowledgementText()const
 //-----------------------------------------------------------------------------
 qSlicerAbstractModuleRepresentation * qSlicerEMSegmentQuickModule::createWidgetRepresentation()
 {
+  // HACK - Since dependencies between modules are not yet managed at runtime, let's
+  //      set the share directory associated with EMSegmentEasy logic when 'createWidgetRepresentation'
+  //      is invoked.
+  //      - Since 'createWidgetRepresentation' is called on-demand and since the logic have been
+  //      instantiated when Slice initialized, it's okay.
+  qSlicerModuleManager * moduleManager = qSlicerCoreApplication::application()->moduleManager();
+  Q_ASSERT(moduleManager);
+  qSlicerAbstractCoreModule * emsegmentModule = moduleManager->module("EMSegment");\
+  if (!emsegmentModule)
+    {
+    qCritical() << "Failed to load EMSegmentEasy widget ! "
+                   "EMSegment module is expected to be loaded.";
+    return 0;
+    }
+  vtkSlicerModuleLogic * emsegmentLogic =
+      vtkSlicerModuleLogic::SafeDownCast(emsegmentModule->logic());
+  if (!emsegmentLogic)
+    {
+    qCritical() << "Failed to load EMSegmentEasy widget ! "
+                   "EMSegment module couldn't be retrieved.";
+    return 0;
+    }
+  vtkSlicerModuleLogic * logic = vtkSlicerModuleLogic::SafeDownCast(this->logic());
+  logic->SetModuleShareDirectory(emsegmentLogic->GetModuleShareDirectory());
+
   QScopedPointer<qSlicerScriptedLoadableModuleWidget> widget(new qSlicerScriptedLoadableModuleWidget);
   QString classNameToLoad = "qSlicerEMSegmentQuickModuleWidget";
   bool ret = widget->setPythonSource(
