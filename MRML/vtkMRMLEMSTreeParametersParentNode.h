@@ -63,11 +63,11 @@ public:
   vtkGetMacro(SmoothingKernelSigma, double);
   vtkSetMacro(SmoothingKernelSigma, double);
 
-  vtkGetMacro(BiasCorrectionType, double);
-  vtkSetMacro(BiasCorrectionType, double);
+  vtkGetMacro(BiasCorrectionType, int);
+  vtkSetMacro(BiasCorrectionType, int);
 
-  vtkGetMacro(UseLLS_Recompute_Means, double);
-  vtkSetMacro(UseLLS_Recompute_Means, double);
+  vtkGetMacro(UseLLS_Recompute_Means, bool);
+  vtkSetMacro(UseLLS_Recompute_Means, bool);
 
   // EM stopping conditions
   // Type:
@@ -137,7 +137,7 @@ protected:
   int                                 BiasCalculationMaxIterations;
   double                              SmoothingKernelSigma;
   int                                 SmoothingKernelWidth;
-  bool                                BiasCorrectionType;
+  int                                 BiasCorrectionType;
   bool                                UseLLS_Recompute_Means;
   
   // EM stopping conditions

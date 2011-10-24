@@ -47,7 +47,7 @@ vtkMRMLEMSTreeParametersParentNode::vtkMRMLEMSTreeParametersParentNode()
   this->SmoothingKernelWidth          = 11;
   this->SmoothingKernelSigma          = 5.0;
   this->BiasCorrectionType            = 0;
-  this->UseLLS_Recompute_Means        = 0;
+  this->UseLLS_Recompute_Means        = false;
 
   this->StopEMType                    = 0;
   this->StopEMMaxIterations           = 4;
