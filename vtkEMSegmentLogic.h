@@ -84,6 +84,11 @@ public:
 
   virtual void ProcessMRMLEvents(vtkObject *caller, unsigned long event, void *callData);
 
+  // ProcessMRMLEvents is renamed into ProcessMRMLSceneEvents in Slicer4
+  virtual void ProcessMRMLSceneEvents(vtkObject *caller,
+                                      unsigned long event,
+                                      void *callData);
+
   // events to observe
   virtual vtkIntArray* NewObservableEvents();
 

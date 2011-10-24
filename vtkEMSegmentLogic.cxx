@@ -336,6 +336,14 @@ void vtkEMSegmentLogic::ProcessMRMLEvents(vtkObject *caller,
 }
 
 //----------------------------------------------------------------------------
+void vtkEMSegmentLogic::ProcessMRMLSceneEvents(vtkObject *caller,
+                                               unsigned long event,
+                                               void *callData)
+{
+  this->ProcessMRMLEvents(caller, event, callData);
+}
+
+//----------------------------------------------------------------------------
 bool vtkEMSegmentLogic::IsVolumeGeometryEqual(vtkMRMLVolumeNode* lhs, vtkMRMLVolumeNode* rhs)
 {
   if (lhs == NULL || rhs == NULL || lhs->GetImageData() == NULL
@@ -2189,7 +2197,8 @@ int vtkEMSegmentLogic::StartSegmentationWithoutPreprocessingAndSaving()
   else
     {
     const char* colorID = this->GetMRMLManager()->GetColorNodeID();
-    if (colorID && strcmp(outDisplayNode->GetColorNodeID(), colorID) != 0)
+    const char* displayColorID = outDisplayNode->GetColorNodeID();
+    if (colorID && (!displayColorID || strcmp(displayColorID, colorID) != 0))
       {
       outDisplayNode->SetAndObserveColorNodeID(colorID);
       }
