@@ -56,6 +56,8 @@ public:
 
   virtual QString contributor()const;
 
+  virtual void setMRMLScene(vtkMRMLScene* mrmlScene);
+
 protected:
   /// Initialize the module. Register the volumes reader/writer
   virtual void setup();

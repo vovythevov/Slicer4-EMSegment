@@ -157,3 +157,13 @@ QString qSlicerEMSegmentQuickModule::contributor()const
 {
   return QLatin1String("Daniel Haehn");
 }
+
+//-----------------------------------------------------------------------------
+void qSlicerEMSegmentQuickModule::setMRMLScene(vtkMRMLScene* _mrmlScene)
+{
+  this->Superclass::setMRMLScene(_mrmlScene);
+  vtkEMSegmentLogic * emsegmentLogic =
+      vtkEMSegmentLogic::SafeDownCast(this->logic());
+  Q_ASSERT(emsegmentLogic);
+  emsegmentLogic->InitializeEventListeners();
+}
