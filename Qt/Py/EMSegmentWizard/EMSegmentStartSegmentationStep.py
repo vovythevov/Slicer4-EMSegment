@@ -74,11 +74,11 @@ class EMSegmentStartSegmentationStep( EMSegmentStep ) :
       messageBox = qt.QMessageBox.warning( self, "Error", "Output node was not found!" )
       return
 
-    selectionNode = slicer.app.mrmlApplicationLogic().GetSelectionNode()
+    selectionNode = slicer.app.applicationLogic().GetSelectionNode()
     #selectionNode.SetReferenceActiveVolumeID(bgVolumeID)
     #selectionNode.SetReferenceSecondaryVolumeID( outputNode.GetID() )
     selectionNode.SetReferenceActiveLabelVolumeID( outputNode.GetID() )
-    slicer.app.mrmlApplicationLogic().PropagateVolumeSelection()
+    slicer.app.applicationLogic().PropagateVolumeSelection()
 
     # show foreground volume
     numberOfCompositeNodes = slicer.mrmlScene.GetNumberOfNodesByClass( 'vtkMRMLSliceCompositeNode' )

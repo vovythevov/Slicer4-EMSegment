@@ -157,10 +157,10 @@ class EMSegmentDefinePreprocessingStep( EMSegmentStep ) :
       if volumeCollection:
         outputNode = volumeCollection.GetNthVolumeNode( 0 )
         # propagate to sliceViews
-        selectionNode = slicer.app.mrmlApplicationLogic().GetSelectionNode()
+        selectionNode = slicer.app.applicationLogic().GetSelectionNode()
         selectionNode.SetReferenceActiveVolumeID( outputNode.GetID() )
         #selectionNode.SetReferenceSecondaryVolumeID( outputNode.GetID() )
-        slicer.app.mrmlApplicationLogic().PropagateVolumeSelection()
+        slicer.app.applicationLogic().PropagateVolumeSelection()
 
     Helper.Info( '=============================================' )
     Helper.Info( 'Pre-processing completed successfully' )
