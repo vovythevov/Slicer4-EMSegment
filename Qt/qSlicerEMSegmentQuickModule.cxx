@@ -28,6 +28,8 @@
 #include <qSlicerCoreApplication.h>
 #include <qSlicerModuleManager.h>
 #include <qSlicerScriptedLoadableModuleWidget.h>
+#include <qSlicerUtils.h>
+#include <vtkSlicerConfigure.h> // For Slicer_QTLOADABLEMODULES_LIB_DIR
 
 // EMSegment Logic includes
 #include <vtkEMSegmentLogic.h>
@@ -114,13 +116,17 @@ qSlicerAbstractModuleRepresentation * qSlicerEMSegmentQuickModule::createWidgetR
                    "EMSegment module couldn't be retrieved.";
     return 0;
     }
+
   vtkSlicerModuleLogic * logic = vtkSlicerModuleLogic::SafeDownCast(this->logic());
   logic->SetModuleShareDirectory(emsegmentLogic->GetModuleShareDirectory());
+
+  QString pythonPath = qSlicerUtils::pathWithoutIntDir(
+              QFileInfo(this->path()).path(), Slicer_QTLOADABLEMODULES_LIB_DIR);
 
   QScopedPointer<qSlicerScriptedLoadableModuleWidget> widget(new qSlicerScriptedLoadableModuleWidget);
   QString classNameToLoad = "qSlicerEMSegmentQuickModuleWidget";
   bool ret = widget->setPythonSource(
-        QFileInfo(this->path()).path() + "/Python/" + classNameToLoad + ".py", classNameToLoad);
+        pythonPath + "/Python/" + classNameToLoad + ".py", classNameToLoad);
   if (!ret)
     {
     return 0;

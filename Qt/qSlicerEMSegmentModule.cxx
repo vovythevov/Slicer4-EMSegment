@@ -26,6 +26,8 @@
 // SlicerQt includes
 #include <qSlicerCoreApplication.h>
 #include <qSlicerScriptedLoadableModuleWidget.h>
+#include <qSlicerUtils.h>
+#include <vtkSlicerConfigure.h> // For Slicer_QTLOADABLEMODULES_LIB_DIR
 
 // EMSegment Logic includes
 #include <vtkEMSegmentLogic.h>
@@ -101,10 +103,13 @@ QString qSlicerEMSegmentModule::acknowledgementText()const
 //-----------------------------------------------------------------------------
 qSlicerAbstractModuleRepresentation * qSlicerEMSegmentModule::createWidgetRepresentation()
 {
+  QString pythonPath = qSlicerUtils::pathWithoutIntDir(
+              QFileInfo(this->path()).path(), Slicer_QTLOADABLEMODULES_LIB_DIR);
+
   QScopedPointer<qSlicerScriptedLoadableModuleWidget> widget(new qSlicerScriptedLoadableModuleWidget);
   QString classNameToLoad = "qSlicerEMSegmentModuleWidget";
   bool ret = widget->setPythonSource(
-        QFileInfo(this->path()).path() + "/Python/" + classNameToLoad + ".py", classNameToLoad);
+        pythonPath + "/Python/" + classNameToLoad + ".py", classNameToLoad);
   if (!ret)
     {
     return 0;
