@@ -164,11 +164,10 @@
             set CMD "$CMD --numberOfIterations 500  --numberOfSamples 30000"
         } elseif { $deformableType == [$mrmlManager GetRegistrationTypeFromString RegistrationSlow] } {
             set CMD "$CMD --numberOfIterations 1500 --numberOfSamples 300000"
-        } else {
+        } elseif { $deformableType } {
             PrintError "BRAINSRegistration: Unknown deformableType: $deformableType"
             return ""
         }
-
 
 
         set CMD "$CMD --useRigid --useScaleSkewVersor3D --useAffine"
