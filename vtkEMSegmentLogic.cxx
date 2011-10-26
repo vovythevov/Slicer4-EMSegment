@@ -323,7 +323,7 @@ void vtkEMSegmentLogic::InitializeEventListeners()
   this->SetAndObserveMRMLSceneEvents(this->GetMRMLScene(), events);
 #else
   // Slicer4
-  this->SetAndObserveMRMLSceneEventsInternal(this->GetMRMLScene(), events);
+  this->GetMRMLSceneObserverManager()->AddObjectEvents(this->GetMRMLScene(), events);
 #endif
 }
 
@@ -2793,7 +2793,7 @@ vtkstd::string vtkEMSegmentLogic::GetTclTaskDirectory()
     // Later do automatically
     vtkstd::string orig_task_dir = vtkstd::string(
         this->GetModuleShareDirectory()) + vtkstd::string("/Tasks");
-    
+
     std::cout << "GetTclTaskDirectory::Copying task files ...\n"
               << "\tfrom: " << orig_task_dir << "\n"
               << "\tto: " << copied_task_dir << std::endl;
