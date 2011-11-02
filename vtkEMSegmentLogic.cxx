@@ -3482,7 +3482,7 @@ std::string vtkEMSegmentLogic::GetTasks()
   for (unsigned int i = 0; i < pssDefaultTasksName.size(); ++i)
     {
     tasksList += pssDefaultTasksName[i];
-    tasksList += ":";
+    tasksList += "^";
     tasksList += pssDefaultTasksFile[i];
     if (i != pssDefaultTasksName.size() - 1)
       tasksList += ",";

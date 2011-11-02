@@ -189,7 +189,7 @@ class EMSegmentSelectTaskStep( EMSegmentStep ) :
 
     # look in files
     for t in tasksList:
-      task = t.split( ':' )
+      task = t.split( '^' )
       if len( task ) == 2:
         taskName = task[0]
         taskFile = task[1]
