@@ -194,10 +194,12 @@ class EMSegmentSelectTaskStep( EMSegmentStep ) :
         taskName = task[0]
         taskFile = task[1]
 
-      # add this entry to our tasksList, if it does not exist yet
-      if not self.__tasksList.has_key( taskName ):
-        self.__tasksList[taskName] = taskFile
-
+        # add this entry to our tasksList, if it does not exist yet
+        if not self.__tasksList.has_key( taskName ):
+          self.__tasksList[taskName] = taskFile
+          Helper.Info("Added to List Task: '" + taskName + "'  File : '" + taskFile + "'") 
+      else: 
+        Helper.Warning("Task: '" + t + "' does not follow convention!")
     return True
 
   def loadPreprocessingTasks( self ):
