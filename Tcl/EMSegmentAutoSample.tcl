@@ -25,14 +25,14 @@ namespace eval EMSegmenterAutoSampleTcl {
     #-------------------------------------------------------------------------------
 
 
-    proc EMSegmentCutOutRegion {ThreshInstance MathInstance ResultVolume ProbVolume CutOffProb volDataType flag} {
+    proc EMSegmentCutOutRegion {ThreshInstance MathInstance ResultVolume ProbVolume CutOffProb flag} {
         # 1. Define cut out area
         $ThreshInstance SetInput $ProbVolume
         if {$flag} {$ThreshInstance ThresholdByUpper $CutOffProb
         } else {$ThreshInstance ThresholdBetween $CutOffProb $CutOffProb}
         $ThreshInstance SetInValue 1.0
         $ThreshInstance SetOutValue 0.0
-        $ThreshInstance SetOutputScalarType $volDataType
+        $ThreshInstance SetOutputScalarType [$ResultVolume GetScalarType] 
         $ThreshInstance Update
         # 2. Cut out region from normal image
         $MathInstance SetOperationToMultiply
@@ -75,19 +75,17 @@ namespace eval EMSegmenterAutoSampleTcl {
             return 1
         }
 
-        set VolDataType [$ProbVolume GetScalarType]
-
         set MRIVolumeList ""
 
         foreach ID $MRIVolumeIDList {
             set MRIVolumeList "${MRIVolumeList}[[$SCENE GetNodeByID $ID] GetImageData] "
         }
-
-        if { [EMSegmentGaussCurveCalculation $LOGIC $CutOffProbability $LogGaussFlag "$MRIVolumeList" $ProbVolume $VolDataType] } {
+        
+        if { [EMSegmentGaussCurveCalculation $LOGIC $CutOffProbability $LogGaussFlag "$MRIVolumeList" $ProbVolume ] } {
             EMSegmentPrint $LOGIC "EMSegmentGaussCurveCalculationFromID: Error occured in calculating Gaussian parameters for $ClassName" 1
             return 1
         }
-        
+
         # -----------------------------------------
         # 3. Print results
         # -----------------------------------------
@@ -122,7 +120,7 @@ namespace eval EMSegmenterAutoSampleTcl {
     #-------------------------------------------------------------------------------
    # For debugging
    # variable SAVEINDEX 0 
-    proc EMSegmentGaussCurveCalculation {LOGIC CutOffProbability LogGaussFlag MRIVolumeList ProbVolume VolDataType} {
+    proc EMSegmentGaussCurveCalculation {LOGIC CutOffProbability LogGaussFlag MRIVolumeList ProbVolume} {
         global EMSegment
         # variable SAVEINDEX 
         # Initialize values
@@ -152,7 +150,7 @@ namespace eval EMSegmenterAutoSampleTcl {
         vtkImageAccumulate Histogram
         Histogram SetInput $ProbVolume
         Histogram Update
-        puts "Minimum: [Histogram GetMin]"
+        EMSegmentPrint $LOGIC "Minimum: [ lindex [Histogram GetMin] 0 ] " 0 
         set Min [expr int([lindex [Histogram GetMin] 0])]
         set EMSegment(GaussCurveCalc,MaxProb) [expr int([lindex [Histogram GetMax] 0])]
         # Ignore voxels with probability 0
@@ -177,7 +175,7 @@ namespace eval EMSegmenterAutoSampleTcl {
         }
         set CutOffVoxel [expr $ROIVoxel*(1.0 - $CutOffProbability)]
         
-    set EMSegment(GaussCurveCalc,CutOffAbsolut) [expr $EMSegment(GaussCurveCalc,MaxProb) +1] 
+        set EMSegment(GaussCurveCalc,CutOffAbsolut) [expr $EMSegment(GaussCurveCalc,MaxProb) +1] 
         set minNumVoxels 10
         for {set i  $maxIndex} {$i > -1} {incr i -1} {
             set numVoxels [expr int ([$data GetScalarComponentAsFloat $i 0 0 0])]
@@ -215,12 +213,11 @@ namespace eval EMSegmenterAutoSampleTcl {
         if { [info command MathMulti] != ""} {
             MathMulti Delete
         }
-        
+   
         vtkImageMathematics MathMulti
         # Calculate the mean for each image
         for { set channelID 0 } {$channelID < $NumInputChannel} { incr channelID } {
-            EMSegmentCutOutRegion gaussCurveCalcThreshold MathMulti [lindex $MRIVolumeList $channelID] $ProbVolume $EMSegment(GaussCurveCalc,CutOffAbsolut) $VolDataType 1
-
+            EMSegmentCutOutRegion gaussCurveCalcThreshold MathMulti [lindex $MRIVolumeList $channelID] $ProbVolume $EMSegment(GaussCurveCalc,CutOffAbsolut) 1
             # Now value To it so we can differnetiate between real 0 and not
             if { [info command MathAdd($channelID)] != ""} {
                 MathAdd($channelID) Delete
@@ -241,7 +238,6 @@ namespace eval EMSegmenterAutoSampleTcl {
             # $LOGIC  WriteImage  [lindex $MRIVolumeList $channelID]  "/tmp/blub_${SAVEINDEX}_Input" 
             # puts "===> New: $SAVEINDEX  $channelID $EMSegment(GaussCurveCalc,CutOffAbsolut)"
             # incr SAVEINDEX
-
             # 3. Generate Histogram in 1D
             Histogram SetInput [MathAdd($channelID) GetOutput]
             Histogram Update
