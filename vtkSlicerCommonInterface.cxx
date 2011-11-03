@@ -584,15 +584,22 @@ const char* vtkSlicerCommonInterface::GetPluginsDirectory()
   //       associated location should be retrieved by invoking Slicer
   //       with for example a "--module-path <ModuleName>" parameter.
   QString slicerDir = qSlicerApplication::application()->slicerHome();
+  if (!qSlicerApplication::application()->isInstalled())
+    {
+    slicerDir += "/" Slicer_CLIMODULES_LIB_DIR "/";
+    }
+  else
+    {
 #ifndef __APPLE__
-  slicerDir += "/" Slicer_CLIMODULES_LIB_DIR "/";
+    slicerDir += "/" Slicer_CLIMODULES_LIB_DIR "/";
 #else
-  // HACK - On Mac OSX, since all libraries are fixed using the same "install_name" (specifying the
-  //        location of the dependent libraries relatively to the location of Slicer executable), it
-  //        is required for CLI executable to be located at same depth as Slicer executable.
-  //        See also Slicer/Utilities/LastConfigureStep/SlicerCompleteBundles.cmake.in
-  slicerDir += "/cli-executables/";
+    // HACK - On Mac OSX, since all libraries are fixed using the same "install_name" (specifying the
+    //        location of the dependent libraries relatively to the location of Slicer executable), it
+    //        is required for CLI executable to be located at same depth as Slicer executable.
+    //        See also Slicer/Utilities/LastConfigureStep/SlicerCompleteBundles.cmake.in
+    slicerDir += "/" Slicer_CLIMODULES_SUBDIR "/";
 #endif
+    }
   return slicerDir.toLatin1();
 
 #endif
