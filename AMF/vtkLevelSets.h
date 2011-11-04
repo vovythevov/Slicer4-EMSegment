@@ -386,10 +386,10 @@ protected:
   unsigned char CheckConvergence();
   void          CheckConvergenceNew();
 
-  void          ExecuteInformation()
-    {
-      this->vtkImageToImageFilter::ExecuteInformation();
-    };
+  //void          ExecuteInformation()
+  //  {
+  //    this->vtkImageToImageFilter::ExecuteInformation();
+  //  };
 
   void PreComputeDataAttachment();
 

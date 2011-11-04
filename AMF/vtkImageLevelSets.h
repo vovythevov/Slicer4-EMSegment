@@ -46,7 +46,7 @@ class VTK_EMSEGMENT_EXPORT vtkImageLevelSets : public vtkImageToImageFilter
 public:
   static vtkImageLevelSets *New();
   vtkTypeMacro(vtkImageLevelSets,vtkImageToImageFilter);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& vtkNotUsed(os), vtkIndent vtkNotUsed(indent));
   
   vtkSetMacro(isotropic_voxels,int);
   vtkGetMacro(isotropic_voxels,int);
@@ -373,7 +373,7 @@ public:
 protected:
   vtkImageLevelSets();
   ~vtkImageLevelSets();
-  //vtkImageLevelSets(const vtkImageLevelSets&) {};
+  // vtkImageLevelSets(const vtkImageLevelSets&) {};
   //  void operator=(const vtkImageLevelSets&) {};
   //
 
@@ -389,10 +389,10 @@ protected:
   unsigned char CheckConvergence();
   void          CheckConvergenceNew();
 
-  void          ExecuteInformation()
-    {
-      this->vtkImageToImageFilter::ExecuteInformation();
-    };
+  //void          ExecuteInformation()
+  //  {
+  //    this->vtkImageToImageFilter::ExecuteInformation();
+  //  };
 
   void PreComputeDataAttachment();
 

@@ -79,7 +79,8 @@ class VTK_EMSEGMENT_EXPORT vtkImageMultiLevelSets : public vtkImageMultipleInput
 
 protected:
   vtkImageMultiLevelSets();
-  vtkImageMultiLevelSets(const vtkImageMultiLevelSets&) {};
+  // Kilian: Caused warning in Slicer 4
+  //   vtkImageMultiLevelSets(const vtkImageMultiLevelSets&) {};
   ~vtkImageMultiLevelSets(); 
  
   int CheckInput(vtkImageData *InData);
@@ -94,8 +95,6 @@ protected:
  
   // Do not execute right now
   void ExecuteData(vtkDataObject *);   
-
-  void ThreadedExecute(vtkImageData **inData, vtkImageData *outData,int outExt[6], int id) {assert(0);} 
 
   // -------------------------------
   // Dimension of probability space

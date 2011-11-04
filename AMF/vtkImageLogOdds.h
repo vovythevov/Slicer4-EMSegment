@@ -58,7 +58,7 @@ class VTK_EMSEGMENT_EXPORT vtkImageLogOdds : public vtkImageMultipleInputFilter
   // -----------------------------------------------------
   static vtkImageLogOdds *New();
   vtkTypeMacro(vtkImageLogOdds,vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) { };
+  void PrintSelf(ostream& vtkNotUsed(os), vtkIndent vtkNotUsed(indent)) { };
 
   // Set the Dimension of the Probability Space
   void SetDimProbSpace(int init);
@@ -103,7 +103,8 @@ class VTK_EMSEGMENT_EXPORT vtkImageLogOdds : public vtkImageMultipleInputFilter
  
 protected:
   vtkImageLogOdds();
-  vtkImageLogOdds(const vtkImageLogOdds&) {};
+  // Kilian: Took it out bc caused warning 
+  // vtkImageLogOdds(const vtkImageLogOdds&) {};
   ~vtkImageLogOdds(); 
  
   int CheckInput(vtkImageData *InData);
@@ -121,7 +122,7 @@ protected:
   void operator=(const vtkImageLogOdds&) {};
   void ExecuteData(vtkDataObject *);   
 
-  void ThreadedExecute(vtkImageData **inData, vtkImageData *outData,int outExt[6], int id);
+  // void ThreadedExecute(vtkImageData vtkNotUsed(**inData), vtkImageData vtkNotUsed(*outData),int vtkNotUsed(outExt[6]), int vtkNotUsed(id));
 
   // -------------------------------
   // Core Functions

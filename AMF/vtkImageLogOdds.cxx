@@ -488,8 +488,9 @@ void vtkImageLogOdds::SetMapMinProb(float init) {
    this->MapMinProb = init;
 }
 
-void vtkImageLogOdds::ThreadedExecute(vtkImageData **inData, vtkImageData *outData,int outExt[6], int id) 
-{
-   assert(0);
-} 
+// void vtkImageLogOdds::ThreadedExecute(vtkImageData vtkNotUsed(**inData), vtkImageData vtkNotUsed(*outData),int vtkNotUsed(outExt[6]), int vtkNotUsed(id)) 
+//void vtkImageLogOdds::ThreadedExecute(vtkImageData **inData, vtkImageData *outData,int outExt[6], int id) 
+//{
+//   assert(0);
+//} 
 
