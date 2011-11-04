@@ -148,6 +148,23 @@ vtkEMSegmentLogic::AddArchetypeScalarVolume(const char* filename, const char* vo
 vtkMRMLScalarVolumeNode*
 vtkEMSegmentLogic::AddArchetypeScalarVolume(const char* filename, const char* volname, vtkSlicerApplicationLogic* appLogic, vtkMRMLScene* mrmlScene, bool centered)
 {
+  // This is for Slicer 3  
+  // vtkSlicerVolumesGUI *vgui = vtkSlicerVolumesGUI::SafeDownCast (app->GetModuleGUIByName ( "Volumes"));
+  // if (!vgui)
+  // {
+  //   vtkErrorMacro("CreateOutputVolumeNode: could not find vtkSlicerVolumesGUI ");
+  //   return;
+  // }
+  // vtkSlicerVolumesLogic* volLogic  = vgui->GetLogic();
+  // if (!volLogic)
+  // {
+  //   vtkErrorMacro("CreateOutputVolumeNode: could not find vtkSlicerVolumesLogic ");
+  //   return;
+  // }
+  // In Slicer 4 
+  //   Slicer4/Base/GUI/Tcl/LoadVolume.tcl
+  //   Slicer4/QTModules/Volumes/Logic/vtkSlicerVolumesLogic.h
+
   VTK_CREATE(vtkSlicerVolumesLogic, volLogic);
   volLogic->SetMRMLScene(mrmlScene);
   volLogic->SetApplicationLogic(appLogic);
