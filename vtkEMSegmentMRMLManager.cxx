@@ -298,7 +298,7 @@ GetTreeNodeParentNodeID(vtkIdType childNodeID)
 {
   if (childNodeID == -1)
     {
-    return NULL;
+    return  ERROR_NODE_VTKID; 
     }
 
   vtkMRMLEMSTreeNode* childNode = this->GetTreeNode(childNodeID);
@@ -2370,13 +2370,14 @@ DoTargetAndAtlasDataTypesMatch(vtkMRMLEMSVolumeCollectionNode* targetNode, vtkMR
   for (int i = 0; i < atlasNode->GetNumberOfVolumes(); ++i)
     {
       int currentScalarDataType =
-    atlasNode->GetNthVolumeNode(i)->GetImageData()->GetScalarType();
+          atlasNode->GetNthVolumeNode(i)->GetImageData()->GetScalarType();
       if (currentScalarDataType != standardScalarDataType)
-    {
-      std::cout << "Atlas volume " << i << ": scalar type does not match!"
-            << std::endl;
-      return false;
-    }
+      {
+         std::cout << "Atlas volume " << i << " (" << atlasNode->GetNthVolumeNode(i)->GetID() << " " 
+                   << atlasNode->GetNthVolumeNode(i)->GetName() << "): scalar type does not match (Standard: " << standardScalarDataType 
+                   << " Current: " << currentScalarDataType << ")!" << std::endl;
+         return false;
+      }
     }
 
   return true;
