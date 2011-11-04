@@ -287,7 +287,8 @@ class VTK_EMSEGMENT_EXPORT  vtkImageIslandFilter : public vtkImageToImageFilter
 protected:
 
   vtkImageIslandFilter();
-  vtkImageIslandFilter(const vtkImageIslandFilter&) {};
+  // Kilian: Caused warning in Slicer 4
+  //  vtkImageIslandFilter(const vtkImageIslandFilter&) {};
   ~vtkImageIslandFilter();
 
   void operator=(const vtkImageIslandFilter&) {};
