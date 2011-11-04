@@ -1472,6 +1472,10 @@ namespace eval EMSegmenterPreProcessingTcl {
         return  [WriteDataToTemporaryDir $Node Volume]
     }
 
+    # Note that there is also 
+    # vtkMRMLScalarVolumeNode*
+    # vtkEMSegmentLogic::AddArchetypeScalarVolume(const char* filename, const char* volname, vtkSlicerApplicationLogic* appLogic, vtkMRMLScene* mrmlScene, bool centered) 
+    # However - we can only use that if the nodes are not already created - which is not the case for us 
     proc ReadDataFromDisk { Node FileName Type } {
         variable SCENE
         variable LOGIC
@@ -1497,6 +1501,7 @@ namespace eval EMSegmenterPreProcessingTcl {
 
         $dataReader SetScene $SCENE
         $dataReader SetFileName "$FileName"
+
         set FLAG [$dataReader ReadData $Node]
         $dataReader Delete
 
@@ -1507,9 +1512,23 @@ namespace eval EMSegmenterPreProcessingTcl {
         return 1
     }
 
+   # This is how it should be done 
+   proc ReadScalarVolumeFromDisk { Node FileName } { 
+       variable LOGIC
+       variable SCENE
 
+       # In Slicer 4 $::slicer3::ApplicationLogic  = [py_eval slicer.app.applicationLogic()]
+       set readNode [$LOGIC AddArchetypeScalarVolume $FileName [$Node GetName]  $::slicer3::ApplicationLogic $SCENE]
+       if  { $readNode != "" } {
+         $Node Copy $readNode
+         # puts "uuuuu [$readNode GetName] [[$readNode GetImageData] GetScalarType]"
+         DeleteNode $readNode
+         return 1
+       }
 
-
+       PrintError "ReadScalarVolumeFromDisk: could not read file $FileName"
+       return 0
+   }
 
 
     proc CheckAndCorrectClassCovarianceMatrix {parentNodeID } {

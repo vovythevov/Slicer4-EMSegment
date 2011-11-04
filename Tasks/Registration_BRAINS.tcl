@@ -189,10 +189,10 @@
 
         set CMD "$CMD --fixedVolumeTimeIndex 0"
         set CMD "$CMD --movingVolumeTimeIndex 0"
+        # for Slicer 3 needs to be --debugNumberOfThreads
         set CMD "$CMD --debugNumberOfThreads -1"
         set CMD "$CMD --debugLevel 0"
         set CMD "$CMD --failureExitCode -1"
-
 #        set CMD "$CMD --medianFilterSize 0,0,0"
 #        set CMD "$CMD --useExplicitPDFDerivativesMode AUTO"
 #        set CMD "$CMD --relaxationFactor 0.5"
@@ -220,15 +220,27 @@
 
         # Test:
         # ReadDataFromDisk $outputVolumeNode /home/pohl/Slicer3pohl/463_vtkMRMLScalarVolumeNode17.nrrd Volume
-        if { [ReadDataFromDisk $outputVolumeNode $outputVolumeFileName Volume] == 0 } {
+        # set outputVolumeFileName /share/data/EMSegment_DataSet/debug3/output.nrrd 
+
+        #if { [ReadDataFromDisk $outputVolumeNode $outputVolumeFileName Volume] == 0 } {
+        #    set nodeID [$SCENE GetNodeByID $transID]
+        #    if { $nodeID != "" } {
+        #        $SCENE RemoveNode $nodeID
+        #    }
+        #}
+        # puts "Aligned Atlas [$outputVolumeNode GetName] [[$outputVolumeNode GetImageData] GetScalarType]"
+     
+        if { [ReadScalarVolumeFromDisk $outputVolumeNode $outputVolumeFileName] == 0 } {
             set nodeID [$SCENE GetNodeByID $transID]
             if { $nodeID != "" } {
                 $SCENE RemoveNode $nodeID
             }
         }
+        # puts "Aligned Atlas [$outputVolumeNode GetName] [[$outputVolumeNode GetImageData] GetScalarType]"
 
         # Test:
         # ReadDataFromDisk [$SCENE GetNodeByID $transID] /home/pohl/Slicer3pohl/EMSegmentLinearTransform.mat Transform
+        # set outputTransformFileName /share/data/EMSegment_DataSet/debug3/outputTrans.mat
         if { [ReadDataFromDisk [$SCENE GetNodeByID $transID] $outputTransformFileName Transform] == 0 } {
             set nodeID [$SCENE GetNodeByID $transID]
             if { $nodeID != "" } {
