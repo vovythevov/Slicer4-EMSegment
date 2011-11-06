@@ -1517,8 +1517,11 @@ namespace eval EMSegmenterPreProcessingTcl {
        variable LOGIC
        variable SCENE
 
-       # In Slicer 4 $::slicer3::ApplicationLogic  = [py_eval slicer.app.applicationLogic()]
-       set readNode [$LOGIC AddArchetypeScalarVolume $FileName [$Node GetName]  $::slicer3::ApplicationLogic $SCENE]
+       # not sure if this works for command line
+       set readNode [$::slicer3::VolumesLogic AddArchetypeScalarVolume $FileName [$Node GetName]  0]
+       # Could not make this work bc of link to scene 
+       # set readNode[$LOGIC AddArchetypeScalarVolume $FileName [$Node GetName]  $::slicer3::ApplicationLogic $SCENE]
+
        if  { $readNode != "" } {
          $Node Copy $readNode
          # puts "uuuuu [$readNode GetName] [[$readNode GetImageData] GetScalarType]"
