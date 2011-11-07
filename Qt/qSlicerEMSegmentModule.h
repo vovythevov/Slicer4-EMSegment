@@ -41,7 +41,7 @@ public:
   qSlicerEMSegmentModule(QObject *parent=0);
   virtual ~qSlicerEMSegmentModule();
 
-  qSlicerGetTitleMacro(QTMODULE_TITLE);
+  qSlicerGetTitleMacro("EMSegmenter with Atlas");
 
   /// Return help text
   virtual QString helpText()const;
