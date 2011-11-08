@@ -93,6 +93,7 @@ qSlicerEMSegmentAnatomicalTreeWidgetPrivate::qSlicerEMSegmentAnatomicalTreeWidge
   this->TreeView = 0;
   this->TreeModel = new QStandardItemModel;
 
+  this->StructureNameVisible = true;
   this->StructureNameEditable = false;
   this->LabelColumnVisible = false;
   this->ClassWeightColumnVisible = false;
@@ -227,9 +228,17 @@ QStandardItem* qSlicerEMSegmentAnatomicalTreeWidgetPrivate::insertTreeRow(
   QList<QStandardItem*> itemList;
 
   // Structure item
-  QStandardItem * structureItem = new QStandardItem(QString("%1").arg(treeNode->GetName()));
+  QStandardItem * structureItem = NULL;
+  if (this->StructureNameVisible) 
+    {
+      structureItem = new QStandardItem(QString("%1").arg(treeNode->GetName())); 
+      structureItem->setData(QVariant(Self::StructureNameItemType), Self::TreeItemTypeRole);
+    } else {
+      structureItem = new QStandardItem(QString("")); 
+      // Prevents messages to be sent out when item canges 
+      structureItem->setData(QVariant(Self::noItemType), Self::TreeItemTypeRole);
+    }
   structureItem->setData(QVariant(treeNodeId), Self::TreeNodeIDRole);
-  structureItem->setData(QVariant(Self::StructureNameItemType), Self::TreeItemTypeRole);
 
   if (isLeaf && !this->LabelColumnVisible)
     {
@@ -240,7 +249,7 @@ QStandardItem* qSlicerEMSegmentAnatomicalTreeWidgetPrivate::insertTreeRow(
     structureItem->setData(
         qMRMLUtils::createColorPixmap(q->style(), this->colorFromLabelId(labelId)), Qt::DecorationRole);
     }
-  structureItem->setEditable(this->StructureNameEditable);
+  structureItem->setEditable(this->StructureNameEditable * this->StructureNameVisible);
   itemList << structureItem;
 
   // MRML ID item
@@ -343,8 +352,8 @@ QStandardItem* qSlicerEMSegmentAnatomicalTreeWidgetPrivate::insertTreeRow(
     labelComboBox->setLabelValueVisible(true);
     labelComboBox->setCurrentColor(
         q->mrmlManager()->GetTreeNodeIntensityLabel(treeNodeId));
-    this->TreeView->setIndexWidget(
-        this->TreeModel->indexFromItem(labelItem), labelComboBox);
+      this->TreeView->setIndexWidget(
+         this->TreeModel->indexFromItem(labelItem), labelComboBox);
     connect(labelComboBox, SIGNAL(currentColorChanged(int)),this,SLOT(onCurrentColorChanged(int)));
     }
 
@@ -453,7 +462,7 @@ void qSlicerEMSegmentAnatomicalTreeWidgetPrivate::onTreeItemChanged(QStandardIte
 
   if (treeItemType == Self::StructureNameItemType)
     {
-    q->mrmlManager()->SetTreeNodeName(treeNodeId, treeItem->text().toLatin1());
+      q->mrmlManager()->SetTreeNodeName(treeNodeId, treeItem->text().toLatin1());
     }
   else if (treeItemType == Self::ClassWeightItemType)
     {
@@ -560,6 +569,7 @@ qSlicerEMSegmentAnatomicalTreeWidget::qSlicerEMSegmentAnatomicalTreeWidget(QWidg
   d->setupUi(this);
 
   // Columns hidden by default
+  this->setStructureNameVisible(true);
   this->setStructureNameEditable(false);
   this->setMRMLIDsColumnVisible(false);
   this->setLabelColumnVisible(false);
@@ -645,7 +655,6 @@ void setStructureNameEditableRecursively(QStandardItem * item, bool editable)
 //-----------------------------------------------------------------------------
 CTK_GET_CPP(qSlicerEMSegmentAnatomicalTreeWidget, bool,
             structureNameEditable, StructureNameEditable);
-
 //-----------------------------------------------------------------------------
 void qSlicerEMSegmentAnatomicalTreeWidget::setStructureNameEditable(bool editable)
 {
@@ -659,6 +668,59 @@ void qSlicerEMSegmentAnatomicalTreeWidget::setStructureNameEditable(bool editabl
 
   d->StructureNameEditable = editable;
 }
+
+void qSlicerEMSegmentAnatomicalTreeWidgetPrivate::setStructureNameVisibleRecursively(QStandardItem * item, vtkIdType treeNodeId, bool visible)
+  {
+  Q_Q(qSlicerEMSegmentAnatomicalTreeWidget);
+  Q_ASSERT(item);
+  if (visible) 
+    { 
+        vtkMRMLEMSTreeNode * treeNode = q->mrmlManager()->GetTreeNode(treeNodeId);
+        Q_ASSERT(treeNode);
+        if (!treeNode)
+        {
+           logger.error(QString("populateTreeModel - No treeNode associated with id: %1").arg(treeNodeId));
+           return;
+        }
+       item->setText(QString("%1").arg(treeNode->GetName()));
+       item->setData(QVariant(Self::StructureNameItemType), Self::TreeItemTypeRole);
+    }
+  else
+    {
+      // Prevents messages to be sent out when item canges 
+     item->setData(QVariant(Self::noItemType), Self::TreeItemTypeRole);
+     item->setText(QString(""));
+    }
+
+  for(int i = 0; i < item->rowCount(); ++i)
+    {
+      this->setStructureNameVisibleRecursively(item->child(i), q->mrmlManager()->GetTreeNodeChildNodeID(treeNodeId, i), visible);
+    }
+}
+
+
+//-----------------------------------------------------------------------------
+CTK_GET_CPP(qSlicerEMSegmentAnatomicalTreeWidget, bool, structureNameVisible, StructureNameVisible);
+
+//-----------------------------------------------------------------------------
+void qSlicerEMSegmentAnatomicalTreeWidget::setStructureNameVisible(bool visible)
+{
+  Q_D(qSlicerEMSegmentAnatomicalTreeWidget);
+  if (d->StructureNameVisible == visible)
+    {
+    return;
+    }
+
+  // has to be set before bc otherwise names are set to "" 
+  d->StructureNameVisible = visible;
+  // If those are not defined then one does not need to do anything
+  if (d->TreeModel && this->mrmlManager())
+    {
+       d->setStructureNameVisibleRecursively(d->TreeModel->invisibleRootItem(), this->mrmlManager()->GetTreeRootNodeID(), visible);
+    }
+
+}
+
 
 //-----------------------------------------------------------------------------
 bool qSlicerEMSegmentAnatomicalTreeWidget::mrmlIDsColumnVisible() const

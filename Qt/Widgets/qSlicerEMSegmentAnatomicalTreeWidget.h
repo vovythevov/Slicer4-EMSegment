@@ -44,6 +44,7 @@ class Q_SLICER_MODULE_EMSEGMENT_WIDGET_EXPORT qSlicerEMSegmentAnatomicalTreeWidg
     public qSlicerEMSegmentWidget
 { 
   Q_OBJECT
+  Q_PROPERTY(bool structureNameVisible READ structureNameVisible WRITE setStructureNameVisible)
   Q_PROPERTY(bool structureNameEditable READ structureNameEditable WRITE setStructureNameEditable)
   Q_PROPERTY(bool mrmlIDsColumnVisible READ mrmlIDsColumnVisible WRITE setMRMLIDsColumnVisible)
   Q_PROPERTY(bool displayMRMLIDsCheckBoxVisible READ isDisplayMRMLIDsCheckBoxVisible WRITE setDisplayMRMLIDsCheckBoxVisible)
@@ -64,6 +65,8 @@ public:
   virtual ~qSlicerEMSegmentAnatomicalTreeWidget();
 
   bool structureNameEditable() const;
+
+  bool structureNameVisible() const;
 
   bool mrmlIDsColumnVisible() const;
 
@@ -96,6 +99,8 @@ public slots:
   void updateWidgetFromMRML();
 
   void setStructureNameEditable(bool editable);
+
+  void setStructureNameVisible(bool editable);
 
   void setMRMLIDsColumnVisible(bool visible);
 

@@ -53,7 +53,8 @@ class EMSegmentQuickStep2( EMSegmentStep ) :
     anatomicalTreeGroupBoxLayout = qt.QFormLayout( anatomicalTreeGroupBox )
 
     self.__anatomicalTree = slicer.modulewidget.qSlicerEMSegmentAnatomicalTreeWidget()
-    self.__anatomicalTree.structureNameEditable = True
+    self.__anatomicalTree.structureNameVisible = False
+    self.__anatomicalTree.structureNameEditable = False
     self.__anatomicalTree.labelColumnVisible = True
     self.__anatomicalTree.addDeleteSubclassesEnabled = True
     self.__anatomicalTree.toolTip = 'Please configure a hierarchy of structures for the input datasets.'
@@ -99,10 +100,9 @@ class EMSegmentQuickStep2( EMSegmentStep ) :
 
         currentId = self.mrmlManager().AddTreeNode( self.mrmlManager().GetTreeRootNodeID() )
         if i == 0:
-          self.mrmlManager().SetTreeNodeName( currentId, 'Background' )
           self.mrmlManager().SetTreeNodeIntensityLabel( currentId, 0 )
         elif i > 0:
-          self.mrmlManager().SetTreeNodeName( currentId, 'Tissue' + str( i ) )
+          self.mrmlManager().SetTreeNodeName( currentId, '' )
           self.mrmlManager().SetTreeNodeIntensityLabel( currentId, i )
 
         self.mrmlManager().SetTreeNodeClassProbability( currentId, probability )
@@ -118,4 +118,6 @@ class EMSegmentQuickStep2( EMSegmentStep ) :
     '''
     super( EMSegmentQuickStep2, self ).validate( desiredBranchId )
 
+    self.mrmlManager().SetEntireLeafNodeNamesToIntensityLabelName()
+    
     self.validationSucceeded( desiredBranchId )

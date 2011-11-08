@@ -29,6 +29,7 @@
 #include <vtkMRMLScalarVolumeDisplayNode.h>
 #include <vtkMRMLScene.h>
 #include <vtkMRMLVolumeArchetypeStorageNode.h>
+#include <vtkMRMLColorTableNode.h>
 
 // VTK includes
 #include <vtkImageData.h>
@@ -452,6 +453,7 @@ RemoveTreeNode(vtkIdType removedNodeID)
   this->GetMRMLScene()->RemoveNode(node);
 }
 
+
 //----------------------------------------------------------------------------
 const char*
 vtkEMSegmentMRMLManager::
@@ -480,6 +482,46 @@ SetTreeNodeName(vtkIdType nodeID, const char* name)
   n->SetName(name);
 }
 
+//----------------------------------------------------------------------------
+void
+vtkEMSegmentMRMLManager::
+SetTreeNodeNameToIntensityLabelName(vtkIdType nodeID)
+{
+  const char *labelName =  this->GetTreeNodeIntensityLabelName(nodeID);
+    if (labelName == NULL)
+      {
+        vtkErrorMacro("Could not find label intensity name for "<< nodeID); 
+    return; 
+      }
+
+   this->SetTreeNodeName(nodeID, labelName);
+}
+
+//----------------------------------------------------------------------------
+void
+vtkEMSegmentMRMLManager::
+SetLeafNodeNamesToIntensityLabelNameRecursively(vtkIdType nodeID)
+{
+  int numChildren = this->GetTreeNodeNumberOfChildren(nodeID);
+  if (numChildren)
+    {
+     for (int i = 0; i < numChildren; ++i)
+      {
+        vtkIdType childID = this->GetTreeNodeChildNodeID(nodeID, i);
+        this->SetLeafNodeNamesToIntensityLabelNameRecursively(childID);
+      }
+     return;
+    }
+  this->SetTreeNodeNameToIntensityLabelName(nodeID);
+}
+
+//----------------------------------------------------------------------------
+void
+vtkEMSegmentMRMLManager::
+SetEntireLeafNodeNamesToIntensityLabelName()
+{
+  this->SetLeafNodeNamesToIntensityLabelNameRecursively(this->GetTreeRootNodeID()); 
+}
 //----------------------------------------------------------------------------
 void
 vtkEMSegmentMRMLManager::
@@ -1024,6 +1066,22 @@ GetTreeNodeIntensityLabel(vtkIdType nodeID)
 
   return n->GetLeafParametersNode()->
     GetIntensityLabel();
+}
+
+const char*
+vtkEMSegmentMRMLManager::
+GetTreeNodeIntensityLabelName(vtkIdType nodeID)
+{
+  const char* colorTableNodeID =  this->GetColorNodeID();
+  vtkMRMLColorTableNode* colorTableNode = vtkMRMLColorTableNode::SafeDownCast(this->MRMLScene->GetNodeByID(colorTableNodeID));
+  if (colorTableNode == NULL)
+    {
+      vtkErrorMacro("ColorNodeID is not correctly set");
+      return NULL;
+    }
+  
+  int nodeColorID =  this->GetTreeNodeIntensityLabel(nodeID);
+  return colorTableNode->GetColorName(nodeColorID);
 }
 
 //----------------------------------------------------------------------------

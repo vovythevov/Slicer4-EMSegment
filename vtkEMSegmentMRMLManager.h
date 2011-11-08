@@ -88,14 +88,19 @@ public:
   //
 
   // Step 1
-  int         GetTreeNodeIntensityLabel(vtkIdType nodeID);
+  int                 GetTreeNodeIntensityLabel(vtkIdType nodeID);
+  const char*         GetTreeNodeIntensityLabelName(vtkIdType nodeID);
   virtual void        SetTreeNodeIntensityLabel(vtkIdType nodeID, int label);
-
-  virtual const char* GetTreeNodeName(vtkIdType id);
-  virtual void        SetTreeNodeName(vtkIdType id, const char* label);
 
   virtual void        GetTreeNodeColor(vtkIdType nodeID, double rgb[3]);
   virtual void        SetTreeNodeColor(vtkIdType nodeID, double rgb[3]);
+
+
+  virtual const char* GetTreeNodeName(vtkIdType id);
+  virtual void        SetTreeNodeName(vtkIdType id, const char* label);
+  virtual void        SetTreeNodeNameToIntensityLabelName(vtkIdType nodeID);
+  virtual void        SetLeafNodeNamesToIntensityLabelNameRecursively(vtkIdType nodeID);
+  virtual void        SetEntireLeafNodeNamesToIntensityLabelName();
 
   // Step 2 see below (volume access)
 

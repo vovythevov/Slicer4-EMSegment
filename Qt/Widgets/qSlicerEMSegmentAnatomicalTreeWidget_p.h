@@ -78,7 +78,8 @@ public:
     AtlasWeightItemType,
     AlphaItemType,
     ProbabilityMapItemType,
-    ParcellationMapItemType
+    ParcellationMapItemType,
+    noItemType
     };
 
   enum ColumnIds
@@ -117,6 +118,8 @@ public slots:
 
   void onCurrentColorChanged(int index);
 
+  void setStructureNameVisibleRecursively(QStandardItem * item, vtkIdType treeNodeId, bool visible);
+
 public:
 
   vtkMRMLEMSNode *         EMSNode;
@@ -126,6 +129,7 @@ public:
   vtkMRMLColorTableNode *  CurrentColorTableNode;
 
   QStandardItemModel *     TreeModel;
+  bool                     StructureNameVisible;
   bool                     StructureNameEditable;
   bool                     LabelColumnVisible;
   bool                     ClassWeightColumnVisible;
