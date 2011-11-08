@@ -82,7 +82,11 @@ vtkSlicerCommonInterface::~vtkSlicerCommonInterface()
 }
 
 //----------------------------------------------------------------------------
-Tcl_Interp* vtkSlicerCommonInterface::Startup(int& argc, char *argv[], ostream *err)
+#ifdef Slicer3_USE_KWWIDGETS
+  Tcl_Interp* vtkSlicerCommonInterface::Startup(int& argc, char *argv[], ostream* err)
+#else 
+  Tcl_Interp* vtkSlicerCommonInterface::Startup(int& argc, char *argv[], ostream* vtkNotUsed(err))
+#endif 
 {
 #ifdef Slicer3_USE_KWWIDGETS
 
@@ -312,7 +316,11 @@ void vtkSlicerCommonInterface::RegisterObjectWithTcl(vtkObject* obj, const char*
 }
 
 //-----------------------------------------------------------------------------
-void vtkSlicerCommonInterface::InitializePythonViaTcl(Tcl_Interp* interp, int argc, char **argv)
+#ifdef Slicer3_USE_KWWIDGETS
+   void vtkSlicerCommonInterface::InitializePythonViaTcl(Tcl_Interp* interp, int argc, char **argv)
+#else 
+     void vtkSlicerCommonInterface::InitializePythonViaTcl(Tcl_Interp* vtkNotUsed(interp), int vtkNotUsed(argc), char** vtkNotUsed(argv))
+#endif 
 {
 #if defined(Slicer3_USE_KWWIDGETS) && defined(Slicer3_USE_PYTHON)
   // Initialize Python
@@ -628,7 +636,12 @@ const char* vtkSlicerCommonInterface::GetRepositoryRevision()
 }
 
 //-----------------------------------------------------------------------------
-void vtkSlicerCommonInterface::SetApplicationBinDir(const char* bindir)
+#ifdef Slicer3_USE_KWWIDGETS
+  void vtkSlicerCommonInterface::SetApplicationBinDir(const char* bindir)
+#else
+    void vtkSlicerCommonInterface::SetApplicationBinDir(const char* vtkNotUsed(bindir))
+#endif 
+
 {
 #ifdef Slicer3_USE_KWWIDGETS
 
@@ -638,7 +651,12 @@ void vtkSlicerCommonInterface::SetApplicationBinDir(const char* bindir)
 }
 
 //-----------------------------------------------------------------------------
-vtkHTTPHandler* vtkSlicerCommonInterface::GetHTTPHandler(vtkMRMLScene* scene)
+#ifdef Slicer3_USE_KWWIDGETS
+  vtkHTTPHandler* vtkSlicerCommonInterface::GetHTTPHandler(vtkMRMLScene* scene)
+#else
+  vtkHTTPHandler* vtkSlicerCommonInterface::GetHTTPHandler(vtkMRMLScene* vtkNotUsed(scene))
+#endif 
+
 {
 
 #ifdef Slicer3_USE_KWWIDGETS
@@ -704,7 +722,11 @@ void vtkSlicerCommonInterface::DestroySlicerApplication()
 }
 
 //-----------------------------------------------------------------------------
-void vtkSlicerCommonInterface::AddDataIOToScene(vtkMRMLScene* mrmlScene, vtkSlicerApplicationLogic *appLogic, vtkDataIOManagerLogic *dataIOManagerLogic)
+#ifdef Slicer3_USE_KWWIDGETS
+  void vtkSlicerCommonInterface::AddDataIOToScene(vtkMRMLScene* mrmlScene, vtkSlicerApplicationLogic *appLogic, vtkDataIOManagerLogic *dataIOManagerLogic)
+#else
+  void vtkSlicerCommonInterface::AddDataIOToScene(vtkMRMLScene* mrmlScene, vtkSlicerApplicationLogic* vtkNotUsed(appLogic), vtkDataIOManagerLogic *dataIOManagerLogic)
+#endif
 {
 
 #ifdef Slicer3_USE_KWWIDGETS
@@ -732,7 +754,11 @@ void vtkSlicerCommonInterface::AddDataIOToScene(vtkMRMLScene* mrmlScene, vtkSlic
 }
 
 //-----------------------------------------------------------------------------
-void vtkSlicerCommonInterface::RemoveDataIOFromScene(vtkMRMLScene* mrmlScene, vtkDataIOManagerLogic *dataIOManagerLogic)
+#ifdef Slicer3_USE_KWWIDGETS
+  void vtkSlicerCommonInterface::RemoveDataIOFromScene(vtkMRMLScene* mrmlScene, vtkDataIOManagerLogic *dataIOManagerLogic)
+#else
+    void vtkSlicerCommonInterface::RemoveDataIOFromScene(vtkMRMLScene* vtkNotUsed(mrmlScene), vtkDataIOManagerLogic* vtkNotUsed(dataIOManagerLogic))
+#endif 
 {
 
 #ifdef Slicer3_USE_KWWIDGETS
@@ -866,7 +892,12 @@ void vtkSlicerCommonInterface::DefineCheckButton(const char *label, int initStat
 }
 
 //-----------------------------------------------------------------------------
-int vtkSlicerCommonInterface::GetCheckButtonValue(vtkIdType ID)
+#ifdef Slicer3_USE_KWWIDGETS
+  int vtkSlicerCommonInterface::GetCheckButtonValue(vtkIdType ID)
+#else
+    int vtkSlicerCommonInterface::GetCheckButtonValue(vtkIdType vtkNotUsed(ID))
+#endif
+
 {
 
 #ifdef Slicer3_USE_KWWIDGETS
@@ -889,7 +920,7 @@ int vtkSlicerCommonInterface::GetCheckButtonValue(vtkIdType ID)
 }
 
 //-----------------------------------------------------------------------------
-void vtkSlicerCommonInterface::DefineTextLabel(const char *label, vtkIdType ID)
+void vtkSlicerCommonInterface::DefineTextLabel(const char* label, vtkIdType ID)
 {
 
 #ifdef Slicer3_USE_KWWIDGETS
@@ -941,7 +972,11 @@ void vtkSlicerCommonInterface::DefineTextLabel(const char *label, vtkIdType ID)
 }
 
 //-----------------------------------------------------------------------------
-void vtkSlicerCommonInterface::DefineVolumeMenuButton(const char *label, vtkIdType initVolID, vtkIdType buttonID)
+#ifdef Slicer3_USE_KWWIDGETS
+  void vtkSlicerCommonInterface::DefineVolumeMenuButton(const char *label, vtkIdType initVolID, vtkIdType buttonID)
+#else
+    void vtkSlicerCommonInterface::DefineVolumeMenuButton(const char * vtkNotUsed(label), vtkIdType vtkNotUsed(initVolID), vtkIdType vtkNotUsed(buttonID))
+#endif 
 {
 
 #ifdef Slicer3_USE_KWWIDGETS
@@ -962,7 +997,11 @@ void vtkSlicerCommonInterface::DefineVolumeMenuButton(const char *label, vtkIdTy
 }
 
 //-----------------------------------------------------------------------------
-vtkIdType vtkSlicerCommonInterface::GetVolumeMenuButtonValue(vtkIdType ID)
+#ifdef Slicer3_USE_KWWIDGETS
+  vtkIdType vtkSlicerCommonInterface::GetVolumeMenuButtonValue(vtkIdType  ID)
+#else
+  vtkIdType vtkSlicerCommonInterface::GetVolumeMenuButtonValue(vtkIdType  vtkNotUsed(ID))
+#endif
 {
 
 #ifdef Slicer3_USE_KWWIDGETS
@@ -985,7 +1024,11 @@ vtkIdType vtkSlicerCommonInterface::GetVolumeMenuButtonValue(vtkIdType ID)
 }
 
 //-----------------------------------------------------------------------------
-void vtkSlicerCommonInterface::VolumeMenuButtonCallback(vtkIdType buttonID, vtkIdType volID)
+#ifdef Slicer3_USE_KWWIDGETS
+  void vtkSlicerCommonInterface::VolumeMenuButtonCallback(vtkIdType buttonID, vtkIdType volID)
+#else
+    void vtkSlicerCommonInterface::VolumeMenuButtonCallback(vtkIdType vtkNotUsed(buttonID), vtkIdType vtkNotUsed(volID))
+#endif 
 {
 
 #ifdef Slicer3_USE_KWWIDGETS
@@ -1006,7 +1049,11 @@ void vtkSlicerCommonInterface::VolumeMenuButtonCallback(vtkIdType buttonID, vtkI
 }
 
 //-----------------------------------------------------------------------------
-void vtkSlicerCommonInterface::DefineTextEntry(const char *label, const char *initText, vtkIdType entryID, int widgetWidth)
+#ifdef Slicer3_USE_KWWIDGETS
+  void vtkSlicerCommonInterface::DefineTextEntry(const char *label, const char *initText, vtkIdType entryID, int widgetWidth)
+#else 
+    void vtkSlicerCommonInterface::DefineTextEntry(const char* vtkNotUsed(label), const char* vtkNotUsed(initText), vtkIdType vtkNotUsed(entryID), int vtkNotUsed(widgetWidth))
+#endif 
 {
 
 #ifdef Slicer3_USE_KWWIDGETS
@@ -1027,7 +1074,11 @@ void vtkSlicerCommonInterface::DefineTextEntry(const char *label, const char *in
 }
 
 //-----------------------------------------------------------------------------
-void vtkSlicerCommonInterface::DefineTextEntry(const char *label, const char *initText, vtkIdType entryID)
+#ifdef Slicer3_USE_KWWIDGETS
+  void vtkSlicerCommonInterface::DefineTextEntry(const char *label, const char *initText, vtkIdType entryID)
+#else
+    void vtkSlicerCommonInterface::DefineTextEntry(const char* vtkNotUsed(label), const char* vtkNotUsed(initText), vtkIdType vtkNotUsed(entryID))
+#endif 
 {
 
 #ifdef Slicer3_USE_KWWIDGETS
@@ -1048,7 +1099,11 @@ void vtkSlicerCommonInterface::DefineTextEntry(const char *label, const char *in
 }
 
 //-----------------------------------------------------------------------------
-const char* vtkSlicerCommonInterface::GetTextEntryValue(vtkIdType ID)
+#ifdef Slicer3_USE_KWWIDGETS
+  const char* vtkSlicerCommonInterface::GetTextEntryValue(vtkIdType ID)
+#else
+  const char* vtkSlicerCommonInterface::GetTextEntryValue(vtkIdType vtkNotUsed(ID))
+#endif 
 {
 
 #ifdef Slicer3_USE_KWWIDGETS
@@ -1092,7 +1147,12 @@ void vtkSlicerCommonInterface::SetButtonsFromMRML()
 }
 
 //-----------------------------------------------------------------------------
-void vtkSlicerCommonInterface::PopUpWarningWindow(const char * msg)
+#ifdef Slicer3_USE_KWWIDGETS
+  void vtkSlicerCommonInterface::PopUpWarningWindow(const char * msg)
+#else
+    void vtkSlicerCommonInterface::PopUpWarningWindow(const char* vtkNotUsed(msg))
+#endif 
+
 {
 
 #ifdef Slicer3_USE_KWWIDGETS
