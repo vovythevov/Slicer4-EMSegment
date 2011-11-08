@@ -2461,13 +2461,13 @@ void vtkEMSegmentNodeParametersStep::DefineClassOverviewWeightWindow(vtkIdType s
   assert(oldSize ==  int(this->NodeParametersClassOverviewWeightAuto.size()));
 
   // to avoid errror messages;
-   vtkIdType parent = NULL;
+   vtkIdType parent = ERROR_NODE_VTKID;
    if ( mrmlManager->GetTreeRootNodeID() != sel_tree_class_id)
      {
         parent = mrmlManager->GetTreeNodeParentNodeID(sel_tree_class_id);
      }
   int newSize =0;
-  if (parent)
+  if (parent != ERROR_NODE_VTKID)
     {
       newSize = mrmlManager->GetTreeNodeNumberOfChildren(parent);
     }
