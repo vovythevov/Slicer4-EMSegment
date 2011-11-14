@@ -155,7 +155,7 @@ QString qSlicerEMSegmentQuickModule::category()const
 //-----------------------------------------------------------------------------
 QString qSlicerEMSegmentQuickModule::contributor()const
 {
-  return QLatin1String("Daniel Haehn");
+  return QLatin1String("Daniel Haehn, Kilian Pohl");
 }
 
 //-----------------------------------------------------------------------------
