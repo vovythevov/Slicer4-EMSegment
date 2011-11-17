@@ -45,12 +45,11 @@ int countFloatsInString(const char *fltString)
 {
   char *end;
   const char *start = fltString;
-  double d;
   int count = 0;
   while ((UCHAR(*start) != '\0') && isspace(UCHAR(*start))) { start++; }
   if (UCHAR(*start) == '\0') return -1; /* Don't ask to convert empty strings */
   do {
-    d = strtod(start, (char **)&end);
+    strtod(start, (char **)&end);
     if (end == start) { 
       /* I want to parse strings of numbers with comments at the end */
       /* This return is executed when the next thing along can't be parsed */

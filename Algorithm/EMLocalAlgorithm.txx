@@ -1349,7 +1349,7 @@ template <class T> void EMLocalAlgorithm<T>::E_Step_Weight_Calculation_Threaded(
 // LLSBiasCorrection
 //------------------------------------------------------------
 template <class T>
-void EMLocalAlgorithm<T>::LLSBiasCorrection(int iter, float* cY)
+void EMLocalAlgorithm<T>::LLSBiasCorrection(int iter)
 {
   srand ( time(NULL) );
   int random = rand();
@@ -2067,7 +2067,7 @@ template  <class T> void EMLocalAlgorithm<T>::RunAlgorithm(EMTriVolume& iv_m, EM
           this->IntensityCorrection(this->PrintIntermediateFlag, iter, iv_m, r_m, cY_MPtr);
           break;
         case 1:
-          this->LLSBiasCorrection(iter, cY_MPtr);
+          this->LLSBiasCorrection(iter);
           break;
         default:
           break;

@@ -41,7 +41,7 @@ PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <cassert>
 
 //----------------------------------------------------------------------------
-void vtkImageSumOverVoxels::ComputeInputUpdateExtent(int inExt[6], int outExt[6])
+void vtkImageSumOverVoxels::ComputeInputUpdateExtent(int inExt[6], int vtkNotUsed(outExt)[6])
 {
   this->GetInput()->GetWholeExtent(inExt);
 }
@@ -58,7 +58,7 @@ vtkImageSumOverVoxels* vtkImageSumOverVoxels::New()
 
 
 //----------------------------------------------------------------------------
-void vtkImageSumOverVoxels::PrintSelf(ostream& os, vtkIndent indent)
+void vtkImageSumOverVoxels::PrintSelf(ostream& vtkNotUsed(os), vtkIndent vtkNotUsed(indent))
 {
 }
 
@@ -128,7 +128,6 @@ void AddVoxels(T* Ptr, vtkIdType inInc[3], int Dim[3], int CentroidFlag, double 
 // this is baisically the VTK version of resamplerMain.c
 void vtkImageSumOverVoxels::ExecuteData(vtkDataObject *) {
   void *inPtr;
-  void *outPtr;
 
   int inExt[6];
   vtkIdType inInc[3];
@@ -170,7 +169,7 @@ void vtkImageSumOverVoxels::ExecuteData(vtkDataObject *) {
   }
 
   inPtr = inData->GetScalarPointerForExtent(inExt);
-  outPtr = outData->GetScalarPointerForExtent(outExt);
+  outData->GetScalarPointerForExtent(outExt);
 
   // cout << inInc[0] << " " << inInc[1] << " " << inInc[2] << endl; 
   switch (inData->GetScalarType()) {

@@ -216,7 +216,7 @@ void vtkImagePropagateDist2::InitParam( vtkImageData* input, vtkImageData* outpu
 //----------------------------------------------------------------------------
 // This method is passed  input and output data, and executes the filter
 // algorithm to fill the output from the input.
-void vtkImagePropagateDist2::ExecuteData(vtkDataObject *outData)
+void vtkImagePropagateDist2::ExecuteData(vtkDataObject *vtkNotUsed(outData))
 //                   -------
 {
 
@@ -244,14 +244,14 @@ void vtkImagePropagateDist2::ExecuteData(vtkDataObject *outData)
 void vtkImagePropagateDist2::IsoSurfDist2D( )
 {
 
-  register int          x,y,p;
+  int          x,y,p;
   register int          n;
   register int          sign, neigh_sign;
   register float        val,val0,val1,diff;
   register float        val0_new,val1_new;
-  register int          displace[2];  
-  register float        Grad[2];
-  register vtkFloatingPointType        vs[3];
+  int          displace[2];  
+  float        Grad[2];
+  vtkFloatingPointType        vs[3];
   register float        norm=0;
   unsigned char         grad_computed;
   register float*       inPtr;
@@ -364,14 +364,14 @@ void vtkImagePropagateDist2::IsoSurfDist2D( )
 void vtkImagePropagateDist2::IsoSurfDist3D( )
 {
 
-  register int          x,y,z,p;
+  int          x,y,z,p;
   register int          n;
   register int          sign, neigh_sign;
   register float        val,val0,val1,diff;
   register float        val0_new,val1_new;
-  register int          displace[3];  
-  register float        Grad[3];
-  register vtkFloatingPointType        vs[3];
+  int          displace[3];  
+  float        Grad[3];
+  vtkFloatingPointType        vs[3];
   register float        norm=0;
   unsigned char         grad_computed;
   register float*       inPtr;
@@ -491,15 +491,15 @@ void vtkImagePropagateDist2::IsoSurfDist3D( )
 void vtkImagePropagateDist2::IsoSurfDist3D_band( int first_band, int last_band)
 {
 
-  register int          x=0,y=0,z=0,p;
+  int          x=0,y=0,z=0,p;
   register int          nbp; // narrow band position
   register int          i,n;
   register int          sign, neigh_sign;
   register float        val,val0,val1,diff;
   register float        val0_new,val1_new;
-  register int          displace[3];  
-  register float        Grad[3];
-  register vtkFloatingPointType        vs[3];
+  int          displace[3];  
+  float        Grad[3];
+  vtkFloatingPointType        vs[3];
   register float        norm=0;
   unsigned char         grad_computed;
   register float*       inPtr0;
@@ -665,12 +665,12 @@ void vtkImagePropagateDist2::PropagateDanielsson2D( )
 
     // 0: know values in the front
     // 1: value to compute in the front  
-    register float     dx,dy;
-    register int       n[8];
-    register int       nx[8];
-    register int       ny[8];
-    register int       l;
-    register int       tp;
+    float     dx,dy;
+    int       n[8];
+    int       nx[8];
+    int       ny[8];
+    int       l;
+    int       tp;
     register int       p,k,pn;
 
     int                x0,y0,x1,y1;
@@ -1165,13 +1165,13 @@ void vtkImagePropagateDist2::PropagateDanielsson3D( )
 
     // 0: know values in the front
     // 1: value to compute in the front  
-    register float     dx,dy,dz;
-    register int       n[26];
-    register int       nx[26];
-    register int       ny[26];
-    register int       nz[26];
-    register int       l;
-    register int       tp;
+    float     dx,dy,dz;
+    int       n[26];
+    int       nx[26];
+    int       ny[26];
+    int       nz[26];
+    int       l;
+    int       tp;
     register int       p,k,pn;
 
     int                x0,y0,z0,x1,y1,z1,p0;
@@ -1446,8 +1446,8 @@ float vtkImagePropagateDist2::ComputeDistance(const float& dx, const float& dy, 
 void vtkImagePropagateDist2::new3D_update_neighbors2( const int& k,  int* n, float* buf)
 {
 
-    register int       p,tp,pn;
-    register float     dxp,dyp,dzp;
+    int       p,tp,pn;
+    float     dxp,dyp,dzp;
     register int       p0,x0,y0,z0;
 
     p=list0[k];
@@ -1460,14 +1460,14 @@ void vtkImagePropagateDist2::new3D_update_neighbors2( const int& k,  int* n, flo
   
     // Check for image limits...
 
-    register float    dxpp = dxp+1;
-    register float    dxpm = dxp-1;
+    float    dxpp = dxp+1;
+    float    dxpm = dxp-1;
 
-    register float    dypp = dyp+1;
-    register float    dypm = dyp-1;
+    float    dypp = dyp+1;
+    float    dypm = dyp-1;
 
-    register float    dzpp = dzp+1;
-    register float    dzpm = dzp-1;
+    float    dzpp = dzp+1;
+    float    dzpm = dzp-1;
 
     /* this optimition seems slower in fact
     register float  dxp2  = dxp+dxp;
@@ -1486,7 +1486,7 @@ void vtkImagePropagateDist2::new3D_update_neighbors2( const int& k,  int* n, flo
     register float current_dist=list_elts[p].GetSquareDist();
     if (current_dist<0) current_dist=-current_dist;
 
-    register float    val; 
+    float    val; 
 
     // This procedure is not safe because we can endup out of the image ...
 
@@ -1590,8 +1590,8 @@ void vtkImagePropagateDist2::new3D_update_neighbors2( const int& k,  int* n, flo
 void vtkImagePropagateDist2::new3D_update_neighbors( int k, int* n, int* nx, int* ny, int* nz, float* buf)
 {
 
-    register int       l;
-    register int       p,tp,pn;
+    int       l;
+    int       p,tp,pn;
     float              dxp,dyp,dzp;
 
     p=list0[k];
@@ -1615,8 +1615,8 @@ void vtkImagePropagateDist2::new3D_update_neighbors( int k, int* n, int* nx, int
        case POINT_SET:        continue;
        case POINT_NOT_PARSED:
      {
-       register float     val;
-       register float     dx,dy,dz;
+       float     val;
+       float     dx,dy,dz;
      PD_element2& neighbor = list_elts[pn];
          list1[list1_size++]=pn;
          neighbor.SetState(POINT_TRIAL_INLIST);
@@ -1645,8 +1645,8 @@ void vtkImagePropagateDist2::new3D_update_neighbors( int k, int* n, int* nx, int
        continue;
      }
        register float     neigh_dist;
-       register float     val;
-       register float     dx,dy,dz;
+       float     val;
+       float     dx,dy,dz;
 
          dx = dxp+nx[l];
          dy = dyp+ny[l];
@@ -1682,12 +1682,12 @@ void vtkImagePropagateDist2::PropagateDanielsson3D_new( )
 
     // 0: know values in the front
     // 1: value to compute in the front  
-    register int       n[26];
-    register int       nx[26];
-    register int       ny[26];
-    register int       nz[26];
+    int       n[26];
+    int       nx[26];
+    int       ny[26];
+    int       nz[26];
     register int       l;
-    register int       p,k;
+    int       p,k;
     int                i,j;
     register float known_dist_pos;
     register float known_dist_neg;
@@ -1866,8 +1866,8 @@ void vtkImagePropagateDist2::SaveTrajectories2D( int num)
   if (!save_intermediate_images) return;  
 
   register int       l;
-  register int       nx[8];
-  register int       ny[8];
+  int       nx[8];
+  int       ny[8];
   
   
   vtkStructuredPointsWriter *writer = vtkStructuredPointsWriter::New();
@@ -1947,9 +1947,9 @@ void vtkImagePropagateDist2::SaveTrajectories3D( int num)
   if (!save_intermediate_images) return;  
 
   register int       l;
-  register int       nx[26];
-  register int       ny[26];
-  register int       nz[26];
+  int       nx[26];
+  int       ny[26];
+  int       nz[26];
   
   
   vtkStructuredPointsWriter *writer = vtkStructuredPointsWriter::New();

@@ -202,7 +202,7 @@ void vtkImagePropagateDist::SetMinMaxX( int** minx, int** maxx)
 //----------------------------------------------------------------------------
 // This method is passed  input and output data, and executes the filter
 // algorithm to fill the output from the input.
-void vtkImagePropagateDist::ExecuteData(vtkDataObject *outData)
+void vtkImagePropagateDist::ExecuteData(vtkDataObject* vtkNotUsed(outData))
 //                   -------
 {
 
@@ -225,13 +225,13 @@ void vtkImagePropagateDist::PropagateDanielsson2D( )
 
     // 0: know values in the front
     // 1: value to compute in the front  
-    register short     dx,dy;
-    register int       n[8];
-    register int       nx[8];
-    register int       ny[8];
-    register int       l;
-    register int       tp;
-    register int       p,k,pn;
+    short     dx,dy;
+    int       n[8];
+    int       nx[8];
+    int       ny[8];
+    int       l;
+    int       tp;
+    int       p,k,pn;
 
     int                x0,y0,x1,y1;
     int                xpn0,ypn0,tpn;
@@ -671,14 +671,14 @@ void vtkImagePropagateDist::PropagateDanielsson3D( )
 
     // 0: know values in the front
     // 1: value to compute in the front  
-    register short     dx,dy,dz;
-    register int       n[26];
-    register int       nx[26];
-    register int       ny[26];
-    register int       nz[26];
-    register int       l;
-    register int       tp;
-    register int       p,k,pn;
+    short     dx,dy,dz;
+    int       n[26];
+    int       nx[26];
+    int       ny[26];
+    int       nz[26];
+    int       l;
+    int       tp;
+    int       p,k,pn;
 
     int                x0,y0,z0,x1,y1,z1,p0;
     int                dxp,dyp,dzp;
@@ -1047,8 +1047,8 @@ void vtkImagePropagateDist::SaveTrajectories2D( int num)
   if (!save_intermediate_images) return;  
 
   register int       l;
-  register int       nx[8];
-  register int       ny[8];
+  int       nx[8];
+  int       ny[8];
   
   
   vtkStructuredPointsWriter *writer = vtkStructuredPointsWriter::New();
@@ -1128,9 +1128,9 @@ void vtkImagePropagateDist::SaveTrajectories3D( int num)
   if (!save_intermediate_images) return;  
 
   register int       l;
-  register int       nx[26];
-  register int       ny[26];
-  register int       nz[26];
+  int       nx[26];
+  int       ny[26];
+  int       nz[26];
   
   
   vtkStructuredPointsWriter *writer = vtkStructuredPointsWriter::New();

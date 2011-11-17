@@ -170,7 +170,7 @@ private:
   void UpdatePCASpecificParameters(int iter);
 
 
-  void LLSBiasCorrection(int iter, float* outData);
+  void LLSBiasCorrection(int iter);
   vtkImageData* reconstructImage(float** InputVector, int InputIndex);
 
   // -----------------------------------------------------

@@ -75,7 +75,7 @@ setenv LD_LIBRARY_PATH ${VTK_BIN_DIR}/bin:${LD_LIBRARY_PATH}
 
 // NewID = -1 is the default => automatic ID will be generated and returned later 
 // MaxSize = up to which size do we want to sort the list ! 
-
+ 
 template <class T> int IslandMemory<T>::AddIsland(int NewStartVoxel, int NewSize, T NewLabel, int NewID, int MaxSize) {
   // cout << "IslandMemory::AddIsland " <<  NewStartVoxel << " Size: " << NewSize << " Label " << int(NewLabel) << " ID " << NewID << " " << MaxSize << endl;
     if (this->ID == -1) {
@@ -198,7 +198,10 @@ template <class T> void IslandMemory<T>::SetSize(int NewSize, IslandMemory<T>* S
   assert(Ptr);
   // cout << "ID " << SetID << endl;
   if ((NewSize > SetSize) && (SetID > -1)) assert(Ptr->AddIsland(SetStartVoxel, NewSize, SetLabel, SetID,MaxSize) > -1);
-  else assert(this->AddIsland(SetStartVoxel, NewSize, SetLabel, SetID, MaxSize) > -1);
+  else if (this->AddIsland(SetStartVoxel, NewSize, SetLabel, SetID, MaxSize) <= -1)
+    {
+      cout << "ERROR: Something went wrong"<< endl;
+    }
 }
 //------------------------------------------------------------------------------
 template <class T> int IslandMemoryGroup<T>::AddIsland(int NewStartVoxel, int NewSize, T NewLabel, int NewID) {
@@ -406,14 +409,14 @@ vtkImageIslandFilter::vtkImageIslandFilter()
 vtkImageIslandFilter::~vtkImageIslandFilter(){ }
 
 //----------------------------------------------------------------------------
-void vtkImageIslandFilter::ComputeInputUpdateExtent(int inExt[6], int outExt[6])
+void vtkImageIslandFilter::ComputeInputUpdateExtent(int inExt[6], int vtkNotUsed(outExt)[6])
 {
   this->GetInput()->GetWholeExtent(inExt);
 }
 
 
 //----------------------------------------------------------------------------
-void vtkImageIslandFilter::PrintSelf(ostream& os, vtkIndent indent)
+void vtkImageIslandFilter::PrintSelf(ostream& vtkNotUsed(os), vtkIndent vtkNotUsed(indent))
 {
 }
 
@@ -852,8 +855,10 @@ static void vtkImageIslandFilterExecute(vtkImageIslandFilter *self, T *inPtr, in
       int IslandSize = vtkImageIslandFilter_DefineIsland(index, NULL, Checked, inPtr, SizeX, SizeY, SizeXY, SizeZ, NewID);
           // If it is not the same then island must be alread part of it 
           int currentIslandCount = Mem->AddIsland(index,IslandSize,inPtr[index],IslandCount);
-          assert(currentIslandCount == IslandCount);
-      break;
+          if (currentIslandCount != IslandCount) {
+        cout << "ERROR: Something went wrong" << endl;
+      }
+          break;
       }
       case IMAGEISLANDFILTER_STATIC: {
       // Only delete it if it is a certain lable and if activated - touching the ROI

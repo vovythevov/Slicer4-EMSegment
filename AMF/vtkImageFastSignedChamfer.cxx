@@ -204,7 +204,7 @@ void vtkImageFastSignedChamfer::SetMinMaxX( int** minx, int** maxx)
 //----------------------------------------------------------------------------
 // This method is passed  input and output data, and executes the filter
 // algorithm to fill the output from the input.
-void vtkImageFastSignedChamfer::ExecuteData(vtkDataObject *outData)
+void vtkImageFastSignedChamfer::ExecuteData(vtkDataObject* vtkNotUsed(outData))
 //                   -------
 {
 
@@ -236,9 +236,9 @@ void vtkImageFastSignedChamfer::FastSignedChamfer2D( )
   register int     x,y,i,n;
   register int     j;
   int              i1,i2;
-  register int     neighbor[4];
-  register int     neighbor1[2];
-  register int     neighbor2[2];
+  int     neighbor[4];
+  int     neighbor1[2];
+  int     neighbor2[2];
   register float   min,val=0;
   register float*  buf;
   register float*  buf1;
@@ -399,10 +399,10 @@ void vtkImageFastSignedChamfer::FastSignedChamfer3DOld( )
   register int    x,y,z,i,n;
   register int    j,k;
   int             i1,i2,i3;
-  register int    neighbor[13];
-  register int    neighbor1[3];
-  register int    neighbor2[6];
-  register int    neighbor3[4];
+  int    neighbor[13];
+  int    neighbor1[3];
+  int    neighbor2[6];
+  int    neighbor3[4];
   register float  min,val=0;
   register float* buf;
   register float* buf1;

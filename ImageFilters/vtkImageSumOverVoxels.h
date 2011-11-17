@@ -44,7 +44,7 @@ class VTK_EMSEGMENT_EXPORT vtkImageSumOverVoxels : public vtkImageToImageFilter
 protected:
 
   vtkImageSumOverVoxels() {VoxelSum = -1;Centroid[0] =Centroid[1] =  Centroid[2] = -1; ComputeCentroid = 0; };
-  vtkImageSumOverVoxels(const vtkImageSumOverVoxels&) {};
+  //  vtkImageSumOverVoxels(const vtkImageSumOverVoxels&) {};
   ~vtkImageSumOverVoxels(){};
 
   void operator=(const vtkImageSumOverVoxels&) {};

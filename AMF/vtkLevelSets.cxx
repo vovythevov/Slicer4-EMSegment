@@ -1613,7 +1613,6 @@ void vtkLevelSets::MakeBand0( )
 void vtkLevelSets::InitParam( vtkImageData* input, vtkImageData* output)
 //                   ---------
 {
-  int type;
   int i;
 
   if (verbose) {
@@ -1630,7 +1629,7 @@ void vtkLevelSets::InitParam( vtkImageData* input, vtkImageData* output)
   else {
 
     // check the image is in float format, or convert
-    type = input->GetScalarType();
+    // type = input->GetScalarType();
     //    if (type != VTK_FLOAT) {
       vtkDebugMacro(<<"making a copy of the input into float format");
       // Create a copy of the data
@@ -2240,7 +2239,7 @@ void vtkLevelSets::Evolve3D( int first_band, int last_band)
     register float* newU = this->u[1-current];
     float* im   = (float*) this->inputImage->GetScalarPointer();
 
-    register short i,j,k;
+    short i,j,k;
     register double u0,upx,upy,upz,umx,umy,umz;
     register double D0x,D0y,D0z;
     register double i0x,i0y,i0z;
@@ -2257,7 +2256,6 @@ void vtkLevelSets::Evolve3D( int first_band, int last_band)
     register double meancurv_grad;
     register double gausscurv_grad2;
     register double smallercurv_grad;
-    register double biggercurv_grad;
     double discriminant=0, dxsq=0,dysq=0,dzsq=0;
     double imcomp=0,costerm,ut;
     double curvterm;
@@ -2425,7 +2423,7 @@ void vtkLevelSets::Evolve3D( int first_band, int last_band)
           if (discriminant<0) discriminant=0;
           discriminant = sqrt(discriminant);
           smallercurv_grad  = meancurv_grad-discriminant;
-          biggercurv_grad   = meancurv_grad+discriminant;
+          // biggercurv_grad   = meancurv_grad+discriminant;
         }
 
       if (DoMean) curvterm = meancurv_grad   ;
@@ -2845,9 +2843,9 @@ void vtkLevelSets::InitEvolution()
    fprintf(stderr,"Threshold %f \n", this->InitThreshold);
 
    if ((this->RescaleImage)&&(initImage==NULL))
-     th = (InitThreshold-minu)/(maxu-minu)*255.0;
+      th = (InitThreshold-minu)/(maxu-minu)*255.0;
    else
-     th = InitThreshold;
+      th = InitThreshold;
 
 
    if (initImage == NULL) {
@@ -3092,13 +3090,10 @@ int vtkLevelSets::Iterate()
 void vtkLevelSets::EndEvolution()
 {
 
-  float  th;
   float* outPtr;
   int    i;
 
   fprintf(stderr,"Threshold %f \n", this->InitThreshold);
-
-  th = InitThreshold;
 
   // Compute the distance map to the isosurface 0
   DistanceMap();

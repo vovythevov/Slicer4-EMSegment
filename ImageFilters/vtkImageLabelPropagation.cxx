@@ -304,7 +304,7 @@ void vtkImageLabelPropagationExecuteSaito(vtkImageLabelPropagation *self,vtkImag
   self->PermuteIncrements(PropagatedMap->GetIncrements(), proInc0, proInc1, proInc2);
 
   T *proPtr0,*proPtr1,*proPtr2;
-  T proLabel;
+  T proLabel = 0 ;
 
   inSize0 = outMax0 - outMin0 + 1;  
   maxDist = self->GetMaximumDistance();
@@ -520,7 +520,7 @@ void vtkImageLabelPropagationExecuteSaito(vtkImageLabelPropagation *self,vtkImag
 
 // Turns the outside negative 
 template <class T> 
-void vtkImageLabelPropagationDefineSignedDistanceMap(vtkImageLabelPropagation *self,
+void vtkImageLabelPropagationDefineSignedDistanceMap(
                                 vtkImageData *inData, T *inPtr,
                                 vtkImageData *outData, 
                                 int outExt[6], float *outPtr )
@@ -654,8 +654,8 @@ int vtkImageLabelPropagation::IterativeRequestData( vtkInformation* vtkNotUsed( 
 
       switch (OriginalInData->GetScalarType())
     {
-      vtkTemplateMacro6(vtkImageLabelPropagationDefineSignedDistanceMap,
-                this, OriginalInData, (VTK_TT *)(OriginalInData->GetScalarPointerForExtent(OriginalInData->GetUpdateExtent())), outData, outExt, (float *)(outPtr));
+      vtkTemplateMacro5(vtkImageLabelPropagationDefineSignedDistanceMap,
+                OriginalInData, (VTK_TT *)(OriginalInData->GetScalarPointerForExtent(OriginalInData->GetUpdateExtent())), outData, outExt, (float *)(outPtr));
     default:
       vtkErrorMacro(<< "Execute: Unknown ScalarType");
       return 1;

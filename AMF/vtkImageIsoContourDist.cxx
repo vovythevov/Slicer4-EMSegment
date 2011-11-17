@@ -224,7 +224,7 @@ void vtkImageIsoContourDist::SetMinMaxX( int** minx, int** maxx)
 //----------------------------------------------------------------------------
 // This method is passed  input and output data, and executes the filter
 // algorithm to fill the output from the input.
-void vtkImageIsoContourDist::ExecuteData(vtkDataObject *outData)
+void vtkImageIsoContourDist::ExecuteData(vtkDataObject* vtkNotUsed(outData))
 //                   -------
 {
 
@@ -256,10 +256,10 @@ void vtkImageIsoContourDist::IsoSurfDist2D( )
   register int          sign, neigh_sign;
   register float        val,val0,val1,diff;
   register float        val0_new,val1_new;
-  register int          displace[2];  
-  register float        Grad[2];
-  register vtkFloatingPointType        vs[3];
-  register float        norm;
+  int          displace[2];  
+  float        Grad[2];
+  vtkFloatingPointType   vs[3];
+  register float        norm = 0 ;
   unsigned char         grad_computed;
   register float*       inPtr;
   register float*       outPtr;
@@ -365,17 +365,17 @@ void vtkImageIsoContourDist::IsoSurfDist3D( )
   register int          sign, neigh_sign;
   register float        val,val0,val1,diff;
   register float        val0_new,val1_new;
-  register int          displace[3];  
-  register float        Grad0[3];
-  register float        Grad1[3];
-  register float        Grad[3];
-  register vtkFloatingPointType        vs[3];
+  int          displace[3];  
+  float        Grad0[3] = {0,0,0};
+  float        Grad1[3];
+  float        Grad[3];
+  vtkFloatingPointType        vs[3];
   register float        vs0_2;
   register float        vs1_2;
   register float        vs2_2;
   register float        alpha_0;
   register float        alpha_1;
-  register float        norm;
+  register float        norm = 0;
   unsigned char         grad0_computed;
   register float*       inPtr;
   register float*       inPtr1;
@@ -628,9 +628,9 @@ void vtkImageIsoContourDist::IsoSurfDist3D_band( int first_band, int last_band)
   register int          sign, neigh_sign;
   register float        val,val0,val1,diff;
   register float        val0_new,val1_new;
-  register int          displace[3];  
-  register float        Grad[3];
-  register vtkFloatingPointType        vs[3];
+  int          displace[3];  
+  float        Grad[3];
+  vtkFloatingPointType        vs[3];
   register float        norm;
   unsigned char         grad_computed;
   register float*       inPtr0;

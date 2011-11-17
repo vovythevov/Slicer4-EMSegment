@@ -345,7 +345,7 @@ void vtkLevelSetFastMarching::SetNarrowBand( int* band, int size)
 
 
 //----------------------------------------------------------------------
-void vtkLevelSetFastMarching::ExecuteData(vtkDataObject *outData)
+void vtkLevelSetFastMarching::ExecuteData(vtkDataObject* vtkNotUsed(outData))
 {
   
   FM_TrialPoint p;
@@ -454,10 +454,10 @@ void vtkLevelSetFastMarching::AddAcceptedPoint( short x, short y, short z, int p
 
   unsigned char* status_buf;
   unsigned char* mask_buf;
-  register int neighbors[6];
-  register short neighb_x [6];
-  register short neighb_y [6];
-  register short neighb_z [6];
+  int neighbors[6];
+  short neighb_x [6];
+  short neighb_y [6];
+  short neighb_z [6];
   // direction: 0,1,2 for X,Y,Z
   unsigned char dir[6];
   int n,nb;
@@ -569,12 +569,12 @@ void vtkLevelSetFastMarching::AddTrialPointsOld( short x, short y, short z, int 
 {
 
   unsigned char* status_buf;
-  unsigned char* mask_buf;
+  unsigned char* mask_buf = NULL;
 
-  register int neighbors[6];
-  register short neighb_x [6];
-  register short neighb_y [6];
-  register short neighb_z [6];
+  int neighbors[6];
+  short neighb_x [6];
+  short neighb_y [6];
+  short neighb_z [6];
   int n,nb;
 
   // direction: 0,1,2 for X,Y,Z
@@ -671,9 +671,9 @@ void vtkLevelSetFastMarching::AddTrialPoints( short x, short y, short z, int pos
 {
 
   
-  unsigned char* mask_buf;
+  unsigned char* mask_buf = NULL;
   int npos,ndir;  // direction: 0,1,2 for X,Y,Z
-  register FM_TrialPoint trial;
+  FM_TrialPoint trial;
   register float valmin;
 
   if (mask!=NULL)
@@ -1052,8 +1052,8 @@ inline unsigned char vtkLevelSetFastMarching::ComputeValueSethian2( FM_TrialPoin
 
 #define macro_swap(a,b) tmp=a; a=b; b=tmp;
 
-  register double val[3];
-  register double val1[3];
+  double val[3];
+  double val1[3];
   double F;
   double cost;
   double cost2;
@@ -1158,7 +1158,7 @@ inline unsigned char vtkLevelSetFastMarching::ComputeValueSethian2( FM_TrialPoin
  
 
 //----------------------------------------------------------------------
-void vtkLevelSetFastMarching::PrintSelf(ostream& os, vtkIndent indent)
+void vtkLevelSetFastMarching::PrintSelf(ostream& vtkNotUsed(os), vtkIndent vtkNotUsed(indent))
 {
   // Nothing for the moment ...
 }
@@ -1614,21 +1614,29 @@ void vtkLevelSetFastMarching::InitIsoSurf()
 //                    -----------
 {
 
-  register float          val0_new,val1_new;
-  register int            pos;
-  register int            displace[3];  // displacement for the 5 neighbors
-  register int            sign, neigh_sign;
-  register float          val0,val1,diff;
-  unsigned char           grad_computed;
-  register float          norm;
-  register float          Grad[3];
-  register int            x,y,z;
-  register float*         init_buf;
-  register float*         T_buf1;
-  register unsigned char* status_buf;
-  register int            n;
-  register float          val;
-  int                     zmin,zmax,nmax;
+  register float          val0_new = 0;
+  register float          val1_new = 0;
+  register int            pos =0;
+  int            displace[3];  // displacement for the 5 neighbors
+  register int            sign = 0;
+  register int            neigh_sign =0;
+  register float          val0 = 0;
+  register float          val1 = 0;
+  register float          diff = 0;
+  unsigned char           grad_computed =0;
+  register float          norm = 0.0;
+  float          Grad[3] = {0,0,0};
+  register int            x =0;
+  register int            y =0;
+  register int            z =0;
+  register float*         init_buf=NULL;
+  register float*         T_buf1 = NULL;
+  register unsigned char* status_buf = NULL;
+  register int            n =0;
+  register float          val = 0;
+  int                     zmin = 0 ;
+  int                     zmax = 0 ;
+  int                     nmax = 0 ;
 
   // Put the result in the time image
   init_buf   = (float*)this->initimage->GetScalarPointer();
