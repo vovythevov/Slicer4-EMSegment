@@ -589,18 +589,6 @@ namespace eval EMSegmenterPreProcessingTcl {
                     PrintError "Transform node is null"
                     return 1
                 }
-
-                $LOGIC PrintText "TCL: === Just for debugging $transformNode [$transformNode GetName] [$transformNode GetID]"
-                set outputNode [vtkMRMLScalarVolumeDisplayNode New]
-                $outputNode SetName "blub1"
-                $SCENE AddNode $outputNode
-                set outputNodeID [$outputNode GetID]
-                $outputNode Delete
-
-                if { [Resample $movingVolumeNode $fixedVolumeNode $transformNode "NotUsedForBSpline" "BSplineTransform" Linear  $backgroundLevel [$SCENE GetNodeByID $outputNodeID]] } {
-                    return 1
-                }
-                ## $SCENE RemoveNode $transformNode
             }
         } else {
 
