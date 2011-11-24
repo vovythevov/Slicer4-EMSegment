@@ -101,16 +101,6 @@ vtkSlicerCommonInterface::~vtkSlicerCommonInterface()
   bool disablePython = qSlicerApplication::testAttribute(qSlicerApplication::AA_DisablePython);
   if(!disablePython)
     {
-    // HACK - Copied from Slicer/Applications/SlicerQT/Main.cxx
-    //        Ideally, it should possible possible to initialize both python environment
-    //        and python manager without having to instantiate qSlicerApplication.
-    app->corePythonManager()->mainContext(); // Initialize python
-#ifdef Q_WS_WIN
-    // HACK - Since on windows setting an environment variable using putenv doesn't propagate
-    // to the environment initialized in python, let's make sure 'os.environ' is updated.
-    app->updatePythonOsEnviron();
-#endif
-
     // Load EMSegment Python module(s)
     QString emsegmentModulePath = QString::fromStdString(
         vtkSlicerApplicationLogic::GetModuleSlicerXYLibDirectory(argv[0]));
