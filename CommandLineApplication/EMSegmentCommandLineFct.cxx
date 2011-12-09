@@ -627,7 +627,6 @@ void GenerateEmptyMRMLScene(const char* filename)
 {
   // create scene, logic, and add parameters to scene
   vtkMRMLScene* mrmlScene = vtkMRMLScene::New();
-  vtkMRMLScene::SetActiveScene(mrmlScene);
   mrmlScene->SetURL(filename);
 
   vtkEMSegmentLogic* emLogic             = vtkEMSegmentLogic::New();

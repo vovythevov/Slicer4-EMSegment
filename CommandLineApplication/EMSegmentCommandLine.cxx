@@ -169,7 +169,6 @@ int main(int argc, char** argv)
   // ================== MRMLScene  ==================
 
   vtkMRMLScene* mrmlScene = vtkMRMLScene::New();
-  vtkMRMLScene::SetActiveScene(mrmlScene);
 
   // We don't need to observe the scene in the applogic
   //appLogic->SetAndObserveMRMLScene(mrmlScene);

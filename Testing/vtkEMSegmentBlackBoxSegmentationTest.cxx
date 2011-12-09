@@ -67,7 +67,6 @@ int main(int argc, char** argv)
   //
   // create a mrml scene that will hold the data parameters
   vtkMRMLScene* mrmlScene = vtkMRMLScene::New();
-  vtkMRMLScene::SetActiveScene(mrmlScene);
   mrmlScene->SetRootDirectory(sceneRootDirectory.c_str());
   mrmlScene->SetURL(mrmlSceneFilename.c_str());
 

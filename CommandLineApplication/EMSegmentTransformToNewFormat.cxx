@@ -63,7 +63,6 @@ int main(int argc, char** argv)
     }
 
   vtkMRMLScene* mrmlScene = vtkMRMLScene::New();
-  vtkMRMLScene::SetActiveScene(mrmlScene);
   appLogic->SetAndObserveMRMLScene(mrmlScene);
   std::string appLogicTcl = vtksys::SystemTools::DuplicateString(slicerCommon->GetTclNameFromPointer(appLogic));
 

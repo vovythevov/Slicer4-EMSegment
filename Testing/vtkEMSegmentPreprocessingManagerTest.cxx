@@ -54,7 +54,6 @@ int main(int vtkNotUsed(argc), char** argv)
   //
   // create a mrml scene that will hold the data parameters
   vtkMRMLScene* mrmlScene = vtkMRMLScene::New();
-  vtkMRMLScene::SetActiveScene(mrmlScene);
   mrmlScene->SetURL(mrmlSceneFilename.c_str());
 
   //
