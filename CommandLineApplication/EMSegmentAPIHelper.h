@@ -109,14 +109,14 @@ std::string StripBackslashes(const std::string& s)
 vtkSlicerApplicationLogic* InitializeApplication(vtkSlicerCommonInterface *slicerCommon, int argc, char** argv)
 {
   // SLICER_HOME
-  cout << "Setting Slicer_HOME .. " << endl;
+  cout << "Setting "Slicer_HOME_ENVVAR_NAME" ..." << endl;
   vtkstd::string slicerHome = tgGetSLICER_HOME(argv);
   if(!slicerHome.size())
     {
       cout << "Error: Cannot find executable" << endl;
       return NULL;
     }
-  cout << "Slicer_HOME is " << slicerHome << endl;
+  cout << Slicer_HOME_ENVVAR_NAME" is " << slicerHome << endl;
 
   slicerCommon->PromptBeforeExitOff();
 
@@ -141,7 +141,7 @@ vtkSlicerApplicationLogic* InitializeApplication(vtkSlicerCommonInterface *slice
 
   // Make generic later 
   slicerCommon->EvaluateTcl("set ::env(KILIS_MODULE) KilisSandbox");
-  //std::string CMD = std::string("set ::env(SLICER_HOME) ") + slicerHome + "/..";
+  //std::string CMD = std::string("set ::env(" + Slicer_HOME_ENVVAR_NAME + ") ") + slicerHome + "/..";
   //slicerCommon->EvaluateTcl(CMD.c_str());
   std::string CMD = "";
   CMD = "set argv { "; 

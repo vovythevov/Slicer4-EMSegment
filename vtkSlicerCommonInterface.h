@@ -39,7 +39,7 @@
 
   //-----------------------------------------------------------------------------
 #else
-  #define Slicer_HOME_ENVVAR_NAME "Slicer_HOME"
+  #define Slicer_HOME_ENVVAR_NAME "SLICER_HOME"
 
   // Qt includes
   #include <QString>
