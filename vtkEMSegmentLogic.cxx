@@ -64,6 +64,7 @@
 #define VTK_CREATE(type, var) \
   vtkSmartPointer<type> var = vtkSmartPointer<type>::New()
 
+//----------------------------------------------------------------------------
 // A helper class to compare two maps
 template<class T>
 class MapCompare
@@ -184,8 +185,8 @@ vtkEMSegmentLogic::AddArchetypeScalarVolume(const char* filename, const char* vo
   return volNode;
 }
 
-char*
-vtkEMSegmentLogic::mktemp_file(const char* postfix)
+//----------------------------------------------------------------------------
+char* vtkEMSegmentLogic::mktemp_file(const char* postfix)
 {
   char *ptr = NULL;
   char filename[256];
@@ -220,8 +221,8 @@ vtkEMSegmentLogic::mktemp_file(const char* postfix)
   return this->GetCurrentTmpFileName();
 }
 
-char*
-vtkEMSegmentLogic::mktemp_dir()
+//----------------------------------------------------------------------------
+char* vtkEMSegmentLogic::mktemp_dir()
 {
   char *ptr;
   char filename[256];
@@ -3537,5 +3538,5 @@ std::string vtkEMSegmentLogic::GetPreprocessingTasks()
     }
 
   return tasksList;
-
 }
+
