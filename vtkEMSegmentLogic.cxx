@@ -167,7 +167,11 @@ vtkEMSegmentLogic::AddArchetypeScalarVolume(const char* filename, const char* vo
 
   VTK_CREATE(vtkSlicerVolumesLogic, volLogic);
   volLogic->SetMRMLScene(mrmlScene);
+#ifdef Slicer3_USE_KWWIDGETS
+  volLogic->SetApplicationLogic(appLogic);
+#else
   volLogic->SetMRMLApplicationLogic(appLogic);
+#endif
   vtkMRMLScalarVolumeNode* volNode = NULL;
   if (centered)
     {
