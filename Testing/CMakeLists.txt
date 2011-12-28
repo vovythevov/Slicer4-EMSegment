@@ -478,7 +478,7 @@ if(NOT DISABLE_CXX_TESTING)
     # Make sure the default parameter set has not changed
     set(test_name "EMSegMRML_DiffDefaultNodes")
     set(test_file_prefix "${EMSegment_TEST_DIR}/${test_name}_tmp")
-    if ("${Slicer_MAJOR_VERSION}" EQUAL "4")
+    if ("${Slicer_VERSION_MAJOR}" EQUAL "4")
       set(test_std_file "${EMSegment_SOURCE_DIR}/Testing/TestData/DefaultMRMLNodes_Slicer4.mrml")
     else()
       set(test_std_file "${EMSegment_SOURCE_DIR}/Testing/TestData/DefaultMRMLNodes.mrml")
