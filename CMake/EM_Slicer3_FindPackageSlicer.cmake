@@ -13,5 +13,10 @@ if(NOT Slicer3_SOURCE_DIR)
   slicer3_set_default_install_prefix_for_external_projects()
 endif()
 
+set(Slicer_VERSION_MAJOR ${Slicer3_VERSION_MAJOR})
+set(Slicer_VERSION_MINOR ${Slicer3_VERSION_MINOR})
+set(Slicer_VERSION_PATCH ${Slicer3_VERSION_PATCH})
+set(Slicer_VERSION "${Slicer_VERSION_MAJOR}.${Slicer_VERSION_MINOR}.${Slicer_VERSION_PATCH}")
+
 SET(EM_SHARE_DIR ${Slicer3_INSTALL_MODULES_SHARE_DIR})
 SET(EM_INSTALL_SHARE_DIR ${Slicer3_INSTALL_MODULES_SHARE_DIR})

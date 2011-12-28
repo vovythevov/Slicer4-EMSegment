@@ -32,7 +32,7 @@ set(CommandLineApplication_INCLUDE_DIRS
   )
 
 # --------------------------------------------------------------------------
-if("${Slicer3_VERSION_MAJOR}" EQUAL "3")
+if("${Slicer_VERSION_MAJOR}" EQUAL "3")
   list(APPEND CommandLineApplication_LIBRARIES
     EMSegment
     AtlasCreatorCxxModule
@@ -60,7 +60,7 @@ endif()
 
 set(CLP_MODULE EMSegmentCommandLine)
 
-if("${Slicer3_VERSION_MAJOR}" EQUAL "3")
+if("${Slicer_VERSION_MAJOR}" EQUAL "3")
 
   # Slicer3 version
   set(${CLP_MODULE}_SOURCE ${CLP_MODULE}.cxx )
@@ -93,7 +93,7 @@ endif()
 
 set(CLP_MODULE EMSegmentTclInterpreter)
 
-if("${Slicer3_VERSION_MAJOR}" EQUAL "3")
+if("${Slicer_VERSION_MAJOR}" EQUAL "3")
 
   set(${CLP_MODULE}_SOURCE ${CLP_MODULE}.cxx )
   generateclp( ${CLP_MODULE}_SOURCE  ${CLP_MODULE}.xml)
@@ -126,7 +126,7 @@ endif()
 
 set(CLP_MODULE EMSegmentTransformToNewFormat)
 
-if("${Slicer3_VERSION_MAJOR}" EQUAL "3")
+if("${Slicer_VERSION_MAJOR}" EQUAL "3")
 
   set(${CLP_MODULE}_SOURCE ${CLP_MODULE}.cxx )
   generateclp( ${CLP_MODULE}_SOURCE  ${CLP_MODULE}.xml)

@@ -21,7 +21,7 @@ set(TEST_INCLUDE_DIRS
   )
 
 # --------------------------------------------------------------------------
-if("${Slicer3_VERSION_MAJOR}" EQUAL "3")
+if("${Slicer_VERSION_MAJOR}" EQUAL "3")
   list(APPEND TEST_LINK_LIBRARIES EMSegment)
   list(APPEND TEST_INCLUDE_DIRS
     ${Slicer3_Libs_INCLUDE_DIRS}
@@ -159,7 +159,7 @@ if(NOT DISABLE_CXX_TESTING)
   # launcher is needed to set up shared library paths correctly.
   ############################################################################
   set(Slicer_LAUNCHER_ADDITIONAL_ARGS)
-  if("${Slicer3_VERSION_MAJOR}" EQUAL "3")
+  if("${Slicer_VERSION_MAJOR}" EQUAL "3")
     set(Slicer_LAUNCHER_EXECUTABLE ${Slicer3_BINARY_DIR}/Slicer3)
     set(Slicer_LAUNCH_COMMAND ${Slicer_LAUNCHER_EXECUTABLE} --launch)
     set(Slicer_LAUNCHER_ADDITIONAL_ARGS --no-error-popup)
@@ -495,7 +495,7 @@ if(NOT DISABLE_CXX_TESTING)
     # Test that the mrml readers/writers work.
     set(test_name "EMSegMRML_DiffReadWriteNodes")
     set(test_file_prefix "${EMSegment_TEST_DIR}/${test_name}_tmp")
-    if("${Slicer_MAJOR_VERSION}" EQUAL "4")
+    if("${Slicer_VERSION_MAJOR}" EQUAL "4")
       set(test_std_file "${EMSegment_TUTORIAL_DIR}/Template_Slicer4_small_normalizationOn_noImages.mrml")
     else()
       set(test_std_file "${EMSegment_TUTORIAL_DIR}/Template_small_normalizationOn_noImages.mrml")
@@ -818,7 +818,7 @@ if(NOT DISABLE_CXX_TESTING)
     endif(EMSEG_RUN_COMPARE_TESTS)
 
 
-    if("${Slicer3_VERSION_MAJOR}" EQUAL "3")
+    if("${Slicer_VERSION_MAJOR}" EQUAL "3")
     # Task Test-Atlas-Cluster, only for Slicer3
     add_test(NAME EMSegCL_Task_TestAtlasCluster_${registrationpackage}_${size}
       COMMAND ${Slicer_LAUNCH_COMMAND} $<TARGET_FILE:EMSegmentCommandLine>

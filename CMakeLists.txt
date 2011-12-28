@@ -26,7 +26,7 @@ endif()
 include(CMake/EM_BaseSources.cmake)
 
 # --------------------------------------------------------------------------
-if("${Slicer3_VERSION_MAJOR}" EQUAL "3")
+if("${Slicer_VERSION_MAJOR}" EQUAL "3")
   include(CMake/EM_Slicer3_IncludeSlicerPython.cmake)
   include(CMake/EM_Slicer3_GenerateConfigureFile.cmake)
 endif()
@@ -35,7 +35,7 @@ endif()
 ADD_SUBDIRECTORY(CommandLineApplication)
 
 # --------------------------------------------------------------------------
-if("${Slicer3_VERSION_MAJOR}" EQUAL "3")
+if("${Slicer_VERSION_MAJOR}" EQUAL "3")
   add_subdirectory(KWWidgets)
 else()
   add_subdirectory(Qt)
@@ -64,6 +64,6 @@ install(DIRECTORY
   )
 
 # --------------------------------------------------------------------------
-if("${Slicer_MAJOR_VERSION}" EQUAL "4")
+if("${Slicer_VERSION_MAJOR}" EQUAL "4")
   include(CMake/EM_Slicer4_GenerateExtensionFile.cmake)
 endif()
