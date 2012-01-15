@@ -548,7 +548,7 @@ if(NOT DISABLE_CXX_TESTING)
 
     foreach(scalartype ${scalartypes})
 
-      # Task test - scalartypes - registrationpackages
+      # Task test - scalartypes - registrationpackages - midas_add adds two test one with fetch and one without  
       midas_add_test(NAME EMSegCL_Task_${registrationpackage}_MRIHumanBrain_scalartype_${scalartype}_${size}
         COMMAND ${Slicer_LAUNCH_COMMAND} $<TARGET_FILE:EMSegmentCommandLine>
         ${Slicer_LAUNCHER_ADDITIONAL_ARGS}
@@ -586,7 +586,7 @@ if(NOT DISABLE_CXX_TESTING)
 
     foreach(registrationpackage ${registrationpackages})
 
-    # Task MRI-Human-Brain
+    # Task MRI-Human-Brain without Midas
     add_test(
       NAME EMSegCL_Task_MRIHumanBrain_${registrationpackage}_${size}
       COMMAND ${Slicer_LAUNCH_COMMAND} $<TARGET_FILE:EMSegmentCommandLine>
@@ -707,29 +707,33 @@ if(NOT DISABLE_CXX_TESTING)
 
 
     # Task MRI-Human-Brain-Exp
-    add_test(
-      NAME EMSegCL_Task_MRIHumanBrainExp_${registrationpackage}_${size}
-      COMMAND ${Slicer_LAUNCH_COMMAND} $<TARGET_FILE:EMSegmentCommandLine>
-      ${Slicer_LAUNCHER_ADDITIONAL_ARGS}
-      --verbose --mrmlSceneFileName
-      ${EMSegment_SOURCE_DIR}/Tasks/MRI-Human-Brain-Exp.mrml
-      --targetVolumeFileNames
-      ${EMSegment_TESTDATA_DIR}/MRI-Human-Brain/${size}_MRIHumanBrain_T1_aligned.nrrd
-      --resultVolumeFileName
-      ${EMSegment_BINARY_DIR}/RESULT_${registrationpackage}_${size}_MRIHumanBrainExp_T1_aligned.nrrd
-      --taskPreProcessingSetting
-      ":C1:C0:C1"
-      --registrationPackage
-      ${registrationpackage}
-      --atlasVolumeFileNames
-      ${EMSegment_TESTDATA_DIR}/MRI-Human-Brain/${size}_atlas_skulneck.nrrd,${EMSegment_TESTDATA_DIR}/MRI-Human-Brain/${size}_atlas_air.nrrd,${EMSegment_TESTDATA_DIR}/MRI-Human-Brain/${size}_atlas_csf.nrrd,${EMSegment_TESTDATA_DIR}/MRI-Human-Brain/${size}_atlas_greymatter.nrrd,${EMSegment_TESTDATA_DIR}/MRI-Human-Brain/${size}_atlas_whitematter.nrrd,${EMSegment_TESTDATA_DIR}/MRI-Human-Brain/${size}_atlas_t1_stripped.nrrd
-      )
-    set_tests_properties(
-      EMSegCL_Task_MRIHumanBrainExp_${registrationpackage}_${size}
-      PROPERTIES
-      FAIL_REGULAR_EXPRESSION
-      "ERROR"
-      )
+     add_test(
+       NAME EMSegCL_Task_MRIHumanBrainExp_${registrationpackage}_${size}
+       COMMAND ${Slicer_LAUNCH_COMMAND} $<TARGET_FILE:EMSegmentCommandLine>
+       ${Slicer_LAUNCHER_ADDITIONAL_ARGS}
+       --verbose --mrmlSceneFileName
+       ${EMSegment_SOURCE_DIR}/Tasks/MRI-Human-Brain-Exp.mrml
+       --targetVolumeFileNames
+       ${EMSegment_TESTDATA_DIR}/MRI-Human-Brain/${size}_MRIHumanBrain_T1_aligned.nrrd
+       --resultVolumeFileName
+       ${EMSegment_BINARY_DIR}/RESULT_${registrationpackage}_${size}_MRIHumanBrainExp_T1_aligned.nrrd
+       --taskPreProcessingSetting
+       ":C1:C0:C1"
+       --registrationPackage
+       ${registrationpackage}
+       --registrationAffineType
+       -1
+       --registrationDeformableType
+       -1
+       --atlasVolumeFileNames
+       ${EMSegment_TESTDATA_DIR}/MRI-Human-Brain/${size}_atlas_skulneck.nrrd,${EMSegment_TESTDATA_DIR}/MRI-Human-Brain/${size}_atlas_air.nrrd,${EMSegment_TESTDATA_DIR}/MRI-Human-Brain/${size}_atlas_csf.nrrd,${EMSegment_TESTDATA_DIR}/MRI-Human-Brain/${size}_atlas_greymatter.nrrd,${EMSegment_TESTDATA_DIR}/MRI-Human-Brain/${size}_atlas_whitematter.nrrd,${EMSegment_TESTDATA_DIR}/MRI-Human-Brain/${size}_atlas_t1_stripped.nrrd
+       )
+     set_tests_properties(
+       EMSegCL_Task_MRIHumanBrainExp_${registrationpackage}_${size}
+       PROPERTIES
+       FAIL_REGULAR_EXPRESSION
+       "ERROR"
+       )
     if(EMSEG_RUN_COMPARE_TESTS)
       midas_add_test(
         NAME EMSegCL_Task_MRIHumanBrainExp_${registrationpackage}_${size}_CompareTest
