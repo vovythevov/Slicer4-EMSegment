@@ -173,23 +173,23 @@ public:
 
   vtkSlicerCommonInterface* GetSlicerCommonInterface();
   virtual int SourceTclFile(const char *tclFile);
-  const char* GetTemporaryDirectory();
+
   const char* GetPluginsDirectory();
 
   //
   // SLICER COMMON INTERFACE ENDS HERE
   //
-
-
   virtual int SourceTaskFiles();
+
   virtual int SourcePreprocessingTclFiles();
   int ComputeIntensityDistributionsFromSpatialPrior();
 
   const char* DefineTclTaskFileFromMRML();
+  const char* DefineTclFullPathName(const char* TclFileName);
+
 
   //BTX
   vtkstd::string GetTclTaskDirectory();
-  std::string DefineTclTaskFullPathName(const char* TclFileName);
   void CreateDefaultTasksList(std::vector<std::string> & DefaultTasksName, 
                               std::vector<std::string> & DefaultTasksFile, 
                               std::vector<std::string> & DefinePreprocessingTasksName, 
@@ -204,6 +204,7 @@ public:
 
   void WriteImage(vtkImageData* file, const char* filename);
 
+
 #ifdef Slicer3_USE_KWWIDGETS
   // we do not want to wrap this function in Slicer3
   // it is only used in Slicer4
@@ -212,9 +213,12 @@ public:
 #endif
 std::string GetTasks();
 std::string GetPreprocessingTasks();
+
 #ifdef Slicer3_USE_KWWIDGETS
   //ETX
 #endif
+
+  int GetSlicerVersion();
 
 protected:
 
@@ -225,6 +229,9 @@ protected:
 
   static void
       ComposeGridTransform(vtkGridTransform* inGrid, vtkMatrix4x4* preMultiply, vtkMatrix4x4* postMultiply, vtkGridTransform* outGrid);
+
+  // Just provide tcl file name and correct directory will be added 
+  virtual int SourceFileInTaskDirectory(const char *tclFile);
 
   // Description:
   // Convenience method for determining if two volumes have same geometry
@@ -263,6 +270,10 @@ protected:
   vtkSetMacro(ProgressCurrentFractionCompleted, double)
   ;
 
+  const char* GetTemporaryDirectory();
+
+  bool CreateIntermediateDirectory(); 
+
   // 
   int
       ActiveMeanField(vtkImageEMLocalSegmenter* segmenter, vtkImageData* result);
@@ -288,6 +299,7 @@ protected:
   //ETX
   vtkEMSegmentLogic();
   ~vtkEMSegmentLogic();
+
 
 private:
   vtkEMSegmentLogic(const vtkEMSegmentLogic&);

@@ -73,6 +73,9 @@ public:
   static vtkSlicerCommonInterface *New();
   vtkTypeMacro(vtkSlicerCommonInterface, vtkObject);
 
+
+  const char* GetTemporaryDirectory();
+
 //BTX
   Tcl_Interp* Startup(int& argc, char *argv[], ostream* err = 0);
 
@@ -85,7 +88,6 @@ public:
   void InitializePythonViaTcl(Tcl_Interp* interp, int argc, char **argv);
   void EvaluatePython(const char* command);
 
-  const char* GetTemporaryDirectory();
   const char* GetBinDirectory();
   const char* GetPluginsDirectory();
   const char* GetRepositoryRevision();

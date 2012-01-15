@@ -2233,43 +2233,48 @@ int vtkEMSegmentLogic::StartSegmentationWithoutPreprocessingAndSaving()
 }
 
 //----------------------------------------------------------------------------
-bool vtkEMSegmentLogic::SaveIntermediateResults(vtkSlicerApplicationLogic *appLogic)
+bool vtkEMSegmentLogic::CreateIntermediateDirectory() 
 {
-  //
-  // get output directory
-  std::string
-      outputDirectory(this->GetMRMLManager()->GetSaveWorkingDirectory());
-
-  if (!vtksys::SystemTools::FileExists(outputDirectory.c_str()))
+  std::string outputDirectory(this->GetMRMLManager()->GetSaveWorkingDirectory());
+  if (vtksys::SystemTools::FileExists(outputDirectory.c_str()))
     {
-    // try to create directory
-    bool createdOK = true;
-    createdOK = vtksys::SystemTools::MakeDirectory(outputDirectory.c_str());
-    if (!createdOK)
-      {
+      // Directory already exists - nothing to do 
+      return true;
+    }
+
+  // try to create directory
+  bool createdOK = vtksys::SystemTools::MakeDirectory(outputDirectory.c_str());
+  if (!createdOK)
+    {
       std::string msg = "SaveIntermediateResults: could not create "
           + outputDirectory + "!";
       ErrorMsg += msg + "\n";
       vtkErrorMacro(<< msg);
       return false;
-      }
     }
-
   // check again whether or not directory exists
   if (!vtksys::SystemTools::FileExists(outputDirectory.c_str()))
     {
-    std::string msg = "SaveIntermediateResults: Directory " + outputDirectory
+      std::string msg = "SaveIntermediateResults: Directory " + outputDirectory
         + " does not exist !";
-    ErrorMsg += msg + "\n";
-    vtkErrorMacro(<< msg);
-    return false;
+      ErrorMsg += msg + "\n";
+      vtkErrorMacro(<< msg);
+      return false;
     }
+  return true;
+}
 
+
+//----------------------------------------------------------------------------
+bool vtkEMSegmentLogic::SaveIntermediateResults(vtkSlicerApplicationLogic *appLogic)
+{
+  if (!this->CreateIntermediateDirectory())
+    {
+      return false;
+    }
   //
   // package EMSeg-related parameters together and write them to disk
-  bool writeSuccessful = this->PackageAndWriteData(appLogic,
-      outputDirectory.c_str());
-
+                  bool writeSuccessful = this->PackageAndWriteData(appLogic,this->GetMRMLManager()->GetSaveWorkingDirectory());
   return writeSuccessful;
 }
 
@@ -2332,8 +2337,7 @@ vtkstd::string vtkEMSegmentLogic::GetTemporaryTaskDirectory()
   // FIXME, what happens if user has no write permission to this directory
   std::string taskDir("");
 
-  const char* tmpDir =
-      this->GetSlicerCommonInterface()->GetTemporaryDirectory();
+  const char* tmpDir = this->GetSlicerCommonInterface()->GetTemporaryDirectory();
 
   const char* svn_revision =
       this->GetSlicerCommonInterface()->GetRepositoryRevision();
@@ -2375,7 +2379,7 @@ int vtkEMSegmentLogic::UpdateTasks()
     //
     // the Slicer temporary directory
     const char* tmpDir =
-        this->GetSlicerCommonInterface()->GetTemporaryDirectory();
+        this->GetSlicerCommonInterface()->GetTemporaryDirectory(); 
 
     if (!tmpDir)
       {
@@ -2778,13 +2782,33 @@ int vtkEMSegmentLogic::StartSegmentationWithoutPreprocessing(vtkSlicerApplicatio
 
 int vtkEMSegmentLogic::SourceTclFile(const char *tclFile)
 {
+  
   return this->GetSlicerCommonInterface()->SourceTclFile(tclFile);
+}
+
+//----------------------------------------------------------------------------
+// It works under Slicer 3 but not under Slicer 4 for the Tcl Interpreter (when running in Generic.tcl)
+int vtkEMSegmentLogic::SourceFileInTaskDirectory(const char *tclFile)
+{
+  vtksys_stl::string file(this->DefineTclFullPathName(tclFile));
+  return this->SourceTclFile(file.c_str());
 }
 
 //----------------------------------------------------------------------------
 const char* vtkEMSegmentLogic::GetTemporaryDirectory()
 {
-  return this->GetSlicerCommonInterface()->GetTemporaryDirectory();
+  if (!this->GetMRMLManager()->GetSaveWorkingDirectory())
+    {
+       return this->GetSlicerCommonInterface()->GetTemporaryDirectory(); 
+    } 
+
+  if ( strcmp(this->GetMRMLManager()->GetSaveWorkingDirectory(),"") && strcmp(this->GetMRMLManager()->GetSaveWorkingDirectory(),"NULL") 
+       && this->CreateIntermediateDirectory()  )
+    {
+      return this->GetMRMLManager()->GetSaveWorkingDirectory();
+    }
+
+  return this->GetSlicerCommonInterface()->GetTemporaryDirectory(); 
 }
 
 //----------------------------------------------------------------------------
@@ -2798,7 +2822,7 @@ vtkstd::string vtkEMSegmentLogic::GetTclTaskDirectory()
 {
   //workaround for the mrml library, we need to have write access to this folder
   const char* tmp_dir =
-      this->GetSlicerCommonInterface()->GetTemporaryDirectory();
+    this->GetSlicerCommonInterface()->GetTemporaryDirectory();
 
   if (tmp_dir)
     {
@@ -2843,16 +2867,16 @@ vtkstd::string vtkEMSegmentLogic::GetTclTaskDirectory()
 //----------------------------------------------------------------------------
 int vtkEMSegmentLogic::SourceTaskFiles()
 {
-  vtkstd::string generalFile = this->DefineTclTaskFullPathName(
+  vtkstd::string generalFile = this->DefineTclFullPathName(
       vtkMRMLEMSGlobalParametersNode::GetDefaultTaskTclFileName());
-  vtkstd::string specificFile = this->DefineTclTaskFileFromMRML();
-  cout << "Sourcing general Task file : " << generalFile.c_str() << endl;
+  cout << "Sourcing task general file: " << generalFile.c_str() << endl;
   // Have to first source the default file to set up the basic structure"
   if (this->SourceTclFile(generalFile.c_str()))
     {
     return 1;
     }
   // Now we overwrite anything from the default
+  vtkstd::string specificFile = this->DefineTclTaskFileFromMRML();
   if (specificFile.compare(generalFile))
     {
     cout << "Sourcing task specific file: " << specificFile << endl;
@@ -2884,8 +2908,7 @@ int vtkEMSegmentLogic::SourcePreprocessingTclFiles()
 const char* vtkEMSegmentLogic::DefineTclTaskFileFromMRML()
 {
   std::string tclFile("");
-  this->StringHolder = this->DefineTclTaskFullPathName(
-                                                       this->GetMRMLManager()->GetTclTaskFilename());
+  this->StringHolder = this->DefineTclFullPathName(this->GetMRMLManager()->GetTclTaskFilename());
 
   if (!vtksys::SystemTools::FileExists(this->StringHolder.c_str())
       || vtksys::SystemTools::FileIsDirectory(this->StringHolder.c_str()))
@@ -2894,7 +2917,7 @@ const char* vtkEMSegmentLogic::DefineTclTaskFileFromMRML()
       cout << "vtkEMSegmentTclConnector::DefineTclTaskFileFromMRML: "
            << this->StringHolder.c_str() << " does not exist - using default file" << endl;
 
-      this->StringHolder = this->DefineTclTaskFullPathName(
+      this->StringHolder = this->DefineTclFullPathName(
            vtkMRMLEMSGlobalParametersNode::GetDefaultTaskTclFileName());
     }
   return this->StringHolder.c_str();
@@ -3026,29 +3049,25 @@ void vtkEMSegmentLogic::UpdateIntensityDistributionAuto(vtkIdType nodeID)
 }
 
 //----------------------------------------------------------------------------
-std::string vtkEMSegmentLogic::DefineTclTaskFullPathName(const char* TclFileName)
+const char* vtkEMSegmentLogic::DefineTclFullPathName(const char* TclFileName)
 {
-  //  std::string task_dir = this->GetTclTaskDirectory(app);
-  //  cout << "TEST 1" << task_dir << " " << vtksys::SystemTools::FileExists(task_dir.c_str()) << endl;
-  vtkstd::string tmp_full_file_path = this->GetTclTaskDirectory()
-      + vtkstd::string("/") + vtkstd::string(TclFileName);
+
+  this->StringHolder = this->GetTclTaskDirectory() + vtkstd::string("/") + vtkstd::string(TclFileName);
   //  vtkstd::string full_file_path = vtksys::SystemTools::ConvertToOutputPath(tmp_full_file_path.c_str());
-  if (vtksys::SystemTools::FileExists(tmp_full_file_path.c_str()))
+  if (vtksys::SystemTools::FileExists(this->StringHolder.c_str()))
     {
-    return tmp_full_file_path;
+    return this->StringHolder.c_str();
     }
 
-  tmp_full_file_path = this->GetTemporaryTaskDirectory() + vtkstd::string("/")
-      + vtkstd::string(TclFileName);
-  //  full_file_path = vtksys::SystemTools::ConvertToOutputPath(tmp_full_file_path.c_str());
-  if (vtksys::SystemTools::FileExists(tmp_full_file_path.c_str()))
+  this->StringHolder = this->GetTemporaryTaskDirectory() + vtkstd::string("/") + vtkstd::string(TclFileName);
+  if (vtksys::SystemTools::FileExists(this->StringHolder.c_str()))
     {
-    return tmp_full_file_path;
+    return this->StringHolder.c_str();
     }
 
-  vtkErrorMacro("DefineTclTaskFullPathName : could not find tcl file with name  " << TclFileName );
-  tmp_full_file_path = vtkstd::string("");
-  return tmp_full_file_path;
+  vtkErrorMacro("DefineTclFullPathName : could not find tcl file with name  " << TclFileName );
+  this->StringHolder = vtkstd::string("");
+  return this->StringHolder.c_str();
 }
 
 //-----------------------------------------------------------------------------
@@ -3540,3 +3559,11 @@ std::string vtkEMSegmentLogic::GetPreprocessingTasks()
   return tasksList;
 }
 
+int vtkEMSegmentLogic::GetSlicerVersion()
+{ 
+#ifdef Slicer3_USE_KWWIDGETS
+  return 3;
+#else 
+  return 4;
+#endif
+}

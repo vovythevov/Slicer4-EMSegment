@@ -456,7 +456,7 @@ void vtkEMSegmentParametersSetStep::SelectedParameterSetChangedCallback(int inde
     anat_step->GetAnatomicalStructureTree()->GetWidget()->DeleteAllNodes();
     }
 
-  std::string tclFileName = this->GetGUI()->GetLogic()->DefineTclTaskFullPathName(mrmlManager->GetTclTaskFilename());
+  std::string tclFileName = this->GetGUI()->GetLogic()->DefineTclFullPathName(mrmlManager->GetTclTaskFilename());
 
   this->SourceTclFile(tclFileName.c_str());
   if (flag && (!this->SettingSegmentationMode(0)))

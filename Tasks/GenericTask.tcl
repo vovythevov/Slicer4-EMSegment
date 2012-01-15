@@ -413,15 +413,16 @@ namespace eval EMSegmenterPreProcessingTcl {
             return 1
         }
 
-        source "[$LOGIC GetTemporaryDirectory]/EMSegmentTaskCopy/Registration_BRAINS.tcl"
-
+        #  This does not work under Slicer 4 $LOGIC SourceFileInTaskDirectory Registration_BRAINS.tcl
+        source "[$LOGIC DefineTclFullPathName Registration_BRAINS.tcl]" 
+       
         set selectedRegistrationPackage ""
         switch -exact "$preferredRegistrationPackage" {
             "BRAINS" {
                 set selectedRegistrationPackage "BRAINS"
             }
             "CMTK" {
-                source "[$LOGIC GetTemporaryDirectory]/EMSegmentTaskCopy/Registration_CMTK.tcl"
+                source "[$LOGIC DefineTclFullPathName Registration_CMTK.tcl]"
                 set REGISTRATION_PACKAGE_FOLDER [Get_CMTK_Installation_Path]
                 if { $REGISTRATION_PACKAGE_FOLDER != "" } {
                     $LOGIC PrintText "TCL: Found CMTK in $REGISTRATION_PACKAGE_FOLDER"
@@ -432,7 +433,7 @@ namespace eval EMSegmenterPreProcessingTcl {
                 }
             }
             "PLASTIMATCH" {
-                source "[$LOGIC GetTemporaryDirectory]/EMSegmentTaskCopy/Registration_plastimatch.tcl"
+                source "[$LOGIC DefineTclFullPathName Registration_plastimatch.tcl]"
                 set REGISTRATION_PACKAGE_FOLDER [Get_Installation_Path "plastimatch-slicer" "plastimatch_slicer_bspline"]
                 if { $REGISTRATION_PACKAGE_FOLDER != "" } {
                     $LOGIC PrintText "TCL: Found PLASTIMATCH in $REGISTRATION_PACKAGE_FOLDER"
@@ -443,7 +444,7 @@ namespace eval EMSegmenterPreProcessingTcl {
                 }
             }
             "DEMONS" {
-                source "[$LOGIC GetTemporaryDirectory]/EMSegmentTaskCopy/Registration_DEMONS.tcl"
+                source "[$LOGIC DefineTclFullPathName Registration_DEMONS.tcl]"
                 set REGISTRATION_PACKAGE_FOLDER [Get_DEMONS_Installation_Path]
                 if { $REGISTRATION_PACKAGE_FOLDER != "" } {
                     $LOGIC PrintText "TCL: Found DEMONS in $REGISTRATION_PACKAGE_FOLDER"
@@ -454,7 +455,7 @@ namespace eval EMSegmenterPreProcessingTcl {
                 }
             }
             "DRAMMS" {
-                source "[$LOGIC GetTemporaryDirectory]/EMSegmentTaskCopy/Registration_DRAMMS.tcl"
+                source "[$LOGIC DefineTclFullPathName Registration_DRAMMS.tcl]"
                 set REGISTRATION_PACKAGE_FOLDER [Get_DRAMMS_Installation_Path]
                 if { $REGISTRATION_PACKAGE_FOLDER != "" } {
                     $LOGIC PrintText "TCL: Found DRAMMS in $REGISTRATION_PACKAGE_FOLDER"
@@ -465,7 +466,7 @@ namespace eval EMSegmenterPreProcessingTcl {
                 }
             }
             "ANTS" {
-                source "[$LOGIC GetTemporaryDirectory]/EMSegmentTaskCopy/Registration_ANTS.tcl"
+        source "[$LOGIC DefineTclFullPathName Registration_ANTS.tcl]"
                 set REGISTRATION_PACKAGE_FOLDER [Get_ANTS_Installation_Path]
                 if { $REGISTRATION_PACKAGE_FOLDER != "" } {
                     $LOGIC PrintText "TCL: Found ANTS in $REGISTRATION_PACKAGE_FOLDER"
@@ -996,8 +997,22 @@ namespace eval EMSegmenterPreProcessingTcl {
 
                 set CMD "$CMD --useRigid --useScaleSkewVersor3D --useAffine"
                 set CMD "$CMD --initializeTransformMode useCenterOfHeadAlign"
-                set CMD "$CMD --numberOfIterations 1500"
-                set CMD "$CMD --numberOfSamples 300000"
+
+                set deformableType [ $mrmlManager GetRegistrationDeformableType ]
+                if { $deformableType == [$mrmlManager GetRegistrationTypeFromString RegistrationTest] } {
+                      set CMD "$CMD --numberOfIterations 3    --numberOfSamples 100"
+                } elseif { $deformableType == [$mrmlManager GetRegistrationTypeFromString RegistrationFast] } {
+                      set CMD "$CMD --numberOfIterations 500  --numberOfSamples 30000"
+                } elseif { $deformableType == [$mrmlManager GetRegistrationTypeFromString RegistrationSlow] } {
+                      set CMD "$CMD --numberOfIterations 1500 --numberOfSamples 300000"
+                } elseif { $deformableType } {
+                     # if it is 0 then equals off 
+                     PrintError "BRAINSRegistration: Unknown deformableType: $deformableType"
+                     return ""
+                }
+
+                # set CMD "$CMD --numberOfIterations 1500"
+                # set CMD "$CMD --numberOfSamples 300000"
                 set CMD "$CMD --minimumStepLength 0.005"
                 set CMD "$CMD --translationScale 1000"
                 set CMD "$CMD --reproportionScale 1"
@@ -1033,7 +1048,13 @@ namespace eval EMSegmenterPreProcessingTcl {
                 set CMD "$CMD -m $movingVolumeFileName"
                 set CMD "$CMD --initializeWithTransform $linearTransformFileName"
                 set CMD "$CMD --outputVolume $nonlinearOutputVolumeFileName"
-                set CMD "$CMD --outputDeformationFieldVolume $deformationfield"
+                if {[$LOGIC GetSlicerVersion] == 3  } {
+                  # ITK 3
+                  set CMD "$CMD --outputDeformationFieldVolume $deformationfield"
+        } else {
+                  # ITK 4 
+                  set CMD "$CMD --outputDisplacementFieldPrefix $deformationfield"
+        }
 
                 set CMD "$CMD -i 500,250,125,60,30 -n 5 -e --numberOfMatchPoints 16 --numberOfHistogramBins 1024"
                 # fast - for debugging
