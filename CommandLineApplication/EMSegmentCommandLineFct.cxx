@@ -69,8 +69,8 @@ AddNewScalarArchetypeVolume(vtkMRMLScene* mrmlScene,
     }
 
   // add nodes to scene
-  mrmlScene->AddNodeNoNotify(storageNode);
-  mrmlScene->AddNodeNoNotify(volumeNode);
+  mrmlScene->AddNode(storageNode);
+  mrmlScene->AddNode(volumeNode);
 
   volumeNode->SetAndObserveStorageNodeID(storageNode->GetID());
 
@@ -234,7 +234,7 @@ int DefineTargetVolume ( int useDefaultTarget,  std::vector<std::string>  target
 
       // create target node
       vtkMRMLEMSVolumeCollectionNode* targetNode = vtkMRMLEMSVolumeCollectionNode::New();
-      mrmlScene->AddNodeNoNotify(targetNode);
+      mrmlScene->AddNode(targetNode);
 
       // remove default target node
       mrmlScene->RemoveNode(emMRMLManager->GetTargetInputNode());

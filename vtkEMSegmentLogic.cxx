@@ -1497,7 +1497,7 @@ void vtkEMSegmentLogic::CreatePackageFilenames(vtkMRMLScene* scene, const char* 
         {
         // create a new storage node for this volume
         volumeStorageNode = vtkMRMLVolumeArchetypeStorageNode::New();
-        scene->AddNodeNoNotify(volumeStorageNode);
+        scene->AddNode(volumeStorageNode);
         volumeNode->SetAndObserveStorageNodeID(volumeStorageNode->GetID());
         std::cout << "Added storage node : " << volumeStorageNode->GetID()
             << std::endl;
@@ -1545,7 +1545,7 @@ void vtkEMSegmentLogic::CreatePackageFilenames(vtkMRMLScene* scene, const char* 
           {
           // create a new storage node for this volume
           volumeStorageNode = vtkMRMLVolumeArchetypeStorageNode::New();
-          scene->AddNodeNoNotify(volumeStorageNode);
+          scene->AddNode(volumeStorageNode);
           volumeNode->SetAndObserveStorageNodeID(volumeStorageNode->GetID());
           std::cout << "Added storage node : " << volumeStorageNode->GetID()
               << std::endl;
@@ -1591,7 +1591,7 @@ void vtkEMSegmentLogic::CreatePackageFilenames(vtkMRMLScene* scene, const char* 
           {
           // create a new storage node for this volume
           volumeStorageNode = vtkMRMLVolumeArchetypeStorageNode::New();
-          scene->AddNodeNoNotify(volumeStorageNode);
+          scene->AddNode(volumeStorageNode);
           volumeNode->SetAndObserveStorageNodeID(volumeStorageNode->GetID());
           std::cout << "Added storage node : " << volumeStorageNode->GetID()
               << std::endl;
@@ -1642,7 +1642,7 @@ void vtkEMSegmentLogic::CreatePackageFilenames(vtkMRMLScene* scene, const char* 
           {
           // create a new storage node for this volume
           volumeStorageNode = vtkMRMLVolumeArchetypeStorageNode::New();
-          scene->AddNodeNoNotify(volumeStorageNode);
+          scene->AddNode(volumeStorageNode);
           volumeNode->SetAndObserveStorageNodeID(volumeStorageNode->GetID());
           std::cout << "Added storage node : " << volumeStorageNode->GetID()
               << std::endl;
@@ -1688,7 +1688,7 @@ void vtkEMSegmentLogic::CreatePackageFilenames(vtkMRMLScene* scene, const char* 
           {
           // create a new storage node for this volume
           volumeStorageNode = vtkMRMLVolumeArchetypeStorageNode::New();
-          scene->AddNodeNoNotify(volumeStorageNode);
+          scene->AddNode(volumeStorageNode);
           volumeNode->SetAndObserveStorageNodeID(volumeStorageNode->GetID());
           std::cout << "Added storage node : " << volumeStorageNode->GetID()
               << std::endl;
