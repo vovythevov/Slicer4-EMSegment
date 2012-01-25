@@ -130,9 +130,9 @@ QIcon qSlicerEMSegmentModule::icon() const
 }
 
 //-----------------------------------------------------------------------------
-QString qSlicerEMSegmentModule::category()const
+QStringList qSlicerEMSegmentModule::categories()const
 {
-  return QLatin1String("Segmentation");
+  return QStringList() << QLatin1String("Segmentation");
 }
 
 //-----------------------------------------------------------------------------

@@ -52,7 +52,7 @@ public:
   /// Return the icon of the EMSegment module.
   virtual QIcon icon()const;
 
-  virtual QString category()const;
+  virtual QStringList categories()const;
 
   virtual QString contributor()const;
 

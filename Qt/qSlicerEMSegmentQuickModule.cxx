@@ -147,9 +147,9 @@ QIcon qSlicerEMSegmentQuickModule::icon() const
 }
 
 //-----------------------------------------------------------------------------
-QString qSlicerEMSegmentQuickModule::category()const
+QStringList qSlicerEMSegmentQuickModule::categories()const
 {
-  return QLatin1String("Segmentation");
+  return QStringList() << QLatin1String("Segmentation");
 }
 
 //-----------------------------------------------------------------------------
