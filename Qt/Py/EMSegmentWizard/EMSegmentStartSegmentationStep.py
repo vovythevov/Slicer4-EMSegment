@@ -51,15 +51,19 @@ class EMSegmentStartSegmentationStep( EMSegmentStep ) :
     self.logic().CreateOutputVolumeNode()
 
     # notify user
-    message = qt.QMessageBox( qt.QMessageBox.NoIcon, "Please wait", "Please wait while the segmentation runs..", qt.QMessageBox.Ignore )
-    message.setModal( False )
-    message.show()
+    # qt.QMessageBox( qt.QMessageBox.NoIcon, "Please wait", "Please wait while the segmentation runs..", qt.QMessageBox.Ignore )
+    dialog = qt.QMessageBox()
+    dialog.setWindowTitle("Please wait")
+    dialog.setText("Please wait while the segmentation runs..")
+    dialog.setModal( False )
+    dialog.show()
+
     slicer.app.processEvents()
 
     # start the segmentation
     returnValue = self.logic().StartSegmentationWithoutPreprocessing( slicer.app.applicationLogic() )
 
-    message.hide()
+    dialog.hide()
     slicer.app.processEvents()
 
     if returnValue != 0:

@@ -127,16 +127,20 @@ class EMSegmentDefinePreprocessingStep( EMSegmentStep ) :
     '''
     '''
     # notify user
-    message = qt.QMessageBox( qt.QMessageBox.NoIcon, "Please wait", "Please wait while pre-processing runs..", qt.QMessageBox.Ignore )
-    message.setModal( False )
-    message.show()
+    # message = qt.QMessageBox( qt.QMessageBox.NoIcon, "Please wait", "Please wait while pre-processing runs..", qt.QMessageBox.Ignore )
+    dialog = qt.QMessageBox()
+    dialog.setWindowTitle("Please wait")
+    dialog.setText("Please wait while pre-processing runs..")
+    dialog.setModal( False )
+    dialog.show()
 
     slicer.app.processEvents()
 
     # run preprocessing
     returnValue = tcl( "::EMSegmenterPreProcessingTcl::Run" )
 
-    message.hide()
+    # message.hide()
+    dialog.hide()
     slicer.app.processEvents()
 
     if not returnValue or int( returnValue ) != 0:
