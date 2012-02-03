@@ -1048,14 +1048,7 @@ namespace eval EMSegmenterPreProcessingTcl {
                 set CMD "$CMD -m $movingVolumeFileName"
                 set CMD "$CMD --initializeWithTransform $linearTransformFileName"
                 set CMD "$CMD --outputVolume $nonlinearOutputVolumeFileName"
-                if {[$LOGIC GetSlicerVersion] == 3  } {
-                  # ITK 3
-                  set CMD "$CMD --outputDeformationFieldVolume $deformationfield"
-        } else {
-                  # ITK 4 
-                  set CMD "$CMD --outputDisplacementFieldPrefix $deformationfield"
-        }
-
+                set CMD "$CMD --outputDeformationFieldVolume $deformationfield"
                 set CMD "$CMD -i 500,250,125,60,30 -n 5 -e --numberOfMatchPoints 16 --numberOfHistogramBins 1024"
                 # fast - for debugging
                 #set CMD "$CMD -i 40,20,10,5,2 -n 5 -e --numberOfMatchPoints 16"
