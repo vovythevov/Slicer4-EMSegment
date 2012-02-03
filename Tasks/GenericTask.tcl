@@ -1109,7 +1109,11 @@ namespace eval EMSegmenterPreProcessingTcl {
                 return ""
             }
 
-            set CMD "${PLUGINS_DIR}/Mask"
+          if {[$LOGIC GetSlicerVersion] == 3  } {
+             set CMD "${PLUGINS_DIR}/Mask"
+          } else {
+             set CMD "${PLUGINS_DIR}/MaskScalarVolume"
+          }
             set CMD "$CMD --label 1 --replace 0 $inputVolumeFileName $deformed_atlas_mask_FileName $outputVolumeFileName"
 
             $LOGIC PrintText "TCL: Executing $CMD"
