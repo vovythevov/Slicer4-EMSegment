@@ -136,9 +136,11 @@ QStringList qSlicerEMSegmentModule::categories()const
 }
 
 //-----------------------------------------------------------------------------
-QString qSlicerEMSegmentModule::contributor()const
+QStringList qSlicerEMSegmentModule::contributors()const
 {
-  return QLatin1String("Daniel Haehn");
+  QStringList moduleContributors;
+  moduleContributors << QString("Daniel Haehn (UPenn)");
+  return moduleContributors;
 }
 
 //-----------------------------------------------------------------------------

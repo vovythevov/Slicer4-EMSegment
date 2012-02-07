@@ -54,7 +54,7 @@ public:
 
   virtual QStringList categories()const;
 
-  virtual QString contributor()const;
+  virtual QStringList contributors()const;
 
   virtual void setMRMLScene(vtkMRMLScene* mrmlScene);
 
