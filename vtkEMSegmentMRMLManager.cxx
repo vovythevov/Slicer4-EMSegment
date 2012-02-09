@@ -49,6 +49,8 @@
 #define VTK_CREATE(type, var) \
   vtkSmartPointer<type> var = vtkSmartPointer<type>::New()
 
+vtkCxxSetObjectMacro(vtkEMSegmentMRMLManager, ColorLogic, vtkMRMLColorLogic);
+
 //----------------------------------------------------------------------------
 vtkEMSegmentMRMLManager* vtkEMSegmentMRMLManager::New()
 {
@@ -67,6 +69,7 @@ vtkEMSegmentMRMLManager* vtkEMSegmentMRMLManager::New()
 //----------------------------------------------------------------------------
 vtkEMSegmentMRMLManager::vtkEMSegmentMRMLManager()
 {
+  this->ColorLogic = vtkMRMLColorLogic::New();
   this->MRMLScene = NULL;
   this->Node = NULL;
   this->NextVTKNodeID = 1000;
@@ -77,6 +80,7 @@ vtkEMSegmentMRMLManager::vtkEMSegmentMRMLManager()
 //----------------------------------------------------------------------------
 vtkEMSegmentMRMLManager::~vtkEMSegmentMRMLManager()
 {
+  this->SetColorLogic(NULL);
   this->SetNode(NULL);
   this->SetMRMLScene(NULL);
 }
@@ -2623,9 +2627,12 @@ GetColorNodeID()
       }
     }
 
-  VTK_CREATE(vtkSlicerColorLogic, colorLogic);
-  // It is important that the color node exists otherwise we get wired errors - I learned the hard way!
-  this->GetGlobalParametersNode()->SetColormap(colorLogic->GetDefaultLabelMapColorNodeID());
+  if (this->ColorLogic != NULL)
+    {
+    // It is important that the color node exists otherwise we get wired errors - I learned the hard way!
+    this->GetGlobalParametersNode()->SetColormap(
+      this->ColorLogic->GetDefaultLabelMapColorNodeID());
+    }
   return this->GetGlobalParametersNode()->GetColormap();
 }
 

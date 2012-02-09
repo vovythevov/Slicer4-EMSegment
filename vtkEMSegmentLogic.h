@@ -22,6 +22,7 @@ class vtkImageEMLocalSegmenter;
 class vtkImageEMLocalSuperClass;
 class vtkImageLevelSets;
 class vtkMatrix4x4;
+class vtkMRMLColorLogic;
 class vtkMRMLScalarVolumeNode;
 class vtkMRMLVolumeNode;
 class vtkSlicerApplicationLogic;
@@ -33,6 +34,9 @@ public:
   static vtkEMSegmentLogic *New();
   
   vtkTypeMacro(vtkEMSegmentLogic,vtkSlicerModuleLogic);
+
+  void SetColorLogic(vtkMRMLColorLogic* colorLogic);
+  vtkMRMLColorLogic* GetColorLogic();
 
   // Description: The name of the Module---this is used to construct
   // the proc invocations

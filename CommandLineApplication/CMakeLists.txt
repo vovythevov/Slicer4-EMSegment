@@ -44,11 +44,14 @@ if("${Slicer_VERSION_MAJOR}" EQUAL "3")
 else()
   list(APPEND CommandLineApplication_LIBRARIES
     vtkSlicerAtlasCreatorModuleLogic
+    vtkSlicerColorsModuleLogic
     vtkSlicerEMSegmentModuleLogic
     )
   list(APPEND CommandLineApplication_INCLUDE_DIRS
     ${vtkSlicerAtlasCreatorModuleLogic_SOURCE_DIR}
     ${vtkSlicerAtlasCreatorModuleLogic_BINARY_DIR}
+    ${vtkSlicerColorsModuleLogic_SOURCE_DIR}
+    ${vtkSlicerColorsModuleLogic_BINARY_DIR}
     )
 endif()
 

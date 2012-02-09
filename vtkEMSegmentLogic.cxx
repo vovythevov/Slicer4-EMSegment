@@ -124,6 +124,18 @@ vtkEMSegmentLogic::~vtkEMSegmentLogic()
 }
 
 //----------------------------------------------------------------------------
+void vtkEMSegmentLogic::SetColorLogic(vtkMRMLColorLogic* colorLogic)
+{
+  this->MRMLManager->SetColorLogic(colorLogic);
+}
+
+//----------------------------------------------------------------------------
+vtkMRMLColorLogic* vtkEMSegmentLogic::GetColorLogic()
+{
+  return this->MRMLManager->GetColorLogic();
+}
+
+//----------------------------------------------------------------------------
 vtkSlicerCommonInterface* vtkEMSegmentLogic::GetSlicerCommonInterface()
 {
 

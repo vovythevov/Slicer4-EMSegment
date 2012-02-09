@@ -25,6 +25,7 @@
 
 // SlicerQt includes
 #include <qSlicerCoreApplication.h>
+#include <qSlicerModuleManager.h>
 #include <qSlicerScriptedLoadableModuleWidget.h>
 #include <qSlicerUtils.h>
 #include <vtkSlicerConfigure.h> // For Slicer_QTLOADABLEMODULES_LIB_DIR
@@ -34,6 +35,9 @@
 
 // EMSegment QTModule includes
 #include "qSlicerEMSegmentModule.h"
+
+// MRML Logic includes
+#include <vtkMRMLColorLogic.h>
 
 //-----------------------------------------------------------------------------
 Q_EXPORT_PLUGIN2(qSlicerEMSegmentModule, qSlicerEMSegmentModule);
@@ -62,6 +66,18 @@ qSlicerEMSegmentModule::~qSlicerEMSegmentModule()
 void qSlicerEMSegmentModule::setup()
 {
   this->Superclass::setup();
+
+  vtkEMSegmentLogic * emsegmentLogic =
+    vtkEMSegmentLogic::SafeDownCast(this->logic());
+
+  qSlicerAbstractCoreModule* colorsModule =
+    qSlicerCoreApplication::application()->moduleManager()->module("Colors");
+  if (colorsModule)
+    {
+    vtkMRMLColorLogic* colorLogic =
+      vtkMRMLColorLogic::SafeDownCast(colorsModule->logic());
+    emsegmentLogic->SetColorLogic(colorLogic);
+    }
 }
 
 //-----------------------------------------------------------------------------

@@ -13,6 +13,7 @@ class vtkMRMLEMSTreeNode;
 class vtkMRMLEMSTreeParametersNode;
 class vtkMRMLEMSTreeParametersParentNode;
 class vtkMRMLEMSWorkingDataNode;
+class vtkMRMLColorLogic;
 class vtkMRMLScalarVolumeNode;
 class vtkMRMLVolumeNode;
 class vtkMRMLEMSVolumeCollectionNode;
@@ -38,6 +39,9 @@ public:
   // Prints out important info about the current template / task 
   void PrintInfo(ostream& os);
   void PrintInfo();
+
+  virtual void SetColorLogic(vtkMRMLColorLogic* colorLogic);
+  vtkGetObjectMacro(ColorLogic, vtkMRMLColorLogic);
 
   // Get/Set the current mrml scene
   vtkSetObjectMacro(MRMLScene, vtkMRMLScene);
@@ -588,6 +592,10 @@ private:
   virtual void         UpdateMapsFromMRML();
 
   virtual int          GetTargetVolumeIndex(vtkIdType vtkID);
+
+  // The color logic used to retrieve the default color node for the
+  // color map
+  vtkMRMLColorLogic* ColorLogic;
 
   // the current mrml scene
   vtkMRMLScene*   MRMLScene;
