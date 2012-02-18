@@ -13,7 +13,9 @@ class vtkMRMLEMSTreeNode;
 class vtkMRMLEMSTreeParametersNode;
 class vtkMRMLEMSTreeParametersParentNode;
 class vtkMRMLEMSWorkingDataNode;
+#if defined(Slicer_USE_PYTHONQT)
 class vtkMRMLColorLogic;
+#endif 
 class vtkMRMLScalarVolumeNode;
 class vtkMRMLVolumeNode;
 class vtkMRMLEMSVolumeCollectionNode;
@@ -40,8 +42,13 @@ public:
   void PrintInfo(ostream& os);
   void PrintInfo();
 
+#if defined(Slicer_USE_PYTHONQT)
+  // if you do not do it then you get errors when wrapping Tcl code in Slicer 3
+//BTX
   virtual void SetColorLogic(vtkMRMLColorLogic* colorLogic);
   vtkGetObjectMacro(ColorLogic, vtkMRMLColorLogic);
+//ETX
+#endif 
 
   // Get/Set the current mrml scene
   vtkSetObjectMacro(MRMLScene, vtkMRMLScene);
@@ -593,9 +600,11 @@ private:
 
   virtual int          GetTargetVolumeIndex(vtkIdType vtkID);
 
+#if defined(Slicer_USE_PYTHONQT)
   // The color logic used to retrieve the default color node for the
   // color map
   vtkMRMLColorLogic* ColorLogic;
+#endif
 
   // the current mrml scene
   vtkMRMLScene*   MRMLScene;

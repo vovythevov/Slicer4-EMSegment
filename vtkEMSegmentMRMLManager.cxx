@@ -49,7 +49,9 @@
 #define VTK_CREATE(type, var) \
   vtkSmartPointer<type> var = vtkSmartPointer<type>::New()
 
+#if defined(Slicer_USE_PYTHONQT)
 vtkCxxSetObjectMacro(vtkEMSegmentMRMLManager, ColorLogic, vtkMRMLColorLogic);
+#endif 
 
 //----------------------------------------------------------------------------
 vtkEMSegmentMRMLManager* vtkEMSegmentMRMLManager::New()
@@ -69,7 +71,9 @@ vtkEMSegmentMRMLManager* vtkEMSegmentMRMLManager::New()
 //----------------------------------------------------------------------------
 vtkEMSegmentMRMLManager::vtkEMSegmentMRMLManager()
 {
+#if defined(Slicer_USE_PYTHONQT)
   this->ColorLogic = vtkMRMLColorLogic::New();
+#endif
   this->MRMLScene = NULL;
   this->Node = NULL;
   this->NextVTKNodeID = 1000;
@@ -80,7 +84,9 @@ vtkEMSegmentMRMLManager::vtkEMSegmentMRMLManager()
 //----------------------------------------------------------------------------
 vtkEMSegmentMRMLManager::~vtkEMSegmentMRMLManager()
 {
+#if defined(Slicer_USE_PYTHONQT)
   this->SetColorLogic(NULL);
+#endif
   this->SetNode(NULL);
   this->SetMRMLScene(NULL);
 }
@@ -2627,12 +2633,20 @@ GetColorNodeID()
       }
     }
 
+#if defined(Slicer_USE_PYTHONQT)
+  // Slicer 4 
   if (this->ColorLogic != NULL)
     {
     // It is important that the color node exists otherwise we get wired errors - I learned the hard way!
     this->GetGlobalParametersNode()->SetColormap(
       this->ColorLogic->GetDefaultLabelMapColorNodeID());
     }
+#else 
+  // slicer 3 implementation
+   VTK_CREATE(vtkSlicerColorLogic, colorLogic);        
+   // It is important that the color node exists otherwise we get wired errors - I learned the hard way! 
+   this->GetGlobalParametersNode()->SetColormap(colorLogic->GetDefaultLabelMapColorNodeID());
+#endif 
   return this->GetGlobalParametersNode()->GetColormap();
 }
 
