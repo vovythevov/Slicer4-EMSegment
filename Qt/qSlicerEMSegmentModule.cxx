@@ -32,6 +32,7 @@
 
 // EMSegment Logic includes
 #include <vtkEMSegmentLogic.h>
+#include <vtkEMSegmentMRMLManager.h>
 
 // EMSegment QTModule includes
 #include "qSlicerEMSegmentModule.h"
@@ -67,16 +68,28 @@ void qSlicerEMSegmentModule::setup()
 {
   this->Superclass::setup();
 
-  vtkEMSegmentLogic * emsegmentLogic =
+  vtkEMSegmentLogic *emsegmentLogic =
     vtkEMSegmentLogic::SafeDownCast(this->logic());
+
+  if (!emsegmentLogic)
+    {
+      return;
+    }
+
+  vtkEMSegmentMRMLManager *mrmlManager = emsegmentLogic->GetMRMLManager();
+    if (!mrmlManager)
+    {
+      return;
+    }
 
   qSlicerAbstractCoreModule* colorsModule =
     qSlicerCoreApplication::application()->moduleManager()->module("Colors");
+
   if (colorsModule)
     {
-    vtkMRMLColorLogic* colorLogic =
-      vtkMRMLColorLogic::SafeDownCast(colorsModule->logic());
-    emsegmentLogic->SetColorLogic(colorLogic);
+       vtkMRMLColorLogic* colorLogic =
+         vtkMRMLColorLogic::SafeDownCast(colorsModule->logic());
+       mrmlManager->SetColorLogic(colorLogic);
     }
 }
 
