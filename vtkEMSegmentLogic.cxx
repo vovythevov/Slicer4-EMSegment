@@ -2896,11 +2896,12 @@ int vtkEMSegmentLogic::SourcePreprocessingTclFiles()
   vtkstd::string tclFile = this->GetModuleShareDirectory();
 
   // on Slicer3 _WIN32 is defined, on Slicer4 WIN32 is defined
-#if defined(_WIN32) || defined(WIN32)
-  tclFile.append("\\Tcl\\EMSegmentAutoSample.tcl");
-#else
+  // Does not work under Slicer4 - just the default does 
+  //#if defined(_WIN32) || defined(WIN32)
+  //tclFile.append("\\Tcl\\EMSegmentAutoSample.tcl");
+  // #else
   tclFile.append("/Tcl/EMSegmentAutoSample.tcl");
-#endif
+  // #endif
   return this->SourceTclFile(tclFile.c_str());
 }
 
