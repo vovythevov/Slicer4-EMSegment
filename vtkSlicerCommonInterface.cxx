@@ -60,8 +60,10 @@ vtkSlicerCommonInterface::vtkSlicerCommonInterface()
 
 #ifndef Slicer3_USE_KWWIDGETS
 
-  // Slicer3
+  // Slicer4
   this->remoteIOLogic = 0;
+  this->binDir = QString("");
+  this->cliDir = QString("");
 
 #endif
 
@@ -555,10 +557,15 @@ const char* vtkSlicerCommonInterface::GetBinDirectory()
 
 #else
 
-  // Slicer4
-  QString slicerDir = qSlicerApplication::application()->slicerHome();
-  slicerDir += "/bin/";
-  return slicerDir.toLatin1();
+  // Slicer4 - do not put in constructor bc otherwise tests fail 
+  // I also added class variable bc if you only give a pointer Slicer can crash 
+  // when pointer is asssigned to something else 
+  if (!this->binDir.compare(""))
+    {
+      // Initialize 
+       this->binDir = QString(qSlicerApplication::application()->slicerHome()) + QString("/bin/");
+    }
+  return this->binDir.toLatin1();
 
 #endif
 
@@ -581,24 +588,28 @@ const char* vtkSlicerCommonInterface::GetPluginsDirectory()
   //       shouldn't be hardcoded using Slicer home. Instead, the
   //       associated location should be retrieved by invoking Slicer
   //       with for example a "--module-path <ModuleName>" parameter.
-  QString slicerDir = qSlicerApplication::application()->slicerHome();
-  if (!qSlicerApplication::application()->isInstalled())
-    {
-    slicerDir += "/" Slicer_CLIMODULES_LIB_DIR "/";
-    }
-  else
-    {
+   if (!this->cliDir.compare(""))
+     {
+      this->cliDir = qSlicerApplication::application()->slicerHome();
+      if (!qSlicerApplication::application()->isInstalled())
+       {
+            this->cliDir += "/" Slicer_CLIMODULES_LIB_DIR "/";
+       }
+       else
+       {
 #ifndef __APPLE__
-    slicerDir += "/" Slicer_CLIMODULES_LIB_DIR "/";
+           this->cliDir += "/" Slicer_CLIMODULES_LIB_DIR "/";
 #else
-    // HACK - On Mac OSX, since all libraries are fixed using the same "install_name" (specifying the
-    //        location of the dependent libraries relatively to the location of Slicer executable), it
-    //        is required for CLI executable to be located at same depth as Slicer executable.
-    //        See also Slicer/Utilities/LastConfigureStep/SlicerCompleteBundles.cmake.in
-    slicerDir += "/" Slicer_CLIMODULES_SUBDIR "/";
+           // HACK - On Mac OSX, since all libraries are fixed using the same "install_name" (specifying the
+           //        location of the dependent libraries relatively to the location of Slicer executable), it
+           //        is required for CLI executable to be located at same depth as Slicer executable.
+           //        See also Slicer/Utilities/LastConfigureStep/SlicerCompleteBundles.cmake.in
+           this->cliDir  += "/" Slicer_CLIMODULES_SUBDIR "/";
 #endif
-    }
-  return slicerDir.toLatin1();
+       }
+     }
+
+  return this->cliDir.toLatin1();
 
 #endif
 

@@ -153,6 +153,8 @@ private:
 #ifndef Slicer3_USE_KWWIDGETS
 //BTX
   vtkMRMLRemoteIOLogic *remoteIOLogic;
+  QString cliDir ;  
+  QString binDir ;  
 //ETX
 #endif
 };
