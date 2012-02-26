@@ -62,8 +62,8 @@ vtkSlicerCommonInterface::vtkSlicerCommonInterface()
 
   // Slicer4
   this->remoteIOLogic = 0;
-  this->binDir = QString("");
-  this->cliDir = QString("");
+  this->binDir = NULL;
+  this->cliDir = NULL; 
 
 #endif
 
@@ -78,6 +78,17 @@ vtkSlicerCommonInterface::~vtkSlicerCommonInterface()
     {
     this->remoteIOLogic->Delete();
     this->remoteIOLogic = 0;
+    }
+  if (this->binDir)
+    {
+      delete[] this->binDir;
+      this->binDir = NULL;
+    }
+
+  if (this->cliDir  )
+    {
+      delete[] this->cliDir;
+      this->cliDir = NULL; 
     }
 #endif
 
@@ -560,12 +571,13 @@ const char* vtkSlicerCommonInterface::GetBinDirectory()
   // Slicer4 - do not put in constructor bc otherwise tests fail 
   // I also added class variable bc if you only give a pointer Slicer can crash 
   // when pointer is asssigned to something else 
-  if (!this->binDir.compare(""))
+  if (!this->binDir) 
     {
       // Initialize 
-       this->binDir = QString(qSlicerApplication::application()->slicerHome()) + QString("/bin/");
+       QString Dir = QString(qSlicerApplication::application()->slicerHome()) + QString("/bin/");
+       this->binDir = qstrdup( Dir.toLatin1().data() );
     }
-  return this->binDir.toLatin1();
+  return this->binDir;
 
 #endif
 
@@ -588,28 +600,30 @@ const char* vtkSlicerCommonInterface::GetPluginsDirectory()
   //       shouldn't be hardcoded using Slicer home. Instead, the
   //       associated location should be retrieved by invoking Slicer
   //       with for example a "--module-path <ModuleName>" parameter.
-   if (!this->cliDir.compare(""))
+  if (!this->cliDir) 
      {
-      this->cliDir = qSlicerApplication::application()->slicerHome();
+       // Initialize 
+      QString Dir = qSlicerApplication::application()->slicerHome();
       if (!qSlicerApplication::application()->isInstalled())
        {
-            this->cliDir += "/" Slicer_CLIMODULES_LIB_DIR "/";
+            Dir += "/" Slicer_CLIMODULES_LIB_DIR "/";
        }
        else
        {
 #ifndef __APPLE__
-           this->cliDir += "/" Slicer_CLIMODULES_LIB_DIR "/";
+           Dir += "/" Slicer_CLIMODULES_LIB_DIR "/";
 #else
            // HACK - On Mac OSX, since all libraries are fixed using the same "install_name" (specifying the
            //        location of the dependent libraries relatively to the location of Slicer executable), it
            //        is required for CLI executable to be located at same depth as Slicer executable.
            //        See also Slicer/Utilities/LastConfigureStep/SlicerCompleteBundles.cmake.in
-           this->cliDir  += "/" Slicer_CLIMODULES_SUBDIR "/";
+           Dir  += "/" Slicer_CLIMODULES_SUBDIR "/";
 #endif
        }
+        this->cliDir = qstrdup( Dir.toLatin1().data() );
      }
 
-  return this->cliDir.toLatin1();
+  return this->cliDir;
 
 #endif
 
