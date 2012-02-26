@@ -574,8 +574,8 @@ const char* vtkSlicerCommonInterface::GetBinDirectory()
   if (!this->binDir) 
     {
       // Initialize 
-       QString Dir = QString(qSlicerApplication::application()->slicerHome()) + QString("/bin/");
-       this->binDir = qstrdup( Dir.toLatin1().data() );
+       QString dir = QString(qSlicerApplication::application()->slicerHome()) + QString("/bin/");
+       this->binDir = qstrdup( dir.toLatin1() );
     }
   return this->binDir;
 
@@ -603,24 +603,26 @@ const char* vtkSlicerCommonInterface::GetPluginsDirectory()
   if (!this->cliDir) 
      {
        // Initialize 
-      QString Dir = qSlicerApplication::application()->slicerHome();
+       cout << "====>DEBUGGGGG : " << qPrintable(qSlicerApplication::application()->intDir()) << endl;
+
+      QString dir = qSlicerApplication::application()->slicerHome();
       if (!qSlicerApplication::application()->isInstalled())
        {
-            Dir += "/" Slicer_CLIMODULES_LIB_DIR "/";
+            dir += "/" Slicer_CLIMODULES_LIB_DIR "/";
        }
        else
        {
-#ifndef __APPLE__
-           Dir += "/" Slicer_CLIMODULES_LIB_DIR "/";
+#ifndef Q_OS_MAC
+           dir += "/" Slicer_CLIMODULES_LIB_DIR "/";
 #else
            // HACK - On Mac OSX, since all libraries are fixed using the same "install_name" (specifying the
            //        location of the dependent libraries relatively to the location of Slicer executable), it
            //        is required for CLI executable to be located at same depth as Slicer executable.
            //        See also Slicer/Utilities/LastConfigureStep/SlicerCompleteBundles.cmake.in
-           Dir  += "/" Slicer_CLIMODULES_SUBDIR "/";
+           dir  += "/" Slicer_CLIMODULES_SUBDIR "/";
 #endif
        }
-        this->cliDir = qstrdup( Dir.toLatin1().data() );
+        this->cliDir = qstrdup( dir.toLatin1() );
      }
 
   return this->cliDir;
