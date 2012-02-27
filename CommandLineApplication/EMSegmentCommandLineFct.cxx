@@ -517,15 +517,21 @@ int RunPreprocessing(vtkEMSegmentLogic* EMSLogic, std::string EMSLogicTcl, std::
 
         // Have to init variables again bc first time EMLogic was not fully set up
         std::string CMD = "::EMSegmenterPreProcessingTcl::InitVariables " + EMSLogicTcl + " " + emMRMLManagerTcl + " NULL";
-        if (atoi(slicerCommon->EvaluateTcl(CMD.c_str())))
         {
+      std::string tclResult(slicerCommon->EvaluateTcl(CMD.c_str()));
+          if (atoi(tclResult.c_str()))
+          {
            throw std::runtime_error("ERROR: could not init files. ");
-        }
+          }
+    }
 
-         if (atoi(slicerCommon->EvaluateTcl("::EMSegmenterPreProcessingTcl::Run")))
+        {
+      std::string tclResult(slicerCommon->EvaluateTcl("::EMSegmenterPreProcessingTcl::Run"));
+         if (atoi(tclResult.c_str()))
            {
              throw std::runtime_error("ERROR: Pre-processing did not execute correctly");
            }
+    }
        }
       catch (std::runtime_error& e)
       {

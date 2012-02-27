@@ -2996,8 +2996,8 @@ void vtkEMSegmentLogic::UpdateIntensityDistributionAuto(vtkIdType nodeID)
         << this->GetMRMLManager()->GetTreeNodeName(nodeID) << "}";
     // cout << CMD.str().c_str() << endl;
 
-
-    if (atoi(this->GetSlicerCommonInterface()->EvaluateTcl(CMD.str().c_str())))
+      std::string result(this->GetSlicerCommonInterface()->EvaluateTcl(CMD.str().c_str()));
+      if (atoi(result.c_str()))
       {
       return;
       }
@@ -3019,10 +3019,11 @@ void vtkEMSegmentLogic::UpdateIntensityDistributionAuto(vtkIdType nodeID)
       os << r;
       os << ")";
 
-      double value = atof(this->GetSlicerCommonInterface()->EvaluateTcl(
-          os.str().c_str()));
+      std::string tcl_result(this->GetSlicerCommonInterface()->EvaluateTcl(os.str().c_str()));
+      double value = atof(tcl_result.c_str());
 
-      cout << "::::::LOGMEAN:" << value << endl;
+      cout << "::::LOGMEAN Char:" << tcl_result.c_str() << endl;
+      cout << "::::LOGMEAN Float:" << value << endl;
 
       leafNode->SetLogMean(r, value);
       } // own scope ends
@@ -3038,8 +3039,8 @@ void vtkEMSegmentLogic::UpdateIntensityDistributionAuto(vtkIdType nodeID)
       os << c;
       os << ")";
 
-      double value = atof(this->GetSlicerCommonInterface()->EvaluateTcl(
-          os.str().c_str()));
+      std::string result(this->GetSlicerCommonInterface()->EvaluateTcl(os.str().c_str()));
+      double value = atof(result.c_str());
 
       leafNode->SetLogCovariance(r, c, value);
 
