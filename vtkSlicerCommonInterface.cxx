@@ -231,7 +231,7 @@ const char* vtkSlicerCommonInterface::GetExtensionsDirectory()
 #else
 
   // Slicer4
-  QString extensionsDir = qSlicerApplication::application()->extensionsPath();
+  QString extensionsDir = qSlicerApplication::application()->extensionsInstallPath();
   this->resetReturnChar() ;
   this->returnChar = qstrdup( extensionsDir.toLatin1() );
   return this->returnChar;
