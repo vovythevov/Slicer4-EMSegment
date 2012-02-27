@@ -62,8 +62,7 @@ vtkSlicerCommonInterface::vtkSlicerCommonInterface()
 
   // Slicer4
   this->remoteIOLogic = 0;
-  this->binDir = NULL;
-  this->cliDir = NULL; 
+  this->returnChar = NULL;
 
 #endif
 
@@ -79,16 +78,11 @@ vtkSlicerCommonInterface::~vtkSlicerCommonInterface()
     this->remoteIOLogic->Delete();
     this->remoteIOLogic = 0;
     }
-  if (this->binDir)
-    {
-      delete[] this->binDir;
-      this->binDir = NULL;
-    }
 
-  if (this->cliDir  )
+  if (this->returnChar  )
     {
-      delete[] this->cliDir;
-      this->cliDir = NULL; 
+      delete[] this->returnChar;
+      this->returnChar = NULL; 
     }
 #endif
 
@@ -183,7 +177,7 @@ int vtkSlicerCommonInterface::SourceTclFile(const char *tclFile)
 }
 
 //-----------------------------------------------------------------------------
-const char* vtkSlicerCommonInterface::EvaluateTcl(const char* command)
+char* vtkSlicerCommonInterface::EvaluateTcl(const char* command)
 {
 
 #ifdef Slicer3_USE_KWWIDGETS
@@ -215,9 +209,10 @@ const char* vtkSlicerCommonInterface::EvaluateTcl(const char* command)
 
     // convert returnValue to const char*
     QByteArray byteArray = returnValue.toString().toUtf8();
-    const char* cString = byteArray.constData();
-
-    return cString;
+    this->resetReturnChar() ;
+    this->returnChar = qstrdup( byteArray );
+    // const char* cString = byteArray.constData();
+    return this->returnChar;
     }
 
 #endif
@@ -571,13 +566,11 @@ const char* vtkSlicerCommonInterface::GetBinDirectory()
   // Slicer4 - do not put in constructor bc otherwise tests fail 
   // I also added class variable bc if you only give a pointer Slicer can crash 
   // when pointer is asssigned to something else 
-  if (!this->binDir) 
-    {
-      // Initialize 
-       QString dir = QString(qSlicerApplication::application()->slicerHome()) + QString("/bin/");
-       this->binDir = qstrdup( dir.toLatin1() );
-    }
-  return this->binDir;
+   QString dir = QString(qSlicerApplication::application()->slicerHome()) + QString("/bin/");
+   this->resetReturnChar(); 
+   this->returnChar = qstrdup( dir.toLatin1() );
+   
+  return this->returnChar;
 
 #endif
 
@@ -600,9 +593,7 @@ const char* vtkSlicerCommonInterface::GetPluginsDirectory()
   //       shouldn't be hardcoded using Slicer home. Instead, the
   //       associated location should be retrieved by invoking Slicer
   //       with for example a "--module-path <ModuleName>" parameter.
-  if (!this->cliDir) 
-     {
-       // Initialize 
+    {
       QString dir = qSlicerApplication::application()->slicerHome();
       if (!qSlicerApplication::application()->isInstalled())
        {
@@ -622,16 +613,15 @@ const char* vtkSlicerCommonInterface::GetPluginsDirectory()
        }
 
 #if defined (WIN32)
-      dir  += QString("Debug/");
+      dir  += qSlicerApplication::application()->intDir();
 #endif
-       cout << "====>DEBUGGGGG : " << qPrintable(qSlicerApplication::application()->intDir()) << endl;
        cout << "====>DEBUGGGG2 : " << qPrintable(dir) << endl;
-
-        this->cliDir = qstrdup( dir.toLatin1() );
+       this->resetReturnChar() ;
+       this->returnChar = qstrdup( dir.toLatin1() );
 
      }
 
-  return this->cliDir;
+  return this->returnChar;
 
 #endif
 
@@ -1212,3 +1202,14 @@ void vtkSlicerCommonInterface::SaveSettingToMRML()
 
 #endif
 }
+
+#ifndef Slicer3_USE_KWWIDGETS
+void vtkSlicerCommonInterface::resetReturnChar() 
+{
+  if (this->returnChar) 
+    {
+      delete[] this->returnChar;
+      this->returnChar = NULL;
+    }
+} 
+#endif
