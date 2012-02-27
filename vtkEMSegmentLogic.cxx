@@ -3022,7 +3022,7 @@ void vtkEMSegmentLogic::UpdateIntensityDistributionAuto(vtkIdType nodeID)
       std::string tcl_result(this->GetSlicerCommonInterface()->EvaluateTcl(os.str().c_str()));
       double value = atof(tcl_result.c_str());
 
-      cout << "::::LOGMEAN Char:" << tcl_result.c_str() << endl;
+      //cout << "::::LOGMEAN Char:" << tcl_result.c_str() << endl;
       cout << "::::LOGMEAN Float:" << value << endl;
 
       leafNode->SetLogMean(r, value);
