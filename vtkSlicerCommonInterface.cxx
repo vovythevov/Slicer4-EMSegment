@@ -177,7 +177,7 @@ int vtkSlicerCommonInterface::SourceTclFile(const char *tclFile)
 }
 
 //-----------------------------------------------------------------------------
-char* vtkSlicerCommonInterface::EvaluateTcl(const char* command)
+const char* vtkSlicerCommonInterface::EvaluateTcl(const char* command)
 {
 
 #ifdef Slicer3_USE_KWWIDGETS

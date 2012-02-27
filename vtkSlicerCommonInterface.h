@@ -80,7 +80,7 @@ public:
   Tcl_Interp* Startup(int& argc, char *argv[], ostream* err = 0);
 
   int SourceTclFile(const char *tclFile);
-  char* EvaluateTcl(const char* command);
+  const char* EvaluateTcl(const char* command);
 
   void RegisterObjectWithTcl(vtkObject *obj, const char* name);
   const char* GetApplicationTclName();
