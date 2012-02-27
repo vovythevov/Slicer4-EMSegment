@@ -603,8 +603,6 @@ const char* vtkSlicerCommonInterface::GetPluginsDirectory()
   if (!this->cliDir) 
      {
        // Initialize 
-       cout << "====>DEBUGGGGG : " << qPrintable(qSlicerApplication::application()->intDir()) << endl;
-
       QString dir = qSlicerApplication::application()->slicerHome();
       if (!qSlicerApplication::application()->isInstalled())
        {
@@ -622,7 +620,15 @@ const char* vtkSlicerCommonInterface::GetPluginsDirectory()
            dir  += "/" Slicer_CLIMODULES_SUBDIR "/";
 #endif
        }
+
+#if defined (WIN32)
+      dir  += QString("Debug/");
+#endif
+       cout << "====>DEBUGGGGG : " << qPrintable(qSlicerApplication::application()->intDir()) << endl;
+       cout << "====>DEBUGGGG2 : " << qPrintable(dir) << endl;
+
         this->cliDir = qstrdup( dir.toLatin1() );
+
      }
 
   return this->cliDir;
