@@ -232,7 +232,9 @@ const char* vtkSlicerCommonInterface::GetExtensionsDirectory()
 
   // Slicer4
   QString extensionsDir = qSlicerApplication::application()->extensionsPath();
-  return extensionsDir.toLatin1();
+  this->resetReturnChar() ;
+  this->returnChar = qstrdup( extensionsDir.toLatin1() );
+  return this->returnChar;
 
 #endif
 
@@ -615,7 +617,6 @@ const char* vtkSlicerCommonInterface::GetPluginsDirectory()
 #if defined (WIN32)
       dir  += qSlicerApplication::application()->intDir();
 #endif
-       cout << "====>DEBUGGGG2 : " << qPrintable(dir) << endl;
        this->resetReturnChar() ;
        this->returnChar = qstrdup( dir.toLatin1() );
 
@@ -640,7 +641,9 @@ const char* vtkSlicerCommonInterface::GetRepositoryRevision()
 #else
 
   // Slicer4
-  return qSlicerApplication::application()->repositoryRevision().toLatin1();
+  this->resetReturnChar() ;
+  this->returnChar = qstrdup( qSlicerApplication::application()->repositoryRevision().toLatin1() );
+  return this->returnChar;
 
 #endif
 
