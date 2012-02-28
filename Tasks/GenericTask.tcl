@@ -843,7 +843,7 @@ namespace eval EMSegmenterPreProcessingTcl {
         set deformationFieldFilename [ CreateTemporaryFileNameForNode $DFNode ]
 
         set PLUGINS_DIR "[$LOGIC GetPluginsDirectory]"
-        set CMDdeform "${PLUGINS_DIR}/BSplineToDeformationField"
+        set CMDdeform "\"${PLUGINS_DIR}/BSplineToDeformationField\""
         set CMDdeform "$CMDdeform --refImage \"$tmpReferenceVolumeFileName\""
         set CMDdeform "$CMDdeform --tfm \"$tmpTransformFileName\""
         set CMDdeform "$CMDdeform --defImage \"$deformationFieldFilename\""
@@ -989,7 +989,7 @@ namespace eval EMSegmenterPreProcessingTcl {
                 }
 
 
-                set CMD "${PLUGINS_DIR}/BRAINSFit"
+                set CMD "\"${PLUGINS_DIR}/BRAINSFit\""
                 set CMD "$CMD --fixedVolume $fixedVolumeFileName"
                 set CMD "$CMD --movingVolume $movingVolumeFileName"
                 set CMD "$CMD --outputVolume $linearOutputVolumeFileName"
@@ -1043,7 +1043,7 @@ namespace eval EMSegmenterPreProcessingTcl {
                 }
 
 
-                set CMD "${PLUGINS_DIR}/BRAINSDemonWarp"
+                set CMD "\"${PLUGINS_DIR}/BRAINSDemonWarp\""
                 set CMD "$CMD -f $fixedVolumeFileName"
                 set CMD "$CMD -m $movingVolumeFileName"
                 set CMD "$CMD --initializeWithTransform $linearTransformFileName"
@@ -1062,7 +1062,7 @@ namespace eval EMSegmenterPreProcessingTcl {
                 # WARP(=Resample) our mask
 
                 set backgroundLevel 0
-                set CMD "${PLUGINS_DIR}/BRAINSResample"
+                set CMD "\"${PLUGINS_DIR}/BRAINSResample\""
                 set CMD "$CMD --inputVolume $atlas_mask_FileName"
                 set CMD "$CMD --referenceVolume $fixedVolumeFileName"
                 set CMD "$CMD --deformationVolume $deformationfield"
@@ -1110,9 +1110,9 @@ namespace eval EMSegmenterPreProcessingTcl {
             }
 
           if {[$LOGIC GetSlicerVersion] == 3  } {
-             set CMD "${PLUGINS_DIR}/Mask"
+             set CMD "\"${PLUGINS_DIR}/Mask\""
           } else {
-             set CMD "${PLUGINS_DIR}/MaskScalarVolume"
+             set CMD "\"${PLUGINS_DIR}/MaskScalarVolume\""
           }
             set CMD "$CMD --label 1 --replace 0 $inputVolumeFileName $deformed_atlas_mask_FileName $outputVolumeFileName"
 
@@ -1717,13 +1717,12 @@ namespace eval EMSegmenterPreProcessingTcl {
         $LOGIC PrintText "TCL: =========================================="
         $LOGIC PrintText "TCL: == Generate ICC MASK (not yet implemented)"
         $LOGIC PrintText "TCL: =========================================="
-        set EXE_DIR "[[$LOGIC GetSlicerCommonInterface] GetBinDirectory]"
         set PLUGINS_DIR "[$LOGIC GetPluginsDirectory]"
         
 
         # set CMD "$PLUGINS_DIR/DemonsRegistration --fixed_image $Scan2Image --moving_image $Scan1Image --output_image $Scan1ToScan2Image --output_field $Scan1ToScan2Deformation --num_levels 3 --num_iterations 20,20,20 --def_field_sigma 1 --use_histogram_matching --verbose"
 
-        set CMD "$PLUGINS_DIR/DemonsRegistration --fixed_image $Scan2Image --moving_image $Scan1Image --output_image $Scan1ToScan2Image --output_field $Scan1ToScan2Deformation --num_levels 3 --num_iterations 20,20,20 --def_field_sigma 1 --use_histogram_matching --verbose"
+        set CMD "\"$PLUGINS_DIR/DemonsRegistration\" --fixed_image $Scan2Image --moving_image $Scan1Image --output_image $Scan1ToScan2Image --output_field $Scan1ToScan2Deformation --num_levels 3 --num_iterations 20,20,20 --def_field_sigma 1 --use_histogram_matching --verbose"
 
         return 1
     }
@@ -1814,7 +1813,7 @@ namespace eval EMSegmenterPreProcessingTcl {
         $LOGIC PrintText "TCL: =========================================="
 
         set PLUGINS_DIR "[$LOGIC GetPluginsDirectory]"
-        set CMD "${PLUGINS_DIR}/N4ITKBiasFieldCorrection"
+        set CMD "\"${PLUGINS_DIR}/N4ITKBiasFieldCorrection\""
 
         # initialize
         set correctedVolumeNodeList ""

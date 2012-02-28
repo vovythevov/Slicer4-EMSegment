@@ -11,7 +11,7 @@
         $LOGIC PrintText "TCL: =========================================="
 
         set PLUGINS_DIR "[$LOGIC GetPluginsDirectory]"
-        set CMD "${PLUGINS_DIR}/BRAINSResample"
+        set CMD "\"${PLUGINS_DIR}/BRAINSResample\""
 
         set tmpInputVolumeFileName [WriteImageDataToTemporaryDir $inputVolumeNode ]
         if { $tmpInputVolumeFileName == "" } { return 1 }

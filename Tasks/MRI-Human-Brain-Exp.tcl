@@ -112,7 +112,6 @@ namespace eval EMSegmenterPreProcessingTcl {
             $LOGIC PrintText "TCLMRI: == Skull Stripping"
             $LOGIC PrintText "TCLMRI: =========================================="
 
-            set PLUGINS_DIR "[$LOGIC GetPluginsDirectory]"
             set SHARE_DIR "[$LOGIC GetModuleShareDirectory]"
 
             #Threshold --threshold 0 --lower 0 --upper 255 --outsidevalue 1 --thresholdtype Above InputImage OutputImage

@@ -105,7 +105,7 @@ proc ANTSRegistration { fixedVolumeNode movingVolumeNode outVolumeNode backgroun
 
 
     set PLUGINS_DIR "[$LOGIC GetPluginsDirectory]"
-    set CMD "${PLUGINS_DIR}/Cast"
+    set CMD "\"${PLUGINS_DIR}/Cast\""
     set CMD "$CMD -t [ANTSGetPixelTypeFromVolumeNode $fixedVolumeNode]"
     set CMD "$CMD $outVolumeFileName $outVolumeFileName"
     $LOGIC PrintText "TCL: Executing $CMD"
@@ -198,7 +198,7 @@ proc ANTSResampleCLI { inputVolumeNode referenceVolumeNode outVolumeNode transfo
 
 
     set PLUGINS_DIR "[$LOGIC GetPluginsDirectory]"
-    set CMD "${PLUGINS_DIR}/Cast"
+    set CMD "\"${PLUGINS_DIR}/Cast\""
     set CMD "$CMD -t [ANTSGetPixelTypeFromVolumeNode $referenceVolumeNode]"
     set CMD "$CMD $outVolumeFileName $outVolumeFileName"
     $LOGIC PrintText "TCL: Executing $CMD"
