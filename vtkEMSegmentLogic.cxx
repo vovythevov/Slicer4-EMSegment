@@ -2782,7 +2782,6 @@ int vtkEMSegmentLogic::StartSegmentationWithoutPreprocessing(vtkSlicerApplicatio
 
 int vtkEMSegmentLogic::SourceTclFile(const char *tclFile)
 {
-  
   return this->GetSlicerCommonInterface()->SourceTclFile(tclFile);
 }
 
@@ -2893,14 +2892,16 @@ int vtkEMSegmentLogic::SourcePreprocessingTclFiles()
     return 1;
     }
   // Source all files here as we otherwise sometimes do not find the function as Tcl did not finish sourcing but our cxx file is already trying to call the function
-  vtkstd::string tclFile = "\"" + this->GetModuleShareDirectory();
+
+
+  vtkstd::string tclFile =  this->GetModuleShareDirectory();
 
   // on Slicer3 _WIN32 is defined, on Slicer4 WIN32 is defined
   // Does not work under Slicer4 - just the default does 
   //#if defined(_WIN32) || defined(WIN32)
   //tclFile.append("\\Tcl\\EMSegmentAutoSample.tcl");
   // #else
-  tclFile.append("/Tcl/EMSegmentAutoSample.tcl\"");
+  tclFile.append("/Tcl/EMSegmentAutoSample.tcl");
   // #endif
   return this->SourceTclFile(tclFile.c_str());
 }

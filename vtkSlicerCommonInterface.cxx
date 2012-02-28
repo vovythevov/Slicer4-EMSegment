@@ -160,7 +160,7 @@ int vtkSlicerCommonInterface::SourceTclFile(const char *tclFile)
     qSlicerPythonManager *py = qSlicerApplication::application()->pythonManager();
 
     QString import = QString("from __main__ import tcl\n");
-    QString tclCall = import + QString("tcl('source %1')\n");
+    QString tclCall = import + QString("tcl('source \"%1\"')\n");
 
     py->executeString(tclCall.arg(tclFile));
 

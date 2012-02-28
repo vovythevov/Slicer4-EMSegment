@@ -143,7 +143,7 @@ namespace eval EMSegmenterPreProcessingTcl {
             set outputDir [CreateDirName "tmp"]
         }
 
-        if { [AtlasCreator "\"[$LOGIC GetPluginsDirectory]/../../../$segmentationsDir\"" "\"[$LOGIC GetPluginsDirectory]/../../../$imagesDir\"" $outputDir $labels $schedulerCommand $alignedTargetNode] } {
+        if { [AtlasCreator "[$LOGIC GetPluginsDirectory]/../../../$segmentationsDir" "[$LOGIC GetPluginsDirectory]/../../../$imagesDir" $outputDir $labels $schedulerCommand $alignedTargetNode] } {
             PrintError "Run: atlas creation failed !"
             return 1
         }
