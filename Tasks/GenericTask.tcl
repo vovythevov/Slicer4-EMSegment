@@ -1224,12 +1224,20 @@ namespace eval EMSegmenterPreProcessingTcl {
 
         # now the configuration options which are valid for all
         if { $imagesDir != "" } {
-            $node SetOriginalImagesFilePathList [glob -directory $imagesDir *]
+        if  { [  catch {  set pathList [ glob -directory $imagesDir * ] } ] }  {
+                $LOGIC PrintText "TCL: Warning : there were no files listed in '${imagesDir}' " 
+        } else {
+                $node SetOriginalImagesFilePathList  "$pathList"
+        }
         }
 
         if { $segmentationsDir != "" } {
-            $node SetSegmentationsFilePathList [glob -directory $segmentationsDir *]
+            if { [ catch { set pathList [ glob -directory $segmentationsDir * ]  } ] } {
+                $LOGIC PrintText "TCL: Warning : there were no files listed in '${segmentationsDir}' " 
+         } else {  
+                $node SetSegmentationsFilePathList "$pathList"  
         }
+         }
 
         if { $outputDir != "" } {
             $node SetOutputDirectory $outputDir
