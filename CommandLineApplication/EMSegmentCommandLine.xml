@@ -11,7 +11,7 @@
   </description>
   <documentation-url>http://www.slicer.org/slicerWiki/index.php/Documentation/4.0/EMSegment_Command-line</documentation-url>
   <license></license>
-  <contributor>Sebastien Barre, Brad Davis, Kilian Pohl, Polina Golland, Yumin Yuan</contributor>
+  <contributor>Sebastien Barre, Brad Davis, Kilian Pohl, Polina Golland, Yumin Yuan, Daniel Haehn</contributor>
   <acknowledgements>Many people and organizations have contributed to the funding, design, and development of the EMSegment algorithm and its various implementations.
 </acknowledgements>
   <parameters>
