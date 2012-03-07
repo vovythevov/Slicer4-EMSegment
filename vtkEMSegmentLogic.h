@@ -132,7 +132,7 @@ public:
 
   virtual void CreateOutputVolumeNode();
 
-  void SubParcelateSegmentation(vtkImageData* segmentation, vtkIdType nodeID);
+  void SubParcelateSegmentation(vtkImageData* origSegmentation,  vtkImageData* currentParcellation,  vtkIdType nodeID);
 
   // functions for packaging and writing intermediate results
   virtual void

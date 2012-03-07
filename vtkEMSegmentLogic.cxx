@@ -1825,10 +1825,16 @@ bool vtkEMSegmentLogic::WritePackagedScene(vtkMRMLScene* scene)
 }
 
 //-----------------------------------------------------------------------------
-void vtkEMSegmentLogic::SubParcelateSegmentation(vtkImageData* segmentation, vtkIdType nodeID)
+// needed to seperate original Segmentaiton and currentParcellation to avoid that rios are mixed up in a hierarchical tree, where the label of a suplerclass's child subparcellation might have the same label as the superclass sister 
+void vtkEMSegmentLogic::SubParcelateSegmentation(vtkImageData* origSegmentation,  vtkImageData* currentParcellation, vtkIdType nodeID)
 {
-  unsigned int numChildren = this->MRMLManager->GetTreeNodeNumberOfChildren(
-      nodeID);
+  unsigned int numChildren = this->MRMLManager->GetTreeNodeNumberOfChildren(nodeID);
+
+   // Create a copy of the original segmentation  - this is so if origSegmentation and currentParcellation are the same 
+   // I initialize this function that way 
+   VTK_CREATE(vtkImageData, origSegCopy);
+   origSegCopy->DeepCopy(origSegmentation);
+
   for (unsigned int i = 0; i < numChildren; ++i)
     {
     vtkIdType childID = this->MRMLManager->GetTreeNodeChildNodeID(nodeID, i);
@@ -1842,45 +1848,65 @@ void vtkEMSegmentLogic::SubParcelateSegmentation(vtkImageData* segmentation, vtk
         }
       int childLabel = this->MRMLManager->GetTreeNodeIntensityLabel(childID);
       cout << "==> Subparcellate " << childLabel << endl;
-      VTK_CREATE(vtkImageData, input);
-      input->DeepCopy(segmentation);
 
+      // Define ROI of interest - note that this is based on original segmentation so that if label appears in subparcellation as well as original parcellation we can handle it 
       VTK_CREATE(vtkImageThreshold, roiMap);
-      roiMap->SetInput(input);
+      roiMap->SetInput(origSegCopy);
       roiMap->ThresholdBetween(childLabel, childLabel);
       roiMap->ReplaceOutOn();
       roiMap->SetInValue(1);
       roiMap->SetOutValue(0);
       roiMap->Update();
 
+      // Create map of background
+      VTK_CREATE(vtkImageThreshold, bgMap);
+      bgMap->SetInput(origSegCopy);
+      bgMap->ThresholdBetween(childLabel, childLabel);
+      bgMap->ReplaceOutOn();
+      bgMap->ReplaceInOn();
+      bgMap->SetInValue(0);
+      bgMap->SetOutValue(1);
+      bgMap->Update();
+
+      // Cast Parcellation map  to scalar type of ROI = initial segmentation  
       VTK_CREATE(vtkImageCast, castParcellation);
       castParcellation->SetInput(parcellationNode->GetImageData());
       castParcellation->SetOutputScalarType(
           roiMap->GetOutput()->GetScalarType());
       castParcellation->Update();
 
+      // Parcellate ROI 
       VTK_CREATE(vtkImageMathematics, roiParcellation);
       roiParcellation->SetInput1(roiMap->GetOutput());
       roiParcellation->SetInput2(castParcellation->GetOutput());
       roiParcellation->SetOperationToMultiply();
       roiParcellation->Update();
 
-      VTK_CREATE(vtkImageThreshold, changedSeg);
-      changedSeg->SetInput(input);
-      changedSeg->ThresholdBetween(childLabel, childLabel);
-      changedSeg->ReplaceOutOff();
-      changedSeg->SetInValue(0);
-      changedSeg->Update();
+      // Create label map where ROI is set to 0 and everything else is unchanged 
+      // Just included this to prevent loops 
+      VTK_CREATE(vtkImageData, tempCurrParcel);
+      tempCurrParcel->DeepCopy(currentParcellation);
 
+      VTK_CREATE(vtkImageMathematics, bgParcellation);
+      bgParcellation->SetInput1(bgMap->GetOutput());
+      bgParcellation->SetInput2(tempCurrParcel); 
+      bgParcellation->SetOperationToMultiply();
+      bgParcellation->Update();
+
+      // Now update the ROI with the new parcellation 
       VTK_CREATE(vtkImageMathematics, parcellatedSeg);
-      parcellatedSeg->SetInput1(changedSeg->GetOutput());
+      parcellatedSeg->SetInput1(bgParcellation->GetOutput());
       parcellatedSeg->SetInput2(roiParcellation->GetOutput());
       parcellatedSeg->SetOperationToAdd();
       parcellatedSeg->Update();
+
+      // Copy results over before pipeline is destroyed  
+      currentParcellation->DeepCopy(parcellatedSeg->GetOutput()) ;
+
       }
     else
       {
-      this->SubParcelateSegmentation(segmentation, childID);
+    this->SubParcelateSegmentation(origSegCopy, currentParcellation, childID);
       }
 
     }
@@ -2165,7 +2191,7 @@ int vtkEMSegmentLogic::StartSegmentationWithoutPreprocessingAndSaving()
   if (this->GetMRMLManager()->GetEnableSubParcellation())
     {
     vtkstd::cout << "=== Sub-Parcellation === " << vtkstd::endl;
-    this->SubParcelateSegmentation(postProcessing,
+    this->SubParcelateSegmentation(postProcessing, postProcessing,
         this->GetMRMLManager()->GetTreeRootNodeID());
     }
 
