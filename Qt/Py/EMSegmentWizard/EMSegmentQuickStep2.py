@@ -60,6 +60,7 @@ class EMSegmentQuickStep2( EMSegmentStep ) :
     self.__anatomicalTree.toolTip = 'Please configure a hierarchy of structures for the input datasets.'
     self.__anatomicalTree.setSizePolicy( qt.QSizePolicy.MinimumExpanding, qt.QSizePolicy.MinimumExpanding )
     anatomicalTreeGroupBoxLayout.addWidget( self.__anatomicalTree )
+    self.__anatomicalTree.disableUpdateValueFlag = False
 
   def onColorNodeChanged( self ):
     '''
@@ -88,6 +89,8 @@ class EMSegmentQuickStep2( EMSegmentStep ) :
 
     if comingFrom.id() == Helper.GetNthStepId( 7 ):
       return
+
+    self.__anatomicalTree.disableUpdateValueFlag = False
 
     if self.__numberOfStructures == 0:
 
@@ -119,5 +122,5 @@ class EMSegmentQuickStep2( EMSegmentStep ) :
     super( EMSegmentQuickStep2, self ).validate( desiredBranchId )
 
     self.mrmlManager().SetEntireLeafNodeNamesToIntensityLabelName()
-    
+    self.__anatomicalTree.disableUpdateValueFlag = True 
     self.validationSucceeded( desiredBranchId )

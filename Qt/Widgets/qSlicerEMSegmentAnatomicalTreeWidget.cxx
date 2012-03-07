@@ -103,10 +103,12 @@ qSlicerEMSegmentAnatomicalTreeWidgetPrivate::qSlicerEMSegmentAnatomicalTreeWidge
   this->ProbabilityMapColumnVisible = false;
   this->ParcellationMapColumnVisible = false;
   this->AddDeleteSubclassesEnabled = false;
+  this->DisableUpdateValueFlag = false;
 
   this->CurrentNode = 0;
 
   this->initializeHorizontalHeader();
+  
 }
 
 //-----------------------------------------------------------------------------
@@ -548,6 +550,10 @@ void qSlicerEMSegmentAnatomicalTreeWidgetPrivate::onCurrentColorChanged(int inde
 {
   Q_Q(qSlicerEMSegmentAnatomicalTreeWidget);
 
+  if (this->DisableUpdateValueFlag )
+    { 
+      return ;
+    }
   // some magic to get the selected treeNodeId
   QWidget* currentWidget = (QWidget*)QObject::sender();
   QStandardItem * item = this->TreeModel->itemFromIndex(this->TreeView->indexAt(currentWidget->pos()));
@@ -583,6 +589,7 @@ qSlicerEMSegmentAnatomicalTreeWidget::qSlicerEMSegmentAnatomicalTreeWidget(QWidg
   // Display checkboxes hidden by default
   this->setDisplayMRMLIDsCheckBoxVisible(false);
   this->setDisplayAlphaCheckBoxVisible(false);
+  this->setDisableUpdateValueFlag(false);
 }
 
 //-----------------------------------------------------------------------------
@@ -858,6 +865,18 @@ void qSlicerEMSegmentAnatomicalTreeWidget::setAddDeleteSubclassesEnabled(bool en
   Q_D(qSlicerEMSegmentAnatomicalTreeWidget);
   d->AddDeleteSubclassesEnabled = enabled;
 }
+
+//-----------------------------------------------------------------------------
+CTK_GET_CPP(qSlicerEMSegmentAnatomicalTreeWidget, bool,
+            disableUpdateValueFlag, DisableUpdateValueFlag);
+
+//-----------------------------------------------------------------------------
+void qSlicerEMSegmentAnatomicalTreeWidget::setDisableUpdateValueFlag(bool disable)
+{
+  Q_D(qSlicerEMSegmentAnatomicalTreeWidget);
+  d->DisableUpdateValueFlag = disable ;
+}
+
 
 //-----------------------------------------------------------------------------
 void qSlicerEMSegmentAnatomicalTreeWidget::showContextMenu(const QPoint & point )

@@ -139,6 +139,7 @@ public:
   bool                     ProbabilityMapColumnVisible;
   bool                     ParcellationMapColumnVisible;
   bool                     AddDeleteSubclassesEnabled;
+  bool                     DisableUpdateValueFlag;
 };
 
 #endif
