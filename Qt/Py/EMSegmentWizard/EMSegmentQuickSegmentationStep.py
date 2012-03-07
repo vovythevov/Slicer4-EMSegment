@@ -22,15 +22,23 @@ class EMSegmentQuickSegmentationStep( EMSegmentStep ) :
     '''
     '''
     # notify user
-    message = qt.QMessageBox( qt.QMessageBox.NoIcon, "Please wait", "Please wait while pre-processing runs..", qt.QMessageBox.Ignore )
-    message.setModal( False )
-    message.show()
+    dialog = qt.QMessageBox()
+    dialog.setWindowTitle("Please wait")
+    dialog.setText("Please wait while pre-processing runs..")
+    dialog.setModal( False )
+    dialog.show()
+
+    # message = qt.QMessageBox( qt.QMessageBox.NoIcon, "Please wait", "Please wait while pre-processing runs..", qt.QMessageBox.Ignore )
+    # message.setModal( False )
+    # message.show()
     slicer.app.processEvents()
 
     # run preprocessing
     returnValue = tcl( "::EMSegmenterPreProcessingTcl::Run" )
 
-    message.hide()
+    # message.hide()
+    dialog.hide()
+
     slicer.app.processEvents()
 
     if not returnValue or int( returnValue ) != 0:
@@ -95,15 +103,23 @@ class EMSegmentQuickSegmentationStep( EMSegmentStep ) :
     self.logic().CreateOutputVolumeNode()
 
     # notify user
-    message = qt.QMessageBox( qt.QMessageBox.NoIcon, "Please wait", "Please wait while the segmentation runs..", qt.QMessageBox.Ignore )
-    message.setModal( False )
-    message.show()
+    dialog = qt.QMessageBox()
+    dialog.setWindowTitle("Please wait")
+    dialog.setText("Please wait while the segmentation runs..")
+    dialog.setModal( False )
+    dialog.show()
+
+#    message = qt.QMessageBox( qt.QMessageBox.NoIcon, "Please wait", "Please wait while the segmentation runs..", qt.QMessageBox.Ignore )
+#    message.setModal( False )
+#    message.show()
+
     slicer.app.processEvents()
 
     # start the segmentation
     returnValue = self.logic().StartSegmentationWithoutPreprocessing( slicer.app.applicationLogic() )
 
-    message.hide()
+    # message.hide()
+    dialog.hide()
     slicer.app.processEvents()
 
     if returnValue != 0:
