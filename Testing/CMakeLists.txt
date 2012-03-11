@@ -631,7 +631,7 @@ if(NOT DISABLE_CXX_TESTING)
       COMMAND ${Slicer_LAUNCH_COMMAND} $<TARGET_FILE:EMSegmentCommandLine>
       ${Slicer_LAUNCHER_ADDITIONAL_ARGS}
       --verbose --mrmlSceneFileName
-      ${EMSegment_SOURCE_DIR}/Tasks/Human-Eye.mrml
+      ${EMSegment_SOURCE_DIR}/Tasks/_Human-Eye.mrml
       --targetVolumeFileNames
       ${EMSegment_TESTDATA_DIR}/MRI-Human-Brain/${size}_MRIHumanBrain_T1_aligned.nrrd
       --resultVolumeFileName
@@ -712,7 +712,7 @@ if(NOT DISABLE_CXX_TESTING)
        COMMAND ${Slicer_LAUNCH_COMMAND} $<TARGET_FILE:EMSegmentCommandLine>
        ${Slicer_LAUNCHER_ADDITIONAL_ARGS}
        --verbose --mrmlSceneFileName
-       ${EMSegment_SOURCE_DIR}/Tasks/MRI-Human-Brain-Exp.mrml
+       ${EMSegment_SOURCE_DIR}/Tasks/_MRI-Human-Brain-Exp.mrml
        --targetVolumeFileNames
        ${EMSegment_TESTDATA_DIR}/MRI-Human-Brain/${size}_MRIHumanBrain_T1_aligned.nrrd
        --resultVolumeFileName
@@ -828,7 +828,7 @@ if(NOT DISABLE_CXX_TESTING)
       COMMAND ${Slicer_LAUNCH_COMMAND} $<TARGET_FILE:EMSegmentCommandLine>
       ${Slicer_LAUNCHER_ADDITIONAL_ARGS}
       --verbose --mrmlSceneFileName
-      ${EMSegment_SOURCE_DIR}/Tasks/Test-Atlas-Cluster.mrml
+      ${EMSegment_SOURCE_DIR}/Tasks/_Test-Atlas-Cluster.mrml
       --targetVolumeFileNames
       ${EMSegment_SOURCE_DIR}/../AtlasCreator/TestData/originals/case62.nrrd
       --registrationPackage
