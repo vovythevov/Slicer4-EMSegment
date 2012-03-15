@@ -156,6 +156,10 @@ class EMSegmentDefineMiscParametersStep( EMSegmentStep ) :
   def validate( self, desiredBranchId ):
     '''
     '''
+    #
+    # Need to do that bc otherwise minimum island size is not updated 
+    #
+    self.propagateToMRML()
     super( EMSegmentDefineMiscParametersStep, self ).validate( desiredBranchId )
     self.validationSucceeded( desiredBranchId )
 
