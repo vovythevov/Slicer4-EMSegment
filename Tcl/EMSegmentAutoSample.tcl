@@ -383,7 +383,7 @@ namespace eval EMSegmenterAutoSampleTcl {
             }
             set det [ComputeCovarianceDeterminant  $NumInputChannel]
             if  { $det <= 0  } {
-                EMSegmentPrint $LOGIC "EMSegmentGaussCurveCalculation: Covariance Matrix was non positive (Det: [format %.3f $det]) - set sides to 0 " 1
+                EMSegmentPrint $LOGIC "EMSegmentGaussCurveCalculation: Covariance Matrix was non positive (Det: [format %.3f $det]) - set sides to 0 " 0
                 for {set i 0} {$i < $NumInputChannel} {incr i} {
                     for {set j [expr $i +1] } {$j < $NumInputChannel} {incr j} {
                         set EMSegment(GaussCurveCalc,Covariance,$i,$j) 0.0
