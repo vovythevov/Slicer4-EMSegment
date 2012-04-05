@@ -822,8 +822,9 @@ if(NOT DISABLE_CXX_TESTING)
     endif(EMSEG_RUN_COMPARE_TESTS)
 
 
-    if("${Slicer_VERSION_MAJOR}" EQUAL "3")
-    # Task Test-Atlas-Cluster, only for Slicer3
+    if(WIN32 AND  "${Slicer_VERSION_MAJOR}" EQUAL "3")
+    # Task Test-Atlas-Cluster, only for Slicer3 and mac or linux
+
     add_test(NAME EMSegCL_Task_TestAtlasCluster_${registrationpackage}_${size}
       COMMAND ${Slicer_LAUNCH_COMMAND} $<TARGET_FILE:EMSegmentCommandLine>
       ${Slicer_LAUNCHER_ADDITIONAL_ARGS}
