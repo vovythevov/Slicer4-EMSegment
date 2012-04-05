@@ -50,7 +50,7 @@ vtkMRMLEMSTreeParametersParentNode::vtkMRMLEMSTreeParametersParentNode()
   this->UseLLS_Recompute_Means        = false;
 
   this->StopEMType                    = 0;
-  this->StopEMMaxIterations           = 4;
+  this->StopEMMaxIterations           = 3;
   this->StopEMValue                   = 0.0;
 
   this->StopMFAType                   = 0;
