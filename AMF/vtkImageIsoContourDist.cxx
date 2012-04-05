@@ -257,7 +257,7 @@ void vtkImageIsoContourDist::IsoSurfDist2D( )
   register float        val,val0,val1,diff;
   register float        val0_new,val1_new;
   int          displace[2];  
-  float        Grad[2];
+  float        Grad[2] = {0,0};
   vtkFloatingPointType   vs[3];
   register float        norm = 0 ;
   unsigned char         grad_computed;
@@ -623,7 +623,7 @@ int vtkImageIsoContourDist::SplitBand(int& first, int& last, int num, int total)
 void vtkImageIsoContourDist::IsoSurfDist3D_band( int first_band, int last_band)
 {
 
-  register int          x,y,z,p,p1;
+  register int          x=0,y=0,z=0,p,p1;
   register int          i,n;
   register int          sign, neigh_sign;
   register float        val,val0,val1,diff;
@@ -631,7 +631,7 @@ void vtkImageIsoContourDist::IsoSurfDist3D_band( int first_band, int last_band)
   int          displace[3];  
   float        Grad[3];
   vtkFloatingPointType        vs[3];
-  register float        norm;
+  register float        norm=0;
   unsigned char         grad_computed;
   register float*       inPtr0;
   register float*       outPtr0;

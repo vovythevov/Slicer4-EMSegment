@@ -240,8 +240,8 @@ void vtkImagePropagateDist::PropagateDanielsson2D( )
     int                i,j;
     register float known_dist_pos;
     register float known_dist_neg;
-    register float next_dist_pos;
-    register float next_dist_neg;
+    register float next_dist_pos=0;
+    register float next_dist_neg=0;
     register float step_dist;
 
     int       iteration;
@@ -686,8 +686,8 @@ void vtkImagePropagateDist::PropagateDanielsson3D( )
     int                i,j;
     register float known_dist_pos;
     register float known_dist_neg;
-    register float next_dist_pos;
-    register float next_dist_neg;
+    register float next_dist_pos=0;
+    register float next_dist_neg=0;
     register float step_dist;
 
     int       iteration;
