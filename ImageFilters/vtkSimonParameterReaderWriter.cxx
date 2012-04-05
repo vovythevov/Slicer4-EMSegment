@@ -49,7 +49,10 @@ int countFloatsInString(const char *fltString)
   while ((UCHAR(*start) != '\0') && isspace(UCHAR(*start))) { start++; }
   if (UCHAR(*start) == '\0') return -1; /* Don't ask to convert empty strings */
   do {
-     strtod(start, (char **)&end);
+    // just doing the thing below to get rid of warning - I actually think that this function does not do anything here 
+    double blub =   strtod(start, (char **)&end);
+    blub +=1;
+ 
     if (end == start) { 
       /* I want to parse strings of numbers with comments at the end */
       /* This return is executed when the next thing along can't be parsed */
