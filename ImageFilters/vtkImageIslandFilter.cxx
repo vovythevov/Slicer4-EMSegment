@@ -195,9 +195,19 @@ template <class T> void IslandMemory<T>::SetSize(int NewSize, IslandMemory<T>* S
   int  SetID          = SetIsland->ID;
   IslandMemory<T>* Ptr =  this->DeleteIsland(SetID);
   // Cannot be last element
-  assert(Ptr);
+  if (!Ptr) {
+     cout << "ERROR: Something went wrong - last element was returned"<< endl;     
+     return; 
+  }
   // cout << "ID " << SetID << endl;
-  if ((NewSize > SetSize) && (SetID > -1)) assert(Ptr->AddIsland(SetStartVoxel, NewSize, SetLabel, SetID,MaxSize) > -1);
+  if ((NewSize > SetSize) && (SetID > -1)) 
+    {
+      if (Ptr->AddIsland(SetStartVoxel, NewSize, SetLabel, SetID,MaxSize) <= -1)
+      {
+            cout << "ERROR: Something went wrong - Island was not correctly added"<< endl;     
+            return; 
+      }
+    }
   else if (this->AddIsland(SetStartVoxel, NewSize, SetLabel, SetID, MaxSize) <= -1)
     {
       cout << "ERROR: Something went wrong"<< endl;
