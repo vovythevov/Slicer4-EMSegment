@@ -580,6 +580,37 @@ if(NOT DISABLE_CXX_TESTING)
 
   endforeach(registrationpackage ${registrationpackages})
 
+# Test 2 Channel Test
+  set(registrationpackage BRAINS)
+  set(scalartype uint)
+  set(size very_small)
+add_test(
+      NAME EMSegCL_Task_MRIHumanBrain_2CH
+      COMMAND ${Slicer_LAUNCH_COMMAND} $<TARGET_FILE:EMSegmentCommandLine>
+      ${Slicer_LAUNCHER_ADDITIONAL_ARGS}
+      --verbose --mrmlSceneFileName
+      ${EMSegment_TESTDATA_DIR}/MRI-Human-Brain2Ch.mrml
+      --targetVolumeFileNames
+      ${EMSegment_TESTDATA_DIR}/MRI-Human-Brain/${size}_MRIHumanBrain_T1_aligned.nrrd,${EMSegment_TESTDATA_DIR}/MRI-Human-Brain/very_small_MRIHumanBrain_T1CheckBoard_aligned.nrrd  
+      --resultVolumeFileName
+      ${EMSegment_BINARY_DIR}/RESULT_${registrationpackage}_${size}_MRIHumanBrain_T1_aligned.nrrd
+      --taskPreProcessingSetting
+      ":C1:C1"
+      --registrationPackage
+      ${registrationpackage}
+      --registrationAffineType
+      -1
+      --registrationDeformableType
+      -1
+      )
+
+      set_tests_properties(
+        EMSegCL_Task_MRIHumanBrain_2CH
+        PROPERTIES
+        FAIL_REGULAR_EXPRESSION
+        "ERROR"
+        )
+
 
 
   foreach(size ${sizes})
