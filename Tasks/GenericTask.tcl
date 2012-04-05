@@ -1824,13 +1824,13 @@ namespace eval EMSegmenterPreProcessingTcl {
         $LOGIC PrintText "TCL: =========================================="
 
         set PLUGINS_DIR "[$LOGIC GetPluginsDirectory]"
-        set CMD "\"${PLUGINS_DIR}/N4ITKBiasFieldCorrection\""
-
         # initialize
         set correctedVolumeNodeList ""
 
         # Run the algorithm on each volume
         for { set i 0 } { $i < [$inputNode GetNumberOfVolumes] } { incr i } {
+
+           set CMD "\"${PLUGINS_DIR}/N4ITKBiasFieldCorrection\""
 
             set inputVolumeNode [$inputNode GetNthVolumeNode $i]
             set inputVolumeData [$inputVolumeNode GetImageData]
@@ -1880,6 +1880,8 @@ namespace eval EMSegmenterPreProcessingTcl {
             # Read results back, we have to read 2 results
 
             ReadDataFromDisk $outputVolumeNode $outputVolumeFileName Volume
+
+
             file delete -force $outputVolumeFileName
 
             # ReadDataFromDisk $outbiasVolumeNode $outbiasVolumeFileName Volume
