@@ -2253,8 +2253,9 @@ int vtkEMSegmentLogic::StartSegmentationWithoutPreprocessingAndSaving()
     }
 
   // vtkstd::cout << "=== Cleanup  === " << vtkstd::endl;
+#ifdef Slicer3_USE_KWWIDGETS
   outVolume->SetModifiedSinceRead(1);
-
+#endif
   return EXIT_SUCCESS;
 }
 
