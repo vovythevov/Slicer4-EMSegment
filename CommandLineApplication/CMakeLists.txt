@@ -78,7 +78,7 @@ if("${Slicer_VERSION_MAJOR}" EQUAL "3")
 
 else()
 
-  slicerMacroBuildCLI(
+  SEMMacroBuildCLI(
     NAME ${CLP_MODULE}
     TARGET_LIBRARIES ${CommandLineApplication_LIBRARIES}
     EXECUTABLE_ONLY
@@ -112,7 +112,7 @@ if("${Slicer_VERSION_MAJOR}" EQUAL "3")
 # TODO
 #else()
 
-#slicerMacroBuildCLI(
+#SEMMacroBuildCLI(
 #  NAME ${CLP_MODULE}
 #  TARGET_LIBRARIES ${CommandLineApplication_LIBRARIES}
 #  EXECUTABLE_ONLY
@@ -143,7 +143,7 @@ if("${Slicer_VERSION_MAJOR}" EQUAL "3")
 
 else()
 
-  slicerMacroBuildCLI(
+  SEMMacroBuildCLI(
     NAME ${CLP_MODULE}
     TARGET_LIBRARIES ${CommandLineApplication_LIBRARIES}
     EXECUTABLE_ONLY
