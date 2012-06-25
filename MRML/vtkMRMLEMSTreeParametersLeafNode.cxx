@@ -293,7 +293,7 @@ void vtkMRMLEMSTreeParametersLeafNode::ReadXMLAttributes(const char** attrs)
       this->DistributionSamplePointsRAS.clear();
       vtksys_stl::stringstream ss;
       ss << val;
-      vtkstd::vector<double> point(3);
+      std::vector<double> point(3);
       while (ss >> point[0] >> point[1] >> point[2])
         {
         this->DistributionSamplePointsRAS.push_back(point);
@@ -433,8 +433,8 @@ AddTargetInputChannel()
     this->LogCovarianceCorrection[i].push_back(0.0);
     }
   ++this->NumberOfTargetInputChannels; 
-  this->LogCovariance.push_back(vtkstd::vector<double>(this->NumberOfTargetInputChannels, 0.0));
-  this->LogCovarianceCorrection.push_back(vtkstd::vector<double>(this->NumberOfTargetInputChannels, 0.0));
+  this->LogCovariance.push_back(std::vector<double>(this->NumberOfTargetInputChannels, 0.0));
+  this->LogCovarianceCorrection.push_back(std::vector<double>(this->NumberOfTargetInputChannels, 0.0));
 }
 
 //-----------------------------------------------------------------------------
@@ -478,7 +478,7 @@ MoveNthTargetInputChannel(int fromIndex, int toIndex)
     this->LogCovarianceCorrection[i].insert(this->LogCovarianceCorrection[i].begin() + toIndex, movingParam);
     }
 
-  vtkstd::vector<double> movingVec = this->LogCovariance[fromIndex];
+  std::vector<double> movingVec = this->LogCovariance[fromIndex];
   this->LogCovariance.erase(this->LogCovariance.begin() + fromIndex);
   this->LogCovariance.insert(this->LogCovariance.begin() + toIndex, movingVec);
 

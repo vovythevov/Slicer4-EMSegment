@@ -609,10 +609,11 @@ int vtkImageLabelPropagation::IterativeRequestData( vtkInformation* vtkNotUsed( 
     {
     switch (inData->GetScalarType())
       {
-      vtkTemplateMacro6(vtkImageLabelPropagationInitialize,
+      
+      vtkTemplateMacro(vtkImageLabelPropagationInitialize(
                         this, 
-                        inData, (VTK_TT *)(inPtr), 
-                        outData, outExt, (float *)(outPtr) );
+                        inData, static_cast<VTK_TT *>(inPtr), 
+                        outData, outExt, (float *)(outPtr)));
       default:
         vtkErrorMacro(<< "Execute: Unknown ScalarType");
         return 1;
@@ -624,10 +625,10 @@ int vtkImageLabelPropagation::IterativeRequestData( vtkInformation* vtkNotUsed( 
     if( inData != outData )
       switch (inData->GetScalarType())
         {    
-        vtkTemplateMacro6(vtkImageLabelPropagationCopyData,
+        vtkTemplateMacro(vtkImageLabelPropagationCopyData(
                           this, 
-                          inData, (VTK_TT *)(inPtr), 
-                          outData, outExt, (float *)(outPtr) );
+                          inData, static_cast<VTK_TT *>(inPtr), 
+                          outData, outExt, (float *)(outPtr)));
         }
     }
   
@@ -636,7 +637,10 @@ int vtkImageLabelPropagation::IterativeRequestData( vtkInformation* vtkNotUsed( 
 
   switch (this->PropagatedMap->GetScalarType())
   {
-    vtkTemplateMacro(vtkImageLabelPropagationExecuteSaito( this, this->PropagatedMap, (VTK_TT *) proPtr, outData, outExt, (float *)(outPtr)));
+    vtkTemplateMacro(vtkImageLabelPropagationExecuteSaito(
+                      this, 
+                      this->PropagatedMap, static_cast<VTK_TT *>(proPtr), 
+                      outData, outExt, (float *)(outPtr)));
     default:
     vtkErrorMacro(<< "Execute: Unknown ScalarType");
     return 1;
@@ -654,8 +658,10 @@ int vtkImageLabelPropagation::IterativeRequestData( vtkInformation* vtkNotUsed( 
 
       switch (OriginalInData->GetScalarType())
     {
-      vtkTemplateMacro5(vtkImageLabelPropagationDefineSignedDistanceMap,
-                OriginalInData, (VTK_TT *)(OriginalInData->GetScalarPointerForExtent(OriginalInData->GetUpdateExtent())), outData, outExt, (float *)(outPtr));
+      vtkTemplateMacro(vtkImageLabelPropagationDefineSignedDistanceMap(
+                OriginalInData, 
+                static_cast<VTK_TT *>(OriginalInData->GetScalarPointerForExtent(OriginalInData->GetUpdateExtent())), 
+                outData, outExt, (float *)(outPtr)));
     default:
       vtkErrorMacro(<< "Execute: Unknown ScalarType");
       return 1;
@@ -678,21 +684,4 @@ void vtkImageLabelPropagation::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "Consider Anisotropy: " 
      << (this->ConsiderAnisotropy ? "On\n" : "Off\n");  
 }
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

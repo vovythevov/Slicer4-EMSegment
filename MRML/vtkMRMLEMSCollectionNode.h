@@ -74,14 +74,14 @@ protected:
 
   //BTX
   // provide mapping key->value and value->key
-  typedef vtkstd::string                    KeyType;
-  typedef vtkstd::string                    ValueType;
-  typedef vtkstd::map<KeyType, ValueType>   MapType;
+  typedef std::string                       KeyType;
+  typedef std::string                       ValueType;
+  typedef std::map<KeyType, ValueType>      MapType;
   mutable MapType                           KeyToNodeIDMap;
   mutable MapType                           NodeIDToKeyMap;
 
   // maintain order of keys
-  typedef vtkstd::list<KeyType>             KeyListType;
+  typedef std::list<KeyType>                KeyListType;
   typedef KeyListType::iterator             KeyIterator;
   typedef KeyListType::const_iterator       KeyConstIterator;  
   mutable KeyListType                       KeyList;

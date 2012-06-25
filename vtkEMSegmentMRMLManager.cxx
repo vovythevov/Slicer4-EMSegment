@@ -426,7 +426,7 @@ RemoveTreeNode(vtkIdType removedNodeID)
   // because GetTreeNodeChildNodeID is invalidated if a child is
   // removed
   int numChildren = this->GetTreeNodeNumberOfChildren(removedNodeID);
-  vtkstd::vector<vtkIdType> childIDs(numChildren);
+  std::vector<vtkIdType> childIDs(numChildren);
   int i;
   for (i = 0; i < numChildren; ++i)
     {
@@ -671,28 +671,28 @@ GetTreeNodeDistributionLogCovariance(vtkIdType nodeID,
 }
 
 //----------------------------------------------------------------------------
-vtkstd::vector<vtkstd::vector<double> >
+std::vector<std::vector<double> >
 vtkEMSegmentMRMLManager::
 GetTreeNodeDistributionLogCovariance(vtkIdType nodeID)
 {
   if (this->GetTreeParametersLeafNode(nodeID) == NULL)
     {
     vtkErrorMacro("Leaf parameters node is null for nodeID: " << nodeID);
-    vtkstd::vector<vtkstd::vector<double> > blub;
+    std::vector<std::vector<double> > blub;
     return blub;
     }
   return this->GetTreeParametersLeafNode(nodeID)->GetLogCovariance();
 }
 
 //----------------------------------------------------------------------------
-vtkstd::vector<vtkstd::vector<double> >
+std::vector<std::vector<double> >
 vtkEMSegmentMRMLManager::
 GetTreeNodeDistributionLogCovarianceCorrection(vtkIdType nodeID)
 {
   if (this->GetTreeParametersLeafNode(nodeID) == NULL)
     {
     vtkErrorMacro("Leaf parameters node is null for nodeID: " << nodeID);
-    vtkstd::vector<vtkstd::vector<double> > blub;
+    std::vector<std::vector<double> > blub;
     return blub;
     }
   return this->GetTreeParametersLeafNode(nodeID)->GetLogCovarianceCorrection();
@@ -868,7 +868,7 @@ vtkEMSegmentMRMLManager::
 UpdateIntensityDistributions()
 {
   // iterate over tree nodes
-  typedef vtkstd::vector<vtkIdType>  NodeIDList;
+  typedef std::vector<vtkIdType>  NodeIDList;
   typedef NodeIDList::const_iterator NodeIDListIterator;
   NodeIDList nodeIDList;
   this->GetListOfTreeNodeIDs(this->GetTreeRootNodeID(), nodeIDList);
@@ -887,7 +887,7 @@ vtkEMSegmentMRMLManager::
 ChangeTreeNodeDistributionsFromManualSamplingToManual()
 {
   // iterate over tree nodes
-  typedef vtkstd::vector<vtkIdType>  NodeIDList;
+  typedef std::vector<vtkIdType>  NodeIDList;
   typedef NodeIDList::const_iterator NodeIDListIterator;
   NodeIDList nodeIDList;
   this->GetListOfTreeNodeIDs(this->GetTreeRootNodeID(), nodeIDList);
@@ -924,22 +924,22 @@ UpdateIntensityDistributionFromSample(vtkIdType nodeID)
   //
   // the default is mean 0, zero covariance
   //
-  vtkstd::vector<double> logMean(numTargetImages, 0.0);
-  vtkstd::vector<vtkstd::vector<double> >
-    logCov(numTargetImages, vtkstd::vector<double>(numTargetImages, 0.0));
+  std::vector<double> logMean(numTargetImages, 0.0);
+  std::vector<std::vector<double> >
+    logCov(numTargetImages, std::vector<double>(numTargetImages, 0.0));
 
   if (numPoints > 0)
     {
       //
       // get all the intensities and compute the means
       //
-      vtkstd::vector<vtkstd::vector<double> >
-    logSamples(numTargetImages, vtkstd::vector<double>(numPoints, 0));
+      std::vector<std::vector<double> >
+    logSamples(numTargetImages, std::vector<double>(numPoints, 0));
 
       for (unsigned int imageIndex = 0; imageIndex < numTargetImages;
        ++imageIndex)
     {
-      vtkstd::string mrmlID = workingTarget->GetNthVolumeNodeID(imageIndex);
+      std::string mrmlID = workingTarget->GetNthVolumeNodeID(imageIndex);
       vtkIdType volumeID = this->MapMRMLNodeIDToVTKNodeID(mrmlID.c_str());
 
       for (unsigned int sampleIndex = 0; sampleIndex < numPoints;
@@ -1593,7 +1593,7 @@ vtkEMSegmentMRMLManager::
 GetTreeNodeFirstIDWithChildProbabilityError()
 {
   // iterate over tree nodes
-  typedef vtkstd::vector<vtkIdType>  NodeIDList;
+  typedef std::vector<vtkIdType>  NodeIDList;
   typedef NodeIDList::const_iterator NodeIDListIterator;
   NodeIDList nodeIDList;
   this->GetListOfTreeNodeIDs(this->GetTreeRootNodeID(), nodeIDList);
@@ -2227,7 +2227,7 @@ ResetTargetSelectedVolumes(const std::vector<vtkIdType>& volumeIDs)
       return;
     }
 
-      vtkstd::string name = volumeNode->GetName();
+      std::string name = volumeNode->GetName();
       if (name.empty())
     {
       name = volumeNode->GetID();
@@ -2290,7 +2290,7 @@ AddTargetSelectedVolume(vtkIdType volumeID)
     }
 
   // get volume name
-  vtkstd::string name = volumeNode->GetName() ? volumeNode->GetName() : "";
+  std::string name = volumeNode->GetName() ? volumeNode->GetName() : "";
   if (name.empty())
     {
       name = volumeNode->GetID();
@@ -3009,7 +3009,7 @@ ComputeAtlasNumberOfTrainingSamples()
   int maxNum = 0;
   int setFlag = 0;
 
-  typedef vtkstd::vector<vtkIdType>  NodeIDList;
+  typedef std::vector<vtkIdType>  NodeIDList;
   typedef NodeIDList::const_iterator NodeIDListIterator;
   NodeIDList nodeIDList;
 
@@ -3769,7 +3769,7 @@ IDMapContainsVTKNodeID(vtkIdType id)
 //-----------------------------------------------------------------------------
 void
 vtkEMSegmentMRMLManager::
-GetListOfTreeNodeIDs(vtkIdType rootNodeID, vtkstd::vector<vtkIdType>& idList)
+GetListOfTreeNodeIDs(vtkIdType rootNodeID, std::vector<vtkIdType>& idList)
 {
   if (rootNodeID == 0)
   {
@@ -3817,7 +3817,7 @@ PropogateAdditionOfSelectedTargetImage()
   }
 
   // iterate over tree nodes
-  typedef vtkstd::vector<vtkIdType>  NodeIDList;
+  typedef std::vector<vtkIdType>  NodeIDList;
   typedef NodeIDList::const_iterator NodeIDListIterator;
   NodeIDList nodeIDList;
   this->GetListOfTreeNodeIDs(this->GetTreeRootNodeID(), nodeIDList);
@@ -3837,7 +3837,7 @@ PropogateRemovalOfSelectedTargetImage(int imageIndex)
   this->GetGlobalParametersNode()->RemoveNthTargetInputChannel(imageIndex);
 
   // iterate over tree nodes
-  typedef vtkstd::vector<vtkIdType>  NodeIDList;
+  typedef std::vector<vtkIdType>  NodeIDList;
   typedef NodeIDList::const_iterator NodeIDListIterator;
   NodeIDList nodeIDList;
   this->GetListOfTreeNodeIDs(this->GetTreeRootNodeID(), nodeIDList);
@@ -3857,7 +3857,7 @@ PropogateMovementOfSelectedTargetImage(int fromIndex, int toIndex)
     MoveNthTargetInputChannel(fromIndex, toIndex);
 
   // iterate over tree nodes
-  typedef vtkstd::vector<vtkIdType>  NodeIDList;
+  typedef std::vector<vtkIdType>  NodeIDList;
   typedef NodeIDList::const_iterator NodeIDListIterator;
   NodeIDList nodeIDList;
   this->GetListOfTreeNodeIDs(this->GetTreeRootNodeID(), nodeIDList);
@@ -3951,7 +3951,7 @@ UpdateMapsFromMRML()
 
     if (node != NULL)
       {
-      vtkstd::string mrmlID = node->GetID();
+      std::string mrmlID = node->GetID();
 
       if (oldMRMLtoVTKMap.count(mrmlID) > 0)
         {
@@ -3982,7 +3982,7 @@ UpdateMapsFromMRML()
 
     if (node != NULL)
       {
-      vtkstd::string mrmlID = node->GetID();
+      std::string mrmlID = node->GetID();
 
       if (oldMRMLtoVTKMap.count(mrmlID) > 0)
         {
@@ -4175,56 +4175,56 @@ void
 vtkEMSegmentMRMLManager::
 PrintTree(vtkIdType rootID, vtkIndent indent)
 {
-  vtkstd::string mrmlID = this->MapVTKNodeIDToMRMLNodeID(rootID);
+  std::string mrmlID = this->MapVTKNodeIDToMRMLNodeID(rootID);
   vtkMRMLEMSTreeNode* rnode = this->GetTreeNode(rootID);
   const char* name = this->GetTreeNodeName(rootID);
 
   if (rnode == NULL)
     {
-    vtkstd::cout << indent << "Node is null for id=" << rootID << std::endl;
+    std::cout << indent << "Node is null for id=" << rootID << std::endl;
     return;
     }
 
 
-    vtkstd::cout << indent << "Name: " << (name ? name : "(null)")
-                 << vtkstd::endl;
-    vtkstd::cout << indent << "ID: "    << rootID
+    std::cout << indent << "Name: " << (name ? name : "(null)")
+                 << std::endl;
+    std::cout << indent << "ID: "    << rootID
                  << " MRML ID: " << rnode->GetID()
-                 << " From Map: " << mrmlID << vtkstd::endl;
-    vtkstd::cout << indent << "AlignedSpatialAtlas: "   ;
+                 << " From Map: " << mrmlID << std::endl;
+    std::cout << indent << "AlignedSpatialAtlas: "   ;
     vtkMRMLVolumeNode* alignedSpatial = this->GetAlignedSpatialPriorFromTreeNodeID(rootID);
     if (alignedSpatial && alignedSpatial->GetName()) {
-      vtkstd::cout <<  alignedSpatial->GetName() << endl;
+      std::cout <<  alignedSpatial->GetName() << endl;
     } else {
-      vtkstd::cout << "None" << endl;
+      std::cout << "None" << endl;
     }
 
-    vtkstd::cout << indent << "Is Leaf: " << this->GetTreeNodeIsLeaf(rootID)  << vtkstd::endl;
+    std::cout << indent << "Is Leaf: " << this->GetTreeNodeIsLeaf(rootID)  << std::endl;
 
     if (!this->GetTreeNodeIsLeaf(rootID) )
       {
       int numChildren = this->GetTreeNodeNumberOfChildren(rootID);
 
-      vtkstd::cout << indent << "Num. Children: " << numChildren << vtkstd::endl;
-      vtkstd::cout << indent << "Child IDs from parent: ";
+      std::cout << indent << "Num. Children: " << numChildren << std::endl;
+      std::cout << indent << "Child IDs from parent: ";
       for (int i = 0; i < numChildren; ++i)
         {
-        vtkstd::cout << rnode->GetNthChildNodeID(i) << " ";
+        std::cout << rnode->GetNthChildNodeID(i) << " ";
         }
-      vtkstd::cout << vtkstd::endl;
-      vtkstd::cout << indent << "Child IDs from children: ";
+      std::cout << std::endl;
+      std::cout << indent << "Child IDs from children: ";
       for (int i = 0; i < numChildren; ++i)
         {
-        vtkstd::cout << rnode->GetNthChildNode(i)->GetID() << " ";
+        std::cout << rnode->GetNthChildNode(i)->GetID() << " ";
         }
-      vtkstd::cout << vtkstd::endl;
+      std::cout << std::endl;
 
       indent = indent.GetNextIndent();
       for (int i = 0; i < numChildren; ++i)
         {
         vtkIdType childID = this->GetTreeNodeChildNodeID(rootID, i);
-        vtkstd::cout << indent << "Child " << i << " (" << childID
-                     << ") of node " << rootID << vtkstd::endl;
+        std::cout << indent << "Child " << i << " (" << childID
+                     << ") of node " << rootID << std::endl;
         this->PrintTree(childID, indent);
         }
       }
@@ -4247,25 +4247,25 @@ vtkEMSegmentMRMLManager::PrintVolumeInfo( vtkMRMLScene* mrmlScene)
     continue;
       }
     // print volume node ID and name
-    vtkstd::cout << "Volume Node ID / Name / ImageData : " << volumeNode->GetID()
-         << " / " << volumeNode->GetName() << " / " << (volumeNode->GetImageData() ? "Defined" : "NULL")  << vtkstd::endl;
+    std::cout << "Volume Node ID / Name / ImageData : " << volumeNode->GetID()
+         << " / " << volumeNode->GetName() << " / " << (volumeNode->GetImageData() ? "Defined" : "NULL")  << std::endl;
     // print display node id
-    vtkstd::cout << " Display Node ID: "
+    std::cout << " Display Node ID: "
               << (volumeNode->GetDisplayNode() ?
                   volumeNode->GetDisplayNode()->GetID() : "NULL")
-              << vtkstd::endl;
+              << std::endl;
 
     // print storage node id and filename
-    vtkstd::cout << " Storage Node ID / Filename: ";
+    std::cout << " Storage Node ID / Filename: ";
     if (volumeNode->GetStorageNode())
       {
-    vtkstd::cout <<   (volumeNode->GetStorageNode()->GetID() ? volumeNode->GetStorageNode()->GetID() : "NULL")
+    std::cout <<   (volumeNode->GetStorageNode()->GetID() ? volumeNode->GetStorageNode()->GetID() : "NULL")
                      << " / " << (volumeNode->GetStorageNode()->GetFileName() ? volumeNode->GetStorageNode()->GetFileName() : "NULL")
-                     << vtkstd::endl;
+                     << std::endl;
       }
     else
       {
-        vtkstd::cout <<  "Not Defined" << vtkstd::endl;
+        std::cout <<  "Not Defined" << std::endl;
       }
     }
 }
@@ -4635,7 +4635,7 @@ void vtkEMSegmentMRMLManager::SetTreeNodeDistributionLogCovarianceWithCorrection
 
    if (!this->TreeNodeDistributionLogCovarianceCorrectionEnabled(nodeID))
      {
-        vtkstd::vector<vtkstd::vector<double> > logCov =  node->GetLogCovariance();
+        std::vector<std::vector<double> > logCov =  node->GetLogCovariance();
        //make sure it is not because of a rounding error
     if (fabs( value - logCov[rowIndex][columnIndex]) < 0.001)
      {

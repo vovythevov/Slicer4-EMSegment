@@ -394,7 +394,7 @@ itcl::body EMSegmenterGraph::CreateHistogramButton {f index} {
     }
 }
 
-# similar to vtkEMSegmentMRMLManager::GetListOfTreeNodeIDs(vtkIdType rootNodeID, vtkstd::vector<vtkIdType>& idList)
+# similar to vtkEMSegmentMRMLManager::GetListOfTreeNodeIDs(vtkIdType rootNodeID, std::vector<vtkIdType>& idList)
 # but only returns children
 itcl::body EMSegmenterGraph::GetListOfClassNodeIDs { rootNodeID } { 
 

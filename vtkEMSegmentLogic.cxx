@@ -894,25 +894,25 @@ void vtkEMSegmentLogic::CopyDataToSegmenter(vtkImageEMLocalSegmenter* segmenter)
   //
   // copy atlas related parameters to algorithm
   //
-  vtkstd::cout << "atlas data...";
+  std::cout << "atlas data...";
   this->CopyAtlasDataToSegmenter(segmenter);
 
   //
   // copy target related parameters to algorithm
   //
-  vtkstd::cout << "target data...";
+  std::cout << "target data...";
   this->CopyTargetDataToSegmenter(segmenter);
 
   //
   // copy global parameters to algorithm
   //
-  vtkstd::cout << "global data...";
+  std::cout << "global data...";
   this->CopyGlobalDataToSegmenter(segmenter);
 
   //
   // copy tree base parameters to algorithm
   //
-  vtkstd::cout << "tree data...";
+  std::cout << "tree data...";
   VTK_CREATE(vtkImageEMLocalSuperClass, rootNode);
   this->CopyTreeDataToSegmenter(rootNode,
       this->MRMLManager->GetTreeRootNodeID());
@@ -1342,10 +1342,10 @@ int vtkEMSegmentLogic::ConvertGUIEnumToAlgorithmEnumInterpolationType(int guiEnu
 }
 
 //----------------------------------------------------------------------------
-vtkstd::string vtkEMSegmentLogic::GetTclGeneralDirectory()
+std::string vtkEMSegmentLogic::GetTclGeneralDirectory()
 {
   // Later do automatically
-  vtkstd::string file_path = this->GetModuleShareDirectory() + vtkstd::string(
+  std::string file_path = this->GetModuleShareDirectory() + std::string(
       "/Tcl");
   return vtksys::SystemTools::ConvertToOutputPath(file_path.c_str());
 }
@@ -1476,7 +1476,7 @@ void vtkEMSegmentLogic::CreatePackageFilenames(vtkMRMLScene* scene, const char* 
 
   // get the full path to the scene
   std::vector < std::string > scenePathComponents;
-  vtkstd::string rootDir = newSceneManager->GetMRMLScene()->GetRootDirectory();
+  std::string rootDir = newSceneManager->GetMRMLScene()->GetRootDirectory();
   if (rootDir.find_last_of("/") == rootDir.length() - 1)
     {
     vtkDebugMacro("em seg: found trailing slash in : " << rootDir);
@@ -1554,7 +1554,7 @@ void vtkEMSegmentLogic::CreatePackageFilenames(vtkMRMLScene* scene, const char* 
           }
         volumeStorageNode->SetCenterImage(centerImages);
         // create new filename
-        vtkstd::stringstream defaultFilename;
+        std::stringstream defaultFilename;
         defaultFilename << "Target" << i << "_Input.mhd";
         std::string oldFilename =
             (storageNode->GetFileName() ? storageNode->GetFileName()
@@ -1600,7 +1600,7 @@ void vtkEMSegmentLogic::CreatePackageFilenames(vtkMRMLScene* scene, const char* 
           }
         volumeStorageNode->SetCenterImage(centerImages);
         // create new filename
-        vtkstd::stringstream defaultFilename;
+        std::stringstream defaultFilename;
         defaultFilename << "Target" << i << "_Aligned.mhd";
         std::string oldFilename =
             (storageNode->GetFileName() ? storageNode->GetFileName()
@@ -1651,7 +1651,7 @@ void vtkEMSegmentLogic::CreatePackageFilenames(vtkMRMLScene* scene, const char* 
           }
         volumeStorageNode->SetCenterImage(centerImages);
         // create new filename
-        vtkstd::stringstream defaultFilename;
+        std::stringstream defaultFilename;
         defaultFilename << "Atlas" << i << "_Input.mhd";
         std::string oldFilename =
             (storageNode->GetFileName() ? storageNode->GetFileName()
@@ -1697,7 +1697,7 @@ void vtkEMSegmentLogic::CreatePackageFilenames(vtkMRMLScene* scene, const char* 
           }
         volumeStorageNode->SetCenterImage(centerImages);
         // create new filename
-        vtkstd::stringstream defaultFilename;
+        std::stringstream defaultFilename;
         defaultFilename << "Atlas" << i << "_Aligned.mhd";
         std::string oldFilename =
             (storageNode->GetFileName() ? storageNode->GetFileName()
@@ -1722,7 +1722,7 @@ void vtkEMSegmentLogic::CreatePackageFilenames(vtkMRMLScene* scene, const char* 
 //-----------------------------------------------------------------------------
 bool vtkEMSegmentLogic::CreatePackageDirectories(const char* packageDirectoryName)
 {
-  vtkstd::string packageDirectory(packageDirectoryName);
+  std::string packageDirectory(packageDirectoryName);
 
   // check that parent directory exists
   std::string parentDirectory = vtksys::SystemTools::GetParentDirectory(
@@ -2131,20 +2131,20 @@ int vtkEMSegmentLogic::StartSegmentationWithoutPreprocessingAndSaving()
   //
   // copy mrml data to segmenter class
   //
-  vtkstd::cout << "EMSEG: Copying data to algorithm class...";
+  std::cout << "EMSEG: Copying data to algorithm class...";
   this->CopyDataToSegmenter(segmenter);
-  vtkstd::cout << "DONE" << vtkstd::endl;
+  std::cout << "DONE" << std::endl;
 
   if (this->GetDebug())
     {
-    vtkstd::cout << "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" << vtkstd::endl;
-    vtkstd::cout << "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" << vtkstd::endl;
-    vtkstd::cout << "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" << vtkstd::endl;
+    std::cout << "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" << std::endl;
+    std::cout << "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" << std::endl;
+    std::cout << "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" << std::endl;
     vtkIndent indent;
-    segmenter->PrintSelf(vtkstd::cout, indent);
-    vtkstd::cout << "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" << vtkstd::endl;
-    vtkstd::cout << "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" << vtkstd::endl;
-    vtkstd::cout << "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" << vtkstd::endl;
+    segmenter->PrintSelf(std::cout, indent);
+    std::cout << "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" << std::endl;
+    std::cout << "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" << std::endl;
+    std::cout << "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" << std::endl;
     }
 
   //
@@ -2152,9 +2152,9 @@ int vtkEMSegmentLogic::StartSegmentationWithoutPreprocessingAndSaving()
   //
   try
     {
-    vtkstd::cout << "[Start] Segmentation algorithm..." << vtkstd::endl;
+    std::cout << "[Start] Segmentation algorithm..." << std::endl;
     segmenter->Update();
-    vtkstd::cout << "[Done]  Segmentation algorithm." << vtkstd::endl;
+    std::cout << "[Done]  Segmentation algorithm." << std::endl;
     } catch (std::exception& e)
     {
     ErrorMsg = "Exception thrown during segmentation: " + std::string(e.what())
@@ -2165,17 +2165,17 @@ int vtkEMSegmentLogic::StartSegmentationWithoutPreprocessingAndSaving()
 
   if (this->GetDebug())
     {
-    vtkstd::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << vtkstd::endl;
-    vtkstd::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << vtkstd::endl;
-    vtkstd::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << vtkstd::endl;
-    segmenter->PrintSelf(vtkstd::cout, static_cast<vtkIndent> (0));
-    vtkstd::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << vtkstd::endl;
-    vtkstd::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << vtkstd::endl;
-    vtkstd::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << vtkstd::endl;
+    std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
+    std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
+    std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
+    segmenter->PrintSelf(std::cout, static_cast<vtkIndent> (0));
+    std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
+    std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
+    std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
     }
 
   // POST PROCESSING
-  vtkstd::cout << "[Start] Postprocessing ..." << vtkstd::endl;
+  std::cout << "[Start] Postprocessing ..." << std::endl;
   VTK_CREATE(vtkImageData, postProcessing);
   postProcessing->ShallowCopy(segmenter->GetOutput());
 
@@ -2190,7 +2190,7 @@ int vtkEMSegmentLogic::StartSegmentationWithoutPreprocessingAndSaving()
   // Subparcellation
   if (this->GetMRMLManager()->GetEnableSubParcellation())
     {
-    vtkstd::cout << "=== Sub-Parcellation === " << vtkstd::endl;
+    std::cout << "=== Sub-Parcellation === " << std::endl;
     this->SubParcelateSegmentation(postProcessing, postProcessing,
         this->GetMRMLManager()->GetTreeRootNodeID());
     }
@@ -2198,7 +2198,7 @@ int vtkEMSegmentLogic::StartSegmentationWithoutPreprocessingAndSaving()
   // Island Removal
   if (this->GetMRMLManager()->GetMinimumIslandSize() > 1)
     {
-    vtkstd::cout << "=== Island removal === " << vtkstd::endl;
+    std::cout << "=== Island removal === " << std::endl;
     VTK_CREATE(vtkImageData, input);
     input->DeepCopy(postProcessing);
     VTK_CREATE(vtkImageIslandFilter, islandFilter);
@@ -2208,7 +2208,7 @@ int vtkEMSegmentLogic::StartSegmentationWithoutPreprocessingAndSaving()
     if (this->GetMRMLManager()->GetIsland2DFlag())
       {
       islandFilter->SetNeighborhoodDim2D();
-      vtkstd::cout << "2D Neighborhood Island activated" << vtkstd::endl;
+      std::cout << "2D Neighborhood Island activated" << std::endl;
       }
     else
       {
@@ -2218,7 +2218,7 @@ int vtkEMSegmentLogic::StartSegmentationWithoutPreprocessingAndSaving()
     islandFilter->Update();
     postProcessing->DeepCopy(islandFilter->GetOutput());
     }
-  vtkstd::cout << "[Done] Postprocessing" << vtkstd::endl;
+  std::cout << "[Done] Postprocessing" << std::endl;
   //
   // copy result to output volume
   //
@@ -2234,7 +2234,7 @@ int vtkEMSegmentLogic::StartSegmentationWithoutPreprocessingAndSaving()
     outVolume->LabelMapOn();
     }
 
-  // vtkstd::cout << "=== Define Display Node  === " << vtkstd::endl;
+  // std::cout << "=== Define Display Node  === " << std::endl;
 
   vtkMRMLVolumeDisplayNode *outDisplayNode =
       vtkMRMLVolumeDisplayNode::SafeDownCast(outVolume->GetDisplayNode());
@@ -2252,7 +2252,7 @@ int vtkEMSegmentLogic::StartSegmentationWithoutPreprocessingAndSaving()
       }
     }
 
-  // vtkstd::cout << "=== Cleanup  === " << vtkstd::endl;
+  // std::cout << "=== Cleanup  === " << std::endl;
 #ifdef Slicer3_USE_KWWIDGETS
   outVolume->SetModifiedSinceRead(1);
 #endif
@@ -2359,7 +2359,7 @@ bool vtkEMSegmentLogic::PackageAndWriteData(vtkSlicerApplicationLogic* appLogic,
 
 //----------------------------------------------------------------------------
 // This function is used for the UpdateButton in vtkEMSegmentParametersSetStep
-vtkstd::string vtkEMSegmentLogic::GetTemporaryTaskDirectory()
+std::string vtkEMSegmentLogic::GetTemporaryTaskDirectory()
 {
   // FIXME, what happens if user has no write permission to this directory
   std::string taskDir("");
@@ -2788,9 +2788,9 @@ int vtkEMSegmentLogic::StartSegmentationWithoutPreprocessing(vtkSlicerApplicatio
   // save intermediate results
   if (this->GetMRMLManager()->GetSaveIntermediateResults())
     {
-    vtkstd::cout << "[Start] Saving intermediate results..." << vtkstd::endl;
+    std::cout << "[Start] Saving intermediate results..." << std::endl;
     bool savedResults = this->SaveIntermediateResults(appLogic);
-    vtkstd::cout << "[Done]  Saving intermediate results." << vtkstd::endl;
+    std::cout << "[Done]  Saving intermediate results." << std::endl;
     if (!savedResults)
       {
       std::string msg = "Error writing intermediate results";
@@ -2844,7 +2844,7 @@ const char* vtkEMSegmentLogic::GetPluginsDirectory()
 }
 
 //----------------------------------------------------------------------------
-vtkstd::string vtkEMSegmentLogic::GetTclTaskDirectory()
+std::string vtkEMSegmentLogic::GetTclTaskDirectory()
 {
   //workaround for the mrml library, we need to have write access to this folder
   const char* tmp_dir =
@@ -2852,7 +2852,7 @@ vtkstd::string vtkEMSegmentLogic::GetTclTaskDirectory()
 
   if (tmp_dir)
     {
-    vtkstd::string copied_task_dir;
+    std::string copied_task_dir;
     copied_task_dir += tmp_dir;
     copied_task_dir += "/EMSegmentTaskCopy";
     /**
@@ -2863,8 +2863,8 @@ vtkstd::string vtkEMSegmentLogic::GetTclTaskDirectory()
      */
     // copy not always, only new files
     // Later do automatically
-    vtkstd::string orig_task_dir = vtkstd::string(
-        this->GetModuleShareDirectory()) + vtkstd::string("/Tasks");
+    std::string orig_task_dir = std::string(
+        this->GetModuleShareDirectory()) + std::string("/Tasks");
 
     std::cout << "GetTclTaskDirectory::Copying task files ...\n"
               << "\tfrom: " << orig_task_dir << "\n"
@@ -2893,7 +2893,7 @@ vtkstd::string vtkEMSegmentLogic::GetTclTaskDirectory()
 //----------------------------------------------------------------------------
 int vtkEMSegmentLogic::SourceTaskFiles()
 {
-  vtkstd::string generalFile = this->DefineTclFullPathName(
+  std::string generalFile = this->DefineTclFullPathName(
       vtkMRMLEMSGlobalParametersNode::GetDefaultTaskTclFileName());
   cout << "Sourcing task general file: " << generalFile.c_str() << endl;
   // Have to first source the default file to set up the basic structure"
@@ -2902,7 +2902,7 @@ int vtkEMSegmentLogic::SourceTaskFiles()
     return 1;
     }
   // Now we overwrite anything from the default
-  vtkstd::string specificFile = this->DefineTclTaskFileFromMRML();
+  std::string specificFile = this->DefineTclTaskFileFromMRML();
   if (specificFile.compare(generalFile))
     {
     cout << "Sourcing task specific file: " << specificFile << endl;
@@ -2921,7 +2921,7 @@ int vtkEMSegmentLogic::SourcePreprocessingTclFiles()
   // Source all files here as we otherwise sometimes do not find the function as Tcl did not finish sourcing but our cxx file is already trying to call the function
 
 
-  vtkstd::string tclFile =  this->GetModuleShareDirectory();
+  std::string tclFile =  this->GetModuleShareDirectory();
 
   // on Slicer3 _WIN32 is defined, on Slicer4 WIN32 is defined
   // Does not work under Slicer4 - just the default does 
@@ -2957,7 +2957,7 @@ const char* vtkEMSegmentLogic::DefineTclTaskFileFromMRML()
 int vtkEMSegmentLogic::ComputeIntensityDistributionsFromSpatialPrior()
 {
   // iterate over tree nodes
-  typedef vtkstd::vector<vtkIdType> NodeIDList;
+  typedef std::vector<vtkIdType> NodeIDList;
   typedef NodeIDList::const_iterator NodeIDListIterator;
   NodeIDList nodeIDList;
 
@@ -3009,7 +3009,7 @@ void vtkEMSegmentLogic::UpdateIntensityDistributionAuto(vtkIdType nodeID)
 
   // Sample
     {
-    vtkstd::stringstream CMD;
+    std::stringstream CMD;
 
     CMD << "::EMSegmenterAutoSampleTcl::EMSegmentGaussCurveCalculationFromID "
         << this->GetSlicerCommonInterface()->GetTclNameFromPointer(this)
@@ -3082,21 +3082,21 @@ void vtkEMSegmentLogic::UpdateIntensityDistributionAuto(vtkIdType nodeID)
 const char* vtkEMSegmentLogic::DefineTclFullPathName(const char* TclFileName)
 {
 
-  this->StringHolder = this->GetTclTaskDirectory() + vtkstd::string("/") + vtkstd::string(TclFileName);
-  //  vtkstd::string full_file_path = vtksys::SystemTools::ConvertToOutputPath(tmp_full_file_path.c_str());
+  this->StringHolder = this->GetTclTaskDirectory() + std::string("/") + std::string(TclFileName);
+  //  std::string full_file_path = vtksys::SystemTools::ConvertToOutputPath(tmp_full_file_path.c_str());
   if (vtksys::SystemTools::FileExists(this->StringHolder.c_str()))
     {
     return this->StringHolder.c_str();
     }
 
-  this->StringHolder = this->GetTemporaryTaskDirectory() + vtkstd::string("/") + vtkstd::string(TclFileName);
+  this->StringHolder = this->GetTemporaryTaskDirectory() + std::string("/") + std::string(TclFileName);
   if (vtksys::SystemTools::FileExists(this->StringHolder.c_str()))
     {
     return this->StringHolder.c_str();
     }
 
   vtkErrorMacro("DefineTclFullPathName : could not find tcl file with name  " << TclFileName );
-  this->StringHolder = vtkstd::string("");
+  this->StringHolder = std::string("");
   return this->StringHolder.c_str();
 }
 
@@ -3437,7 +3437,7 @@ int vtkEMSegmentLogic::ActiveMeanField(vtkImageEMLocalSegmenter* segmenter, vtkI
   outcomeProb->Update();
   result->DeepCopy(outcomeProb->GetMap());
 
-  //         vtkstd::stringstream filename;
+  //         std::stringstream filename;
   //         filename << "/tmp/log_sli_" << i <<  "_" << sli ;
   //         this->WriteImage(logOddsInSlice[i]->GetOutput(),filename.str().c_str());
 

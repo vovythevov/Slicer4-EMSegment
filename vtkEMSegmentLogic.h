@@ -50,7 +50,7 @@ public:
   //
   virtual bool StartPreprocessingInitializeInputData();
   //BTX
-  vtkstd::string GetTclGeneralDirectory();
+  std::string GetTclGeneralDirectory();
   //ETX
 
   // Used within StartSegmentation to copy data from the MRMLManager
@@ -162,7 +162,7 @@ public:
       PackageAndWriteData(vtkSlicerApplicationLogic *appLogic, const char* packageDirectoryName);
 
   //BTX
-  vtkstd::string GetTemporaryTaskDirectory();
+  std::string GetTemporaryTaskDirectory();
   //ETX
 
   int UpdateTasks();
@@ -189,7 +189,7 @@ public:
 
 
   //BTX
-  vtkstd::string GetTclTaskDirectory();
+  std::string GetTclTaskDirectory();
   void CreateDefaultTasksList(std::vector<std::string> & DefaultTasksName, 
                               std::vector<std::string> & DefaultTasksFile, 
                               std::vector<std::string> & DefinePreprocessingTasksName, 

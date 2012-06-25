@@ -110,7 +110,7 @@ vtkSlicerApplicationLogic* InitializeApplication(vtkSlicerCommonInterface *slice
 {
   // SLICER_HOME
   cout << "Setting "Slicer_HOME_ENVVAR_NAME" ..." << endl;
-  vtkstd::string slicerHome = tgGetSLICER_HOME(argv);
+  std::string slicerHome = tgGetSLICER_HOME(argv);
   if(!slicerHome.size())
     {
       cout << "Error: Cannot find executable" << endl;

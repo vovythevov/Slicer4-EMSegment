@@ -139,7 +139,7 @@ protected:
   double                              ColorRGB[3];
 
   //BTX
-  typedef vtkstd::vector<double>      ChannelWeightListType;
+  typedef std::vector<double>      ChannelWeightListType;
  ChannelWeightListType  InputChannelWeights;
   //ETX
 

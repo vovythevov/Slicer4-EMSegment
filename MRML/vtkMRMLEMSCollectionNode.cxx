@@ -288,15 +288,15 @@ int
 vtkMRMLEMSCollectionNode::
 GetIndexByKey(const char* key) const
 {
-  KeyIterator location = vtkstd::find(this->KeyList.begin(),
-                                      this->KeyList.end(), key);
+  KeyIterator location = std::find(this->KeyList.begin(),
+                                   this->KeyList.end(), key);
   if (location == this->KeyList.end())
     {
     return -1;
     }
   else
     {
-    return vtkstd::distance(this->KeyList.begin(), location);
+    return std::distance(this->KeyList.begin(), location);
     }
 }
 
@@ -356,7 +356,7 @@ MoveNthNode(int n, int toIndex)
   KeyIterator iterTo   = start;
   vtksys_stl::advance(iterTo, toIndex);
 
-  vtkstd::string keyFrom = *iterFrom;
+  std::string keyFrom = *iterFrom;
 
   if (iterFrom != this->KeyList.end() && iterTo != this->KeyList.end())
     {

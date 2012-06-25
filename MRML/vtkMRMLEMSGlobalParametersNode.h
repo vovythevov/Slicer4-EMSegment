@@ -159,7 +159,7 @@ protected:
 
   // --- Kilian Should be looked at if still is used 
   //BTX
-  vtkstd::vector<std::string>         RegistrationAtlasVolumeKey;
+  std::vector<std::string>         RegistrationAtlasVolumeKey;
   //ETX
   char*                               RegistrationTargetVolumeKey;
    // ---

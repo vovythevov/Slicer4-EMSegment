@@ -679,7 +679,7 @@ static void vtkImageEMLocalSegmenterExecute(vtkImageEMLocalSegmenter *self,float
 void vtkImageEMLocalSegmenter::ExecuteData(vtkDataObject *)
 {
   //std::cerr << "###vtkImageEMLocalSegmenter::ExecuteData" << std::endl;
-  //this->PrintSelf(vtkstd::cerr, 0);
+  //this->PrintSelf(std::cerr, 0);
 
   std::cerr << "Local Version" << endl;
   void *outPtr;

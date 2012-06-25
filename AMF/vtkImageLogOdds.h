@@ -28,7 +28,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
   
 #include <vtkEMSegment.h> 
 #include "vtkImageMultipleInputFilter.h"
-#include <vtkstd/vector> 
+#include <vector> 
 
 // Modes of operating this filter
 // Probabilities are turned into LogOdds

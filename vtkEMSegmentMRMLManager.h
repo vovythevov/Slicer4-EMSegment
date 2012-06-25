@@ -530,7 +530,7 @@ public:
 
   //BTX
   virtual void           GetListOfTreeNodeIDs(vtkIdType rootNodeID, 
-                                              vtkstd::vector<vtkIdType>& list);
+                                              std::vector<vtkIdType>& list);
   //ETX
 
   virtual const char* GetTclTaskFilename();
@@ -633,8 +633,8 @@ private:
   typedef vtksys_stl::map<vtksys_stl::string, vtkIdType>  MRMLToVTKMapType;
   MRMLToVTKMapType                                MRMLNodeIDToVTKNodeIDMap;
 
-  vtkstd::vector<vtkstd::vector<double> > GetTreeNodeDistributionLogCovariance(vtkIdType nodeID);
-  vtkstd::vector<vtkstd::vector<double> > GetTreeNodeDistributionLogCovarianceCorrection(vtkIdType nodeID);
+  std::vector<std::vector<double> > GetTreeNodeDistributionLogCovariance(vtkIdType nodeID);
+  std::vector<std::vector<double> > GetTreeNodeDistributionLogCovarianceCorrection(vtkIdType nodeID);
 
    // Should Only be used in this function - bc only set through gui which calls DistributionMeanWithCorrection
   virtual double   GetTreeNodeDistributionLogMeanCorrection(vtkIdType nodeID, 
@@ -649,7 +649,7 @@ private:
   // Should Only be used in this function - bc only set through gui which calls DistributionLogCovarianceWithCorrection
   virtual double   GetTreeNodeDistributionLogCovarianceCorrection(vtkIdType nodeID, int rowIndex, int columnIndex);
 
-  // virtual void     SetTreeNodeDistributionLogCovarianceCorrection(vtkIdType nodeID, vtkstd::vector<vtkstd::vector<double> > cov);
+  // virtual void     SetTreeNodeDistributionLogCovarianceCorrection(vtkIdType nodeID, std::vector<std::vector<double> > cov);
 
     virtual double   GetTreeNodeDistributionLogCovariance(vtkIdType nodeID, 
                                                         int rowIndex,

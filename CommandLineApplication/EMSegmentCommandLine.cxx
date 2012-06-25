@@ -359,7 +359,7 @@ int main(int argc, char** argv)
       if (writeIntermediateResults)
         {
           emMRMLManager->SetSaveIntermediateResults(true);
-          vtkstd::string absolutePath = vtksys::SystemTools::
+          std::string absolutePath = vtksys::SystemTools::
             CollapseFullPath(intermediateResultsDirectory.c_str());
           emMRMLManager->
             SetSaveWorkingDirectory(absolutePath.c_str());

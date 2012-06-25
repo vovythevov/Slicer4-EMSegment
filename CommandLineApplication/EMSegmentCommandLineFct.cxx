@@ -460,7 +460,7 @@ int DefineFinalOutput(  int useDefaultOutput, std::string resultVolumeFileName, 
         // create volume node
         if (verbose) std::cout << "Creating output volume node...";
 
-        vtkstd::string absolutePath = resultVolumeFileName;
+        std::string absolutePath = resultVolumeFileName;
 
         // the gui uses <image>, the command line uses actual files
         //
@@ -554,9 +554,9 @@ bool WriteResultsToFile(int disableCompression, vtkEMSegmentMRMLManager* emMRMLM
      if (verbose) std::cout << "Saving segmentation results..." << std::endl;
     try
       {
-      vtkstd::cout << "Writing segmentation result: " <<
+      std::cout << "Writing segmentation result: " <<
         emMRMLManager->GetOutputVolumeNode()->GetStorageNode()->GetFileName()
-                   << vtkstd::endl;
+                   << std::endl;
       emMRMLManager->GetOutputVolumeNode()->GetStorageNode()->
         SetUseCompression(!disableCompression);
       emMRMLManager->GetOutputVolumeNode()->GetStorageNode()->

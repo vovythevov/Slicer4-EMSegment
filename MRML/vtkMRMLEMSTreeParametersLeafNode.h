@@ -62,12 +62,12 @@ public:
 
   //BTX
   // It makes a copy of it 
-  vtkstd::vector<vtkstd::vector<double> >  GetLogCovarianceCorrection()
+  std::vector<std::vector<double> >  GetLogCovarianceCorrection()
     {
       return this->LogCovarianceCorrection;
     }
 
-  vtkstd::vector<vtkstd::vector<double> >  GetLogCovariance()
+  std::vector<std::vector<double> >  GetLogCovariance()
     {
       return this->LogCovariance;
     }
@@ -105,20 +105,20 @@ protected:
   char*                               SubParcellationVolumeName;
 
   //BTX
-  typedef vtkstd::vector<double>                PointType;
-  typedef vtkstd::vector<PointType>             SamplePointListType;
+  typedef std::vector<double>                   PointType;
+  typedef std::vector<PointType>                SamplePointListType;
   typedef SamplePointListType::iterator         SamplePointListIterator;
   typedef SamplePointListType::const_iterator   SamplePointListConstIterator;
 
   SamplePointListType                           DistributionSamplePointsRAS;
-  vtkstd::vector<double>                        LogMean;
-  vtkstd::vector<vtkstd::vector<double> >       LogCovariance;
+  std::vector<double>                           LogMean;
+  std::vector<std::vector<double> >             LogCovariance;
 
   // These values define the deviation from LogMean and LogCovariance 
   // that way one can automatically compute Intensity distribution from Template and then might slight changes 
   // the gui always shows the LogMean - LogMeanCorrection 
-  vtkstd::vector<double>                        LogMeanCorrection;
-  vtkstd::vector<vtkstd::vector<double> >       LogCovarianceCorrection;
+  std::vector<double>                        LogMeanCorrection;
+  std::vector<std::vector<double> >          LogCovarianceCorrection;
   //ETX
 
   unsigned int                        NumberOfTargetInputChannels;
