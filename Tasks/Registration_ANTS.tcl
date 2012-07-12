@@ -211,9 +211,9 @@ proc ANTSResampleCLI { inputVolumeNode referenceVolumeNode outVolumeNode transfo
     ReadDataFromDisk $outVolumeNode $outVolumeFileName Volume
 
     # clean up
-#    file delete -force $outVolumeFileName
-    file delete -force $inputVolumeFileName
-    file delete -force $referenceVolumeFileName
+    # file delete -force $outVolumeFileName
+    # file delete -force $inputVolumeFileName
+    # file delete -force $referenceVolumeFileName
 
     return 0
 }

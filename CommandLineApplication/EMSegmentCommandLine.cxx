@@ -476,8 +476,9 @@ int main(int argc, char** argv)
 
 
   // ================== Clean Up ==================
-  if (verbose) std::cout << "Cleaning up...";
+  if (verbose) std::cout << "Cleaning up..." << endl;
 
+  EMSLogic->RemoveTempFilesAndDirs();
 
   slicerCommon->RemoveDataIOFromScene(mrmlScene,dataIOManagerLogic);
 
@@ -492,7 +493,7 @@ int main(int argc, char** argv)
 
   CleanUp(appLogic,slicerCommon);
 
-  if (verbose) std::cout << "DONE" << std::endl;
+  if (verbose) std::cout << "... DONE" << std::endl;
 
   return segmentationSucceeded ? EXIT_SUCCESS : EXIT_FAILURE;
 }

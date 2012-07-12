@@ -65,8 +65,8 @@
         # Write results back to scene
         # This does not work $::slicer3::ApplicationLogic RequestReadData [$outVolumeNode GetID] $outVolumeFileName 0 1
         ReadDataFromDisk $outVolumeNode $outVolumeFileName Volume
-        file delete -force \"$outVolumeFileName\"
-        file delete -force \"$tmpInputVolumeFileName\"
+        # file delete -force \"$outVolumeFileName\"
+        # file delete -force \"$tmpInputVolumeFileName\"
 
         return 0
     }
@@ -240,9 +240,9 @@
         # Test:
         # $LOGIC PrintText "==> [[$SCENE GetNodeByID $transID] Print]"
 
-        foreach NAME $RemoveFiles {
-            file delete -force $NAME
-        }
+        # foreach NAME $RemoveFiles {
+        #    file delete -force $NAME
+        # }
 
         # Remove Transformation from image
         $movingVolumeNode SetAndObserveTransformNodeID ""

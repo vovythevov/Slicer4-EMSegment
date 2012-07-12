@@ -193,26 +193,43 @@ char* vtkEMSegmentLogic::mktemp_file(const char* postfix)
   FILE *fp, *fp2;
 
   std::ostringstream mytemplate;
-  mytemplate << this->GetTemporaryDirectory() << "/fn" << rand() << "XXXXXX";
+  mytemplate << this->GetTemporaryDirectory() << "/EMS" << rand() << "XXXXXX";
   std::ostringstream s;
 
 #if _WIN32
   // _mktemp alone is unusable because of it's limitation to 26 files
   strcpy_s( filename, sizeof(filename), mytemplate.str().c_str() );
   ptr = _mktemp( filename );
-  if ( fopen_s( &fp, ptr, "w" ) != 0 )
-  std::cout << "Cannot create file " << ptr << std::endl;
+  // You need to create this here so that mktemp knows that file is taken 
+  if ( fopen_s( &fp, ptr, "w" ) != 0 ) 
+    {
+       std::cout << "Cannot create file " << ptr << std::endl;
+    }
+  this->tempFileList.push_back(std::string(ptr));
+
   s << ptr << postfix;
   if ( fopen_s( &fp2, s.str().c_str(), "w" ) != 0 )
-  std::cout << "Cannot create file " << ptr << std::endl;
+    {
+       std::cout << "Cannot create file " << ptr << std::endl;
+    }
+  this->tempFileList.push_back(s.str());
 #else
   strcpy(filename, mytemplate.str().c_str());
   ptr = mktemp(filename);
-  if ((fp = fopen(ptr, "w")) == NULL)
-    std::cout << "Cannot create file " << ptr << std::endl;
+  // You need to create this here so that mktemp knows that file is taken 
+  if ((fp = fopen(ptr, "w")) == NULL) 
+    {
+     std::cout << "Cannot create file " << ptr << std::endl;
+    }
+  this->tempFileList.push_back(std::string(ptr));
+  
   s << ptr << postfix;
   if ((fp2 = fopen(s.str().c_str(), "w")) == NULL)
-    std::cout << "Cannot create file " << ptr << std::endl;
+    {
+      std::cout << "Cannot create file " << ptr << std::endl;
+    }
+  this->tempFileList.push_back(s.str());
+
 #endif
   fclose(fp);
   fclose(fp2);
@@ -228,7 +245,7 @@ char* vtkEMSegmentLogic::mktemp_dir()
   char filename[256];
 
   std::ostringstream mytemplate;
-  mytemplate << this->GetTemporaryDirectory() << "/dn" << rand() << "XXXXXX";
+  mytemplate << this->GetTemporaryDirectory() << "/EMSD" << rand() << "XXXXXX";
 
 #if _WIN32
   //todo, on windows _mkdtemp is not available
@@ -238,8 +255,34 @@ char* vtkEMSegmentLogic::mktemp_dir()
   strcpy(filename, mytemplate.str().c_str());
   ptr = mkdtemp(filename);
 #endif
+  this->tempDirList.push_back(std::string(ptr));
 
   return ptr;
+}
+
+//----------------------------------------------------------------------------
+void vtkEMSegmentLogic::RemoveTempFilesAndDirs()
+{
+  while (!this->tempFileList.empty())
+    {
+      std::string tempFile(this->tempFileList.back());
+      if (remove(tempFile.c_str())) 
+ {
+           std::cout << "Cannot delete file " << tempFile.c_str() << std::endl;
+ }    
+      this->tempFileList.pop_back();
+    }
+
+  while (!this->tempDirList.empty())
+    {
+      std::string tempDir(this->tempDirList.back());
+      if (vtkDirectory::DeleteDirectory(tempDir.c_str())) 
+ {
+           std::cout << "Cannot delete dorectory " << tempDir.c_str() << std::endl;
+ }    
+      this->tempDirList.pop_back();
+    }
+
 }
 
 //----------------------------------------------------------------------------

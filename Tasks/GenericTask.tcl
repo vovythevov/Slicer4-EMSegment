@@ -859,9 +859,9 @@ namespace eval EMSegmenterPreProcessingTcl {
         }
 
         # clean up
-        file delete -force $tmpTransformFileName
-        file delete -force $tmpInputVolumeFileName
-        file delete -force $tmpReferenceVolumeFileName
+        # file delete -force $tmpTransformFileName
+        # file delete -force $tmpInputVolumeFileName
+        # file delete -force $tmpReferenceVolumeFileName
 
         return $deformationFieldFilename
     }
@@ -1130,7 +1130,7 @@ namespace eval EMSegmenterPreProcessingTcl {
 
             # Read results back
             ReadDataFromDisk $outputVolumeNode $outputVolumeFileName Volume
-            file delete -force $outputVolumeFileName
+            # file delete -force $outputVolumeFileName
 
             # still in for loop, create a list of Volumes
             set inputNode_SkullStripped "$alignedInputNode_SkullStripped $outputVolumeNode"
@@ -1465,7 +1465,7 @@ namespace eval EMSegmenterPreProcessingTcl {
         $out SetFileName $tmpName
         if { [file exists $tmpName] && [file size $tmpName] == 0 } {
             # remove empty file immediately before we write into it.
-            file delete $tmpName
+            # file delete $tmpName
         } else {
             PrintError "tried to overwrite a non-empty existing file"
             return ""
@@ -1882,7 +1882,7 @@ namespace eval EMSegmenterPreProcessingTcl {
             ReadDataFromDisk $outputVolumeNode $outputVolumeFileName Volume
 
 
-            file delete -force $outputVolumeFileName
+            # file delete -force $outputVolumeFileName
 
             # ReadDataFromDisk $outbiasVolumeNode $outbiasVolumeFileName Volume
             # file delete -force $outbiasVolumeFileName

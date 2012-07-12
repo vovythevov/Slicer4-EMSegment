@@ -83,9 +83,9 @@ proc CMTKResampleCLI { inputVolumeNode referenceVolumeNode outVolumeNode transfo
     ReadDataFromDisk $outVolumeNode $outVolumeFileName Volume
 
     # clean up
-    file delete -force $outVolumeFileName
-    file delete -force $inputVolumeFileName
-    file delete -force $referenceVolumeFileName
+    # file delete -force $outVolumeFileName
+    # file delete -force $inputVolumeFileName
+    # file delete -force $referenceVolumeFileName
 
     return 0
 }
@@ -260,9 +260,9 @@ proc CMTKRegistration { fixedVolumeNode movingVolumeNode outVolumeNode backgroun
     # Test:
     # $LOGIC PrintText "==> [[$SCENE GetNodeByID $transID] Print]"
     # exit 0
-    foreach NAME $RemoveFiles {
-        file delete -force $NAME
-    }
+    # foreach NAME $RemoveFiles {
+    #     file delete -force $NAME
+    # }
 
     # Remove Transformation from image
     $movingVolumeNode SetAndObserveTransformNodeID ""

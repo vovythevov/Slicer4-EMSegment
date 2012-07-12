@@ -56,9 +56,9 @@ proc PLASTIMATCHResampleCLI { inputVolumeNode referenceVolumeNode outVolumeNode 
     ReadDataFromDisk $outVolumeNode $outVolumeFileName Volume
 
     # clean up
-    file delete -force $outVolumeFileName
-    file delete -force $inputVolumeFileName
-    file delete -force $referenceVolumeFileName
+    #file delete -force $outVolumeFileName
+    #file delete -force $inputVolumeFileName
+    #file delete -force $referenceVolumeFileName
 
     return 0
 }
@@ -173,9 +173,9 @@ proc PLASTIMATCHRegistration { fixedVolumeNode movingVolumeNode outVolumeNode ba
         PrintError "PLASTIMATCHRegistration: out transform file doesn't exists"
     }
 
-    foreach NAME $RemoveFiles {
+    # foreach NAME $RemoveFiles {
         #file delete -force $NAME
-    }
+    # }
 
     # Remove Transformation from image
     $movingVolumeNode SetAndObserveTransformNodeID ""
