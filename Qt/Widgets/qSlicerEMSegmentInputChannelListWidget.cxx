@@ -274,7 +274,6 @@ void qSlicerEMSegmentInputChannelListWidget::setMRMLManager(vtkEMSegmentMRMLMana
 //-----------------------------------------------------------------------------
 void qSlicerEMSegmentInputChannelListWidget::updateMRMLFromWidget()
 {
-
   if (!this->mrmlManager())
     {
     logger.warn("updateMRMLFromWidget - MRMLManager is NULL");
@@ -292,40 +291,38 @@ void qSlicerEMSegmentInputChannelListWidget::updateMRMLFromWidget()
   //inputNodes->SetNumberOfInputChannelName(this->inputChannelCount());
 
   // delete all input channels
-  for(int i=0; i<globalNode->GetNumberOfTargetInputChannels(); i++)
+
+  for(int i=globalNode->GetNumberOfTargetInputChannels(); i> 0 ; i-- )
     {
-
-    globalNode->RemoveNthTargetInputChannel(i);
-
+    globalNode->RemoveNthTargetInputChannel(i-1);
     }
 
   for (int rowId = 0; rowId < this->inputChannelCount(); rowId++)
     {
 
-  vtkMRMLVolumeNode *node = this->inputChannelVolume(rowId);
-  char* nodeId = 0;
-  if (!node)
-    {
-    return;
-    }
+      vtkMRMLVolumeNode *node = this->inputChannelVolume(rowId);
+      char* nodeId = 0;
+      if (!node)
+      {
+        return;
+      }
 
-  globalNode->AddTargetInputChannel();
+      globalNode->AddTargetInputChannel();
+      // Update channel name
+      globalNode->SetNthTargetInputChannelName(rowId,this->inputChannelName(rowId).toLatin1());
 
-  nodeId = node->GetID();
-
-  if (rowId == this->mrmlManager()->GetTargetNumberOfSelectedVolumes())
-    {
-    // Add input
-    this->mrmlManager()->AddTargetSelectedVolumeByMRMLID(nodeId);
-    }
-  else
-    {
-    // Update input
-    this->mrmlManager()->SetTargetSelectedVolumeNthMRMLID(rowId, nodeId);
-    }
-
-  // Update channel name
-  globalNode->SetNthTargetInputChannelName(rowId,this->inputChannelName(rowId).toLatin1());
+      // Update Volume Input list - Only works when adding more channels but not when removing 
+      nodeId = node->GetID();
+      if (rowId == this->mrmlManager()->GetTargetNumberOfSelectedVolumes())
+      {
+         // Add input
+         this->mrmlManager()->AddTargetSelectedVolumeByMRMLID(nodeId);
+      }
+     else
+     {
+        // Update input
+        this->mrmlManager()->SetTargetSelectedVolumeNthMRMLID(rowId, nodeId);
+     }
   }
 
 }
@@ -333,78 +330,73 @@ void qSlicerEMSegmentInputChannelListWidget::updateMRMLFromWidget()
 //-----------------------------------------------------------------------------
 void qSlicerEMSegmentInputChannelListWidget::updateWidgetFromMRML()
 {
-Q_D(qSlicerEMSegmentInputChannelListWidget);
+    Q_D(qSlicerEMSegmentInputChannelListWidget);
 
-if (!this->mrmlManager())
+  if (!this->mrmlManager())
   {
-  logger.warn("updateWidgetFromMRML - MRMLManager is NULL");
-  return;
+    logger.warn("updateWidgetFromMRML - MRMLManager is NULL");
+    return;
   }
 
-//vtkMRMLEMSTargetNode *inputNodes = this->mrmlManager()->GetTargetInputNode();
-vtkMRMLEMSVolumeCollectionNode *inputNodes =
+  //vtkMRMLEMSTargetNode *inputNodes = this->mrmlManager()->GetTargetInputNode();
+  vtkMRMLEMSVolumeCollectionNode *inputNodes =
     this->mrmlManager()->GetTargetInputNode();
-if (!inputNodes)
+  if (!inputNodes)
   {
-  logger.warn("updateWidgetFromMRML - inputNodes is NULL");
-  return;
+    logger.warn("updateWidgetFromMRML - inputNodes is NULL");
+    return;
   }
 
-vtkMRMLEMSGlobalParametersNode* globalNode =
+  vtkMRMLEMSGlobalParametersNode* globalNode =
     this->mrmlManager()->GetGlobalParametersNode();
-if (!globalNode)
+  if (!globalNode)
   {
-  logger.warn("updateWidgetFromMRML - globalNode is NULL");
-  return;
+    logger.warn("updateWidgetFromMRML - globalNode is NULL");
+    return;
   }
 
-// delete everything
-//d->TableWidget->clearContents();
-for (int i = 0; i < d->TableWidget->rowCount(); i++)
+  // delete everything
+  for (int i = d->TableWidget->rowCount(); i > 0  ; i--)
   {
-d->TableWidget->removeRow(i);
-}
+     d->TableWidget->removeRow(i-1);
+  }
 
 // Loop through input nodes and update or insert row
-for (int i = 0; i < globalNode->GetNumberOfTargetInputChannels(); i++)
-{
+  for (int i = 0; i < globalNode->GetNumberOfTargetInputChannels(); i++)
+  {
 
-QString inputChannelName(globalNode->GetNthTargetInputChannelName(i));
+    QString inputChannelName(globalNode->GetNthTargetInputChannelName(i));
 
-if (inputChannelName.isEmpty())
-{
-inputChannelName = QString("input %1").arg(i);
-}
+    if (inputChannelName.isEmpty())
+    {
+         inputChannelName = QString("input %1").arg(i);
+    }
 
-d->insertInputChannel(i, inputChannelName, inputNodes->GetNthVolumeNode(i));
-}
+    d->insertInputChannel(i, inputChannelName, inputNodes->GetNthVolumeNode(i));
+  }
 
-int lastRowId = d->TableWidget->rowCount() - 1;
+  int lastRowId = d->TableWidget->rowCount() - 1;
 
  // Unselect everything
-d->TableWidget->setRangeSelected(QTableWidgetSelectionRange(0, 0, lastRowId, 1),
-false);
- // Select the last row
-d->TableWidget->setRangeSelected(
-QTableWidgetSelectionRange(lastRowId, 0, lastRowId, 1), true);
+  d->TableWidget->setRangeSelected(QTableWidgetSelectionRange(0, 0, lastRowId, 1),false);
+   // Select the last row 
+  d->TableWidget->setRangeSelected(QTableWidgetSelectionRange(lastRowId, 0, lastRowId, 1), true);
 
 }
 
 //-----------------------------------------------------------------------------
 void qSlicerEMSegmentInputChannelListWidget::addInputChannel()
 {
-Q_D(qSlicerEMSegmentInputChannelListWidget);
+  Q_D(qSlicerEMSegmentInputChannelListWidget);
 
-d->insertInputChannel(d->TableWidget->rowCount());
+  d->insertInputChannel(d->TableWidget->rowCount());
 
-int lastRowId = d->TableWidget->rowCount() - 1;
+  int lastRowId = d->TableWidget->rowCount() - 1;
 
- // Unselect everything
-d->TableWidget->setRangeSelected(QTableWidgetSelectionRange(0, 0, lastRowId, 1),
-false);
- // Select the last row
-d->TableWidget->setRangeSelected(
-QTableWidgetSelectionRange(lastRowId, 0, lastRowId, 1), true);
+   // Unselect everything
+  d->TableWidget->setRangeSelected(QTableWidgetSelectionRange(0, 0, lastRowId, 1), false);
+   // Select the last row
+  d->TableWidget->setRangeSelected(QTableWidgetSelectionRange(lastRowId, 0, lastRowId, 1), true);
 }
 
 //-----------------------------------------------------------------------------

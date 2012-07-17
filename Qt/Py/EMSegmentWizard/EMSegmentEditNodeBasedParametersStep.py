@@ -403,9 +403,8 @@ class EMSegmentEditNodeBasedParametersStep( EMSegmentStep ) :
         ## input channel weights
         curVolumeIndex = 0
         for i in self.__inputChannelWeights:
-          curVolumeIndex = curVolumeIndex + 1
           self.mrmlManager().SetTreeNodeInputChannelWeight( vtkId, curVolumeIndex, i.value )
-
+          curVolumeIndex = curVolumeIndex + 1
 
         #
         # stopping conditions panel
