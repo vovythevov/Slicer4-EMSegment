@@ -342,7 +342,8 @@ QStandardItem* qSlicerEMSegmentAnatomicalTreeWidgetPrivate::insertTreeRow(
   parentItem->appendRow(itemList);
 
   // Set widget associated with labelItem
-  if (isLeaf && this->LabelColumnVisible)
+  // this->CurrentColorTableNode is not defined then slicer crashes 
+  if (isLeaf && this->LabelColumnVisible && this->CurrentColorTableNode)
     {
 
     qMRMLLabelComboBox * labelComboBox = new qMRMLLabelComboBox;
@@ -431,9 +432,8 @@ QStandardItem* qSlicerEMSegmentAnatomicalTreeWidgetPrivate::insertTreeRow(
 //-----------------------------------------------------------------------------
 QColor qSlicerEMSegmentAnatomicalTreeWidgetPrivate::colorFromLabelId(int labelId)
 {
-  Q_ASSERT(this->CurrentColorTableNode);
-
-  if (labelId < 0)
+  
+  if (labelId < 0 || !this->CurrentColorTableNode)
     {
     return QColor::Invalid;
     }
