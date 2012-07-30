@@ -130,14 +130,16 @@
         if { $deformableType != 0 } {
             set transformNode [vtkMRMLBSplineTransformNode New]
             $transformNode SetName "EMSegmentBSplineTransform"
-            $SCENE AddNode $transformNode
+            # Don't added to scene otherwise it is difficult to delete it later- not needed anyway 
+            # $SCENE AddNode $transformNode
             set transID [$transformNode GetID]
             set outputTransformFileName [CreateTemporaryFileNameForNode $transformNode]
             set CMD "$CMD --bsplineTransform \"$outputTransformFileName\""
         } else {
             set transformNode [vtkMRMLLinearTransformNode New]
             $transformNode SetName "EMSegmentLinearTransform"
-            $SCENE AddNode $transformNode
+            # Don't added to scene otherwise it is difficult to delete it later- not needed anyway 
+            # $SCENE AddNode $transformNode
             set transID [$transformNode GetID]
             set outputTransformFileName [CreateTemporaryFileNameForNode $transformNode]
             set CMD "$CMD --outputTransform \"$outputTransformFileName\""

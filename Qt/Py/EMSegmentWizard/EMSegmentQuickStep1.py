@@ -148,7 +148,12 @@ class EMSegmentQuickStep1( EMSegmentStep ) :
     '''
     super( EMSegmentQuickStep1, self ).onEntry( comingFrom, transitionType )
 
+    # Remove everything if needed - did not work properly -however when running it without it  then it resets pipeline but leaves nodes in scend ! 
+    # self.logic().RemoveTaskAndTempFiles()
+    # self.reset()
+
     slicer.modules.emsegmentAdvancedDynamicFrame = self.dynamicFrame()
+
 
     if not self.__initialized:
 

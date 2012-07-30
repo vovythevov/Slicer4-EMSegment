@@ -507,7 +507,14 @@ if(NOT DISABLE_CXX_TESTING)
       ARGS
         ${Slicer_LAUNCHER_ADDITIONAL_ARGS}
         ${test_std_file} ${test_cmp_file}
+        0
       )
+
+#    set(test_name "EMSegMRML_RemoveEMSNodes")
+#    ADD_TEST(NAME "${test_name}"   COMMAND ${Slicer_LAUNCH_COMMAND}  $<TARGET_FILE:vtkEMSegmentReadWriteMRMLTest> ${Slicer_LAUNCHER_ADDITIONAL_ARGS}
+#        /home/pohl/Desktop/SlicerDevel/MRI-Human-Brain.mrml /home/pohl/Desktop/SlicerDevel/MRI-Human-Brain-test.mrml 1
+#      )
+
   endif(EMSEG_RUN_EXTRA_SHORT_TESTS)
 
 

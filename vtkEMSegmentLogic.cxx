@@ -2295,10 +2295,11 @@ int vtkEMSegmentLogic::StartSegmentationWithoutPreprocessingAndSaving()
       }
     }
 
-  // std::cout << "=== Cleanup  === " << std::endl;
+  std::cout << "=== Cleanup  === " << std::endl;
 #ifdef Slicer3_USE_KWWIDGETS
   outVolume->SetModifiedSinceRead(1);
 #endif
+
   return EXIT_SUCCESS;
 }
 
@@ -3640,3 +3641,14 @@ int vtkEMSegmentLogic::GetSlicerVersion()
   return 4;
 #endif
 }
+
+void vtkEMSegmentLogic::RemoveTaskAndTempFiles()
+{
+
+  if (this->MRMLManager)
+    {
+      this->MRMLManager->RemoveTaskRelatedNodesFromScene();
+    }
+  this->RemoveTempFilesAndDirs();
+}
+

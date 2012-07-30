@@ -59,8 +59,9 @@ class qSlicerEMSegmentModuleWidget:
     specifyIntensityDistributionStep = EMSegmentWizard.EMSegmentSpecifyIntensityDistributionStep( Helper.GetNthStepId( 7 ) )
     editNodeBasedParametersStep = EMSegmentWizard.EMSegmentEditNodeBasedParametersStep( Helper.GetNthStepId( 8 ) )
     miscStep = EMSegmentWizard.EMSegmentDefineMiscParametersStep( Helper.GetNthStepId( 9 ) )
-    statisticsStep = EMSegmentWizard.EMSegmentLabelStatisticsStep( Helper.GetNthStepId( 11 ) )
     segmentStep = EMSegmentWizard.EMSegmentStartSegmentationStep( Helper.GetNthStepId( 10 ) )
+    statisticsStep = EMSegmentWizard.EMSegmentLabelStatisticsStep( Helper.GetNthStepId( 11 ) )
+
 
     # add the wizard steps to an array for convenience
     allSteps = []

@@ -3,12 +3,14 @@
 #include "vtkMRMLScene.h"
 #include "vtkEMSegmentLogic.h"
 #include "vtkEMSegmentTestUtilities.h"
+#include "vtkEMSegmentMRMLManager.h"
 
 int main(int argc, char** argv)
 {
   std::cerr << "Starting EM read/write MRML test..." << std::endl;
   std::string mrmlSceneFilenameInput;
   std::string mrmlSceneFilenameOutput;
+  std::string removeFlag;
   bool success = true;
 
   //
@@ -19,12 +21,14 @@ int main(int argc, char** argv)
       << "Usage: vtkEMSegmentReadWriteMRMLTest"      << std::endl
       <<         "<mrmlSceneFilenameInput>"          << std::endl
       <<         "<mrmlSceneFilenameOutput>"         << std::endl
+      <<         "<0/1 = Remove EM Related Nodes"    << std::endl
       << std::endl;
     return EXIT_FAILURE;
   }
 
   mrmlSceneFilenameInput           = argv[1];
   mrmlSceneFilenameOutput          = argv[2];
+  removeFlag                       = argv[3];
 
   //
   // create a mrml scene that will hold the data parameters
@@ -45,6 +49,11 @@ int main(int argc, char** argv)
   try 
   {
     mrmlScene->Import();
+    if (!removeFlag.compare("1"))
+      {    
+        emLogic->GetMRMLManager()->SetLoadedParameterSetIndex(0);
+        emLogic->RemoveTaskAndTempFiles();
+      }
     mrmlScene->Commit(mrmlSceneFilenameOutput.c_str());
   }
   catch (...)

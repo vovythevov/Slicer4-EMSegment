@@ -305,9 +305,16 @@ class EMSegmentSelectTaskStep( EMSegmentStep ) :
       Helper.Error( "No valid workflow found!" )
       return False
 
-    # we go forward in the simpleMode branch
-    workflow.goForward( 'SimpleMode' )
+    # When the Reset button is pressed in the Label Statistics 
+    # then the workflow is stopped  and started again - jumping to this panel 
+    # for some reason the workflow is then stopped again - I do not know why - testing it on entry everything works fine 
+    # just press the button twice and everything works fine 
 
+    if self.workflow().isRunning:
+       workflow.goForward( 'SimpleMode' )
+    else:
+       workflow.start()
+       Helper.Info("Please press Simple button again")
 
   def goAdvanced( self ):
     '''
@@ -318,8 +325,34 @@ class EMSegmentSelectTaskStep( EMSegmentStep ) :
       Helper.Error( "No valid workflow found!" )
       return False
 
-    # we go forward in the advancedMode branch
-    workflow.goForward( 'AdvancedMode' )
+    # When the Reset button is pressed in the Label Statistics 
+    # then the workflow is stopped  and started again - jumping to this panel 
+    # for some reason the workflow is then stopped again - I do not know why - testing it on entry everything works fine 
+    # just press the button twice and everything works fine 
+    if self.workflow().isRunning:
+       workflow.goForward( 'AdvancedMode' )
+    else:
+       workflow.start()
+       Helper.Info("Please press Advanced button again")
+
+  def onEntry( self, comingFrom, transitionType ):
+    '''
+    '''
+
+    super( EMSegmentSelectTaskStep, self ).onEntry( comingFrom, transitionType )
+    self.logic().RemoveTaskAndTempFiles()
+
+   
+
+
+# 
+#   def onExit( self, comingFrom, transitionType ):
+#     '''
+#     '''
+# 
+#     super( EMSegmentSelectTaskStep, self ).onExit( comingFrom, transitionType )
+#     Helper.Info('============> Exit ')
+#     self.startedWorkflow = 0
 
   def validate( self, desiredBranchId ):
     '''

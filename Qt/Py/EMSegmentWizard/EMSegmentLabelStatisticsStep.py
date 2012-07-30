@@ -33,6 +33,7 @@ class EMSegmentLabelStatisticsStep( EMSegmentStep ) :
     self.__layout.addWidget( self.__top )
 
     # deactivate next button since it is the last step
+    # note that if simple mode is once called then it will always hide it - create a flag ! 
     if slicer.modules.emsegmentsimplemode:
       self.buttonBoxHints = self.ButtonBoxHidden
     else:
@@ -65,31 +66,21 @@ class EMSegmentLabelStatisticsStep( EMSegmentStep ) :
 
     labelStatisticsWidget.onApply()
 
-    if slicer.modules.emsegmentsimplemode:
-      infoLabel2 = qt.QLabel( '\n\nIt is now possible to reset the module.' )
-      #infoLabel2.setFont( self.getBoldFont() )
-      self.__layout.addWidget( infoLabel2 )
+    #if slicer.modules.emsegmentsimplemode:
+    # infoLabel2 = qt.QLabel( '\n\nIt is now possible to reset the module.' )
+    #infoLabel2.setFont( self.getBoldFont() )
+    # self.__layout.addWidget( infoLabel2 )
 
-      resetButton = qt.QPushButton( 'Reset Module' )
-      resetButton.connect( 'clicked()', self.onResetButton )
-      self.__layout.addWidget( resetButton )
+    resetButton = qt.QPushButton( 'Reset Module' )
+    resetButton.connect( 'clicked()', self.onResetButton )
+    self.__layout.addWidget( resetButton )
 
   def onResetButton( self ):
     '''
     '''
-    self.workflow().goBackward() # 9
-    self.workflow().goBackward() # 8
-    self.workflow().goBackward() # 7
-    self.workflow().goBackward() # 6
-    self.workflow().goBackward() # 5
-    self.workflow().goBackward() # 4
-    self.workflow().goBackward() # 3
-    self.workflow().goBackward( 'SimpleMode' ) # 2
-
-
-
-    #self.__layout.addWidget( labelStatisticsWidget )
-
+    
+    self.workflow().stop()
+    self.workflow().start()
 
   def onEntry( self, comingFrom, transitionType ):
     '''

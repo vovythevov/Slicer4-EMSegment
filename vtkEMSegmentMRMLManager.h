@@ -563,6 +563,10 @@ public:
   vtkMRMLScalarVolumeNode*  CreateVolumeScalarNode(vtkMRMLScalarVolumeNode*  referenceNode , const char *name); 
   vtkIdType CreateVolumeScalarNodeVolumeID(vtkMRMLScalarVolumeNode*  referenceNode , const char *name);
  
+  // Removes all nodes and files but the segmentation and the input images
+  void RemoveTaskRelatedNodesFromScene();
+
+
 private:
   vtkEMSegmentMRMLManager();
   ~vtkEMSegmentMRMLManager();
@@ -670,6 +674,13 @@ private:
   virtual void         SetOutputVolumeID(vtkIdType volumeID);
 
   void PrintWeightOnForTree(vtkIdType rootID); 
+
+  void RemoveWorkingNodeFromScene();
+
+  // Removes all volumes linked to a collection node with the  associated storage and display nodes from the scene
+  // Furthermore, removes the files associated with the storage node  
+  void RemoveVolumesAndFilesOfCollectionNodes(vtkMRMLEMSVolumeCollectionNode* collectionNode, int flag);
+
 };
 
 #endif

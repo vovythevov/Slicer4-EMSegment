@@ -168,7 +168,7 @@ QStringList qSlicerEMSegmentModule::categories()const
 QStringList qSlicerEMSegmentModule::contributors()const
 {
   QStringList moduleContributors;
-  moduleContributors << QString("Daniel Haehn (UPenn)");
+  moduleContributors << QString("Daniel Haehn, Kilian Pohl (UPenn)");
   return moduleContributors;
 }
 

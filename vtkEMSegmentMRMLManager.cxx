@@ -37,6 +37,7 @@
 #include <vtkMatrix4x4.h>
 #include <vtkObjectFactory.h>
 #include <vtkSmartPointer.h>
+#include <vtkCollection.h>
 
 // VTKSYS includes
 #include <vtksys/SystemTools.hxx>
@@ -1989,7 +1990,10 @@ SetTreeNodeSpatialPriorVolumeID(vtkIdType nodeID,
 
   // aligned atlas is no longer valid
   //
-  this->GetWorkingDataNode()->SetAlignedAtlasNodeIsValid(0);
+  if (this->GetWorkingDataNode()) 
+    {
+      this->GetWorkingDataNode()->SetAlignedAtlasNodeIsValid(0);
+    }
 }
 
 
@@ -5295,4 +5299,135 @@ vtkIdType vtkEMSegmentMRMLManager::CreateVolumeScalarNodeVolumeID(vtkMRMLScalarV
     vtkMRMLScalarVolumeNode* node = this->CreateVolumeScalarNode(referenceNode, name);
     return this->MapMRMLNodeIDToVTKNodeID(node->GetID());
 }
+
+
+// Removes all task related nodes from Scene
+// Preserve input images and segmentation 
+void vtkEMSegmentMRMLManager::RemoveTaskRelatedNodesFromScene()
+{
+  if (!this->Node) 
+    {
+      //Nothing to do 
+      return;
+    }
+
+  cout << "== Start RemoveRelatedNodesFromScene ... " << endl; 
+
+  // get all nodes associated with the Task Node - generic approach did not work as it deleted too much including the segmentation itself
+  //  vtkCollection* nodes = this->GetMRMLScene()->GetReferencedNodes(this->Node);
+  // ...
+  // First have to remove all volume nodes 
+
+   // Make sure output is not deleted
+  this->SetOutputVolumeMRMLID(NULL);
+
+   // First remove all intermediate nodes. They require special treatment as they are associated with files 
+  this->RemoveWorkingNodeFromScene();
+
+  // Remove Atlas node - but not files
+  vtkMRMLEMSVolumeCollectionNode* inputAtlas = this->GetAtlasInputNode();
+  this->RemoveVolumesAndFilesOfCollectionNodes(inputAtlas,0);
+  this->GetMRMLScene()->RemoveNode(inputAtlas);
+
+  // Remove SubParcellationNode 
+  vtkMRMLEMSVolumeCollectionNode* subParcellation = this->GetSubParcellationInputNode();
+  this->RemoveVolumesAndFilesOfCollectionNodes(subParcellation,0);
+  this->GetMRMLScene()->RemoveNode(subParcellation);
+
+  // Remove all other nodes 
+  vtkCollection* nodes = this->GetMRMLScene()->GetReferencedNodes(this->Node);
+
+  // Make sure that is done correctly 
+  this->SetNode(NULL);
+
+  nodes->InitTraversal();
+
+  vtkObject* currentObject = NULL;
+  while ((currentObject = nodes->GetNextItemAsObject()) &&
+         (currentObject != NULL))
+    {
+      vtkMRMLNode* delNode = vtkMRMLNode::SafeDownCast(currentObject);
+      if (delNode)
+      {
+        //cout << "-------- Removing " ;
+     // if (delNode->GetName()) cout << delNode->GetName();  
+        // cout << " "  << delNode->GetID() << endl;
+    this->GetMRMLScene()->RemoveNode(delNode);
+      }
+    }
+
+  // clean up
+  nodes->Delete();
+
+
+  cout << "== .. done " << endl; 
+}
+
+void vtkEMSegmentMRMLManager::RemoveWorkingNodeFromScene()
+{
+  vtkMRMLEMSWorkingDataNode* workingDataNode = this->GetWorkingDataNode();
+  if (!workingDataNode)
+    {
+      cout <<"Warning:vtkEMSegmentMRMLManager::RemoveWorkingNodeFromScene: No WorkingDataNode defined" << endl;
+      return;
+    }
+  // Only nodes
+  this->MRMLScene->RemoveNode(workingDataNode->GetOutputSegmentationNode());
+
+  this->MRMLScene->RemoveNode(workingDataNode->GetInputTargetNode());
+
+  // Nodes and Files 
+  vtkMRMLEMSVolumeCollectionNode* alignedTarget = workingDataNode->GetAlignedTargetNode();
+  this->RemoveVolumesAndFilesOfCollectionNodes(alignedTarget,1);
+  this->MRMLScene->RemoveNode(alignedTarget);
+
+  // Nodes and Files 
+  vtkMRMLEMSVolumeCollectionNode* alignedAtlas = workingDataNode->GetAlignedAtlasNode();
+  this->RemoveVolumesAndFilesOfCollectionNodes(alignedAtlas,1);
+  this->MRMLScene->RemoveNode(alignedAtlas);
+
+  // Nodes and Files 
+  vtkMRMLEMSVolumeCollectionNode* alignedSubParcellation = workingDataNode->GetAlignedSubParcellationNode();
+  this->RemoveVolumesAndFilesOfCollectionNodes(alignedSubParcellation,1);
+  this->MRMLScene->RemoveNode(alignedSubParcellation);
+
+  
+  // Only nodes
+  this->MRMLScene->RemoveNode(workingDataNode);
+}
+
+
+void vtkEMSegmentMRMLManager::RemoveVolumesAndFilesOfCollectionNodes(vtkMRMLEMSVolumeCollectionNode* collectionNode, int removeFileFlag)
+{
+   if (!collectionNode) 
+   {
+     return;
+   }
+   int numNodes = collectionNode->GetNumberOfNodes();
+   for (int i = numNodes-1; i  > -1; --i)
+   {
+       vtkMRMLVolumeNode* volumeNode = collectionNode->GetNthVolumeNode(i);
+       // nothing to do 
+       if (!volumeNode) continue;
+
+       vtkMRMLStorageNode* storageNode = volumeNode->GetStorageNode();
+       vtkMRMLVolumeArchetypeStorageNode* volumeStorageNode =
+           dynamic_cast<vtkMRMLVolumeArchetypeStorageNode*> (storageNode);
+       if (volumeStorageNode && removeFileFlag) 
+       {
+           const char* fileName = volumeStorageNode->GetFileName();
+           remove(fileName);
+       this->MRMLScene->RemoveNode(volumeStorageNode);
+       }
+
+       vtkMRMLVolumeDisplayNode *displayNode =
+            vtkMRMLVolumeDisplayNode::SafeDownCast(volumeNode->GetDisplayNode());
+       if (displayNode)
+     {
+            this->MRMLScene->RemoveNode(displayNode);
+     }
+       this->MRMLScene->RemoveNode(volumeNode);
+   }
+}
+
 
