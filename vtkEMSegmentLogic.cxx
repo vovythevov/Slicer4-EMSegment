@@ -56,6 +56,10 @@
 #include <algorithm>
 #include <sstream>
 
+#ifdef Slicer3_USE_KWWIDGETS
+  #include <vtkMRMLAtlasCreatorNode.h>
+#endif
+
 #ifdef _WIN32
 //for _mktemp
 #include <io.h>

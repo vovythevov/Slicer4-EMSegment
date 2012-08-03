@@ -860,7 +860,7 @@ add_test(
     endif(EMSEG_RUN_COMPARE_TESTS)
 
 
-    if(WIN32 AND  "${Slicer_VERSION_MAJOR}" EQUAL "3")
+    if(NOT WIN32 AND  "${Slicer_VERSION_MAJOR}" EQUAL "3")
     # Task Test-Atlas-Cluster, only for Slicer3 and mac or linux
 
     add_test(NAME EMSegCL_Task_TestAtlasCluster_${registrationpackage}_${size}

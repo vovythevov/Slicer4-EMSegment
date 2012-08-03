@@ -10,7 +10,7 @@
 #include "vtkSlicerCommonInterface.h"
 
 #ifdef Slicer3_USE_KWWIDGETS
-# include <vtkMRMLAtlasCreatorNode.h>
+  class vtkMRMLAtlasCreatorNode;
 #endif
 
 class vtkEMSegmentMRMLManager;
