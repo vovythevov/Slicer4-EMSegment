@@ -130,20 +130,20 @@
         if { $deformableType != 0 } {
             set transformNode [vtkMRMLBSplineTransformNode New]
             $transformNode SetName "EMSegmentBSplineTransform"
-            # Don't added to scene otherwise it is difficult to delete it later- not needed anyway 
-            # $SCENE AddNode $transformNode
+            $SCENE AddNode $transformNode
             set transID [$transformNode GetID]
             set outputTransformFileName [CreateTemporaryFileNameForNode $transformNode]
             set CMD "$CMD --bsplineTransform \"$outputTransformFileName\""
         } else {
             set transformNode [vtkMRMLLinearTransformNode New]
             $transformNode SetName "EMSegmentLinearTransform"
-            # Don't added to scene otherwise it is difficult to delete it later- not needed anyway 
-            # $SCENE AddNode $transformNode
+            $SCENE AddNode $transformNode
             set transID [$transformNode GetID]
             set outputTransformFileName [CreateTemporaryFileNameForNode $transformNode]
             set CMD "$CMD --outputTransform \"$outputTransformFileName\""
         }
+        # Do not remove itself from the scene otherwise you will get an error at the end of the function when returning the result
+        # Node gets removed from Scene in function that calls this function ! 
         $transformNode Delete
         set RemoveFiles "$RemoveFiles \"$outputTransformFileName\""
 
@@ -214,14 +214,7 @@
         catch { eval exec $CMD } errmsg
         $LOGIC PrintText "TCL: $errmsg"
 
-
-        # Read results back to scene
-        # $::slicer3::ApplicationLogic RequestReadData [$outVolumeNode GetID] $outputVolumeFileName 0 1
-        # Cannot do it that way bc vtkSlicerApplicationLogic needs a cachemanager,
-        # which is defined through vtkSlicerCacheAndDataIOManagerGUI.cxx
-        # instead:
-
-        # Test:
+        # Test if correctly completed:
         # ReadDataFromDisk $outputVolumeNode /home/pohl/Slicer3pohl/463_vtkMRMLScalarVolumeNode17.nrrd Volume
         if { [ReadDataFromDisk $outputVolumeNode $outputVolumeFileName Volume] == 0 } {
             set nodeID [$SCENE GetNodeByID $transID]
@@ -236,15 +229,8 @@
             set nodeID [$SCENE GetNodeByID $transID]
             if { $nodeID != "" } {
                 $SCENE RemoveNode $nodeID
-            }
-        }
-
-        # Test:
-        # $LOGIC PrintText "==> [[$SCENE GetNodeByID $transID] Print]"
-
-        # foreach NAME $RemoveFiles {
-        #    file delete -force $NAME
-        # }
+            } 
+        } 
 
         # Remove Transformation from image
         $movingVolumeNode SetAndObserveTransformNodeID ""

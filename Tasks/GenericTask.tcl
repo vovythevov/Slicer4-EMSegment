@@ -593,6 +593,8 @@ namespace eval EMSegmenterPreProcessingTcl {
                     PrintError "Transform node is null"
                     return 1
                 }
+                # Not longer needed 
+                DeleteNode $transformNode
             }
         } else {
 
@@ -1502,6 +1504,7 @@ namespace eval EMSegmenterPreProcessingTcl {
             PrintError "ReadDataFromDisk: $FileName does not exist"
             return 0
         }
+        $LOGIC PrintText "TCL: ReadDataFromDisk: File exists"  
 
         # Load a scalar or vector volume node
         # Need to maintain the original coordinate frame established by
@@ -2044,6 +2047,7 @@ namespace eval EMSegmenterPreProcessingTcl {
         set backgroundLevel [$LOGIC GuessRegistrationBackgroundLevel $movingAtlasVolumeNode]
         set transformDirName ""
         set transformNode ""
+        set BRAINStransformNode ""
         set transformNodeType ""
 
 
@@ -2134,14 +2138,15 @@ namespace eval EMSegmenterPreProcessingTcl {
                 $LOGIC PrintText "TCL: RegisterAtlas: calcDFVolumeNode START"
 
                 if { ($deformableType != 0) && ($affineType != 0) } {
-                    # BRAINStransformNode is a BSplineNode
+                    # BRAINStransformNode is a BSplineNode - here returns the location of a file 
                     set transformNode [calcDFVolumeNode $movingAtlasVolumeNode $fixedTargetVolumeNode $BRAINStransformNode]
                     set transformNodeType "DeformVolumeTransform"
                 } else {
-                    # use slow method
+                    # use slow method - transformNode is still a node ! 
                     set transformNode $BRAINStransformNode
                     set transformNodeType "BSplineTransform"
                 }
+                $LOGIC PrintText "HHHHHHHHHHHH==============>  $transformNode"
                 $LOGIC PrintText "TCL: RegisterAtlas: calcDFVolumeNode DONE"
                 if { $transformNode == "" } {
                     PrintError "RegisterAtlas: Deformation Field Transform node is null"
@@ -2196,6 +2201,10 @@ namespace eval EMSegmenterPreProcessingTcl {
             $LOGIC PrintText "TCL:  Aligned Segmentation after voronoi $blub"
         }
 
+        # Remove TransformNode from scene as it is not needed anymore
+        if { $BRAINStransformNode != "" } {
+                DeleteNode $BRAINStransformNode
+        }
 
         $LOGIC PrintText "TCL: Atlas-to-target registration complete."
         $workingDN SetAlignedAtlasNodeIsValid 1
