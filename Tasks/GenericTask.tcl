@@ -2146,7 +2146,6 @@ namespace eval EMSegmenterPreProcessingTcl {
                     set transformNode $BRAINStransformNode
                     set transformNodeType "BSplineTransform"
                 }
-                $LOGIC PrintText "HHHHHHHHHHHH==============>  $transformNode"
                 $LOGIC PrintText "TCL: RegisterAtlas: calcDFVolumeNode DONE"
                 if { $transformNode == "" } {
                     PrintError "RegisterAtlas: Deformation Field Transform node is null"
