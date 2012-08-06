@@ -180,11 +180,13 @@ vtkEMSegmentLogic::AddArchetypeScalarVolume(const char* filename, const char* vo
   vtkMRMLScalarVolumeNode* volNode = NULL;
   if (centered)
     {
-    volNode = volLogic->AddArchetypeScalarVolume(filename, volname, 2);
+    vtkMRMLVolumeNode* nd = volLogic->AddArchetypeVolume(filename, volname, 2);
+    volNode = dynamic_cast<vtkMRMLScalarVolumeNode*>(nd);
     }
   else
     {
-    volNode = volLogic->AddArchetypeScalarVolume(filename, volname, 0);
+    vtkMRMLVolumeNode* nd = volLogic->AddArchetypeVolume(filename, volname, 0);
+    volNode = dynamic_cast<vtkMRMLScalarVolumeNode*>(nd);
     }
   return volNode;
 }
