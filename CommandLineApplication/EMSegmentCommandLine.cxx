@@ -478,7 +478,14 @@ int main(int argc, char** argv)
   // ================== Clean Up ==================
   if (verbose) std::cout << "Cleaning up..." << endl;
 
-  EMSLogic->RemoveTempFilesAndDirs();
+  if (!keepTempFiles)
+    {
+       EMSLogic->RemoveTempFilesAndDirs();
+    } 
+  else 
+    {
+        std::cout << "  Temporary files are not removed!" << endl;
+    }
 
   slicerCommon->RemoveDataIOFromScene(mrmlScene,dataIOManagerLogic);
 

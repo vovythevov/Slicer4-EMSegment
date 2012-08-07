@@ -113,6 +113,14 @@
       <label>Task Pre Processing Setting</label>
     </string>    
 
+    <boolean>
+      <name>keepTempFiles</name>
+      <longflag>keepTempFiles</longflag>
+      <description>If flag is set then at the end of command the temporary files are not removed</description>
+      <label>Keep Temporary Files</label>
+      <default>false</default>
+    </boolean>
+
   </parameters>
 
   <parameters advanced="true">

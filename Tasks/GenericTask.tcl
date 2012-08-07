@@ -999,16 +999,16 @@ namespace eval EMSegmenterPreProcessingTcl {
                 set CMD "$CMD --movingVolume $movingVolumeFileName"
                 set CMD "$CMD --outputVolume $linearOutputVolumeFileName"
                 set CMD "$CMD --outputTransform $linearTransformFileName"
-
-                set CMD "$CMD --useRigid --useScaleSkewVersor3D --useAffine"
                 set CMD "$CMD --initializeTransformMode useCenterOfHeadAlign"
 
                 set deformableType [ $mrmlManager GetRegistrationDeformableType ]
                 if { $deformableType == [$mrmlManager GetRegistrationTypeFromString RegistrationTest] } {
                       set CMD "$CMD --numberOfIterations 3    --numberOfSamples 100"
                 } elseif { $deformableType == [$mrmlManager GetRegistrationTypeFromString RegistrationFast] } {
+                      set CMD "$CMD --useRigid --useScaleSkewVersor3D --useAffine"
                       set CMD "$CMD --numberOfIterations 500  --numberOfSamples 30000"
                 } elseif { $deformableType == [$mrmlManager GetRegistrationTypeFromString RegistrationSlow] } {
+                      set CMD "$CMD --useRigid --useScaleSkewVersor3D --useAffine"
                       set CMD "$CMD --numberOfIterations 1500 --numberOfSamples 300000"
                 } elseif { $deformableType } {
                      # if it is 0 then equals off 
@@ -1054,15 +1054,17 @@ namespace eval EMSegmenterPreProcessingTcl {
                 set CMD "$CMD --initializeWithTransform $linearTransformFileName"
                 set CMD "$CMD --outputVolume $nonlinearOutputVolumeFileName"
                 set CMD "$CMD --outputDeformationFieldVolume $deformationfield"
-                set CMD "$CMD -i 500,250,125,60,30 -n 5 -e --numberOfMatchPoints 16 --numberOfHistogramBins 1024"
-                # fast - for debugging
-                #set CMD "$CMD -i 40,20,10,5,2 -n 5 -e --numberOfMatchPoints 16"
+
+                if { $deformableType == [$mrmlManager GetRegistrationTypeFromString RegistrationTest] } {
+                   set CMD "$CMD -i 40,20,10,5,2"
+        } else {
+                   set CMD "$CMD -i 500,250,125,60,30"
+        }
+                set CMD "$CMD -n 5 -e --numberOfMatchPoints 16 --numberOfHistogramBins 1024"
 
                 $LOGIC PrintText "TCL: Executing $CMD"
                 catch { eval exec $CMD } errmsg
                 $LOGIC PrintText "TCL: $errmsg"
-
-
 
                 # WARP(=Resample) our mask
 
