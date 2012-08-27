@@ -266,11 +266,18 @@ class EMSegmentSelectTaskStep( EMSegmentStep ) :
 
     if not templateNodes:
       # error!
-      Helper.Error( "Could not find any template node after trying to load them!" )
+      Helper.Error( "Could not find any template node with name " + taskName + "  after trying to load them!" )
       return False
 
     # we load the last template node which fits the taskname
-    templateNode = templateNodes.GetItemAsObject( templateNodes.GetNumberOfItems() - 1 )
+    numTempNodes = templateNodes.GetNumberOfItems()
+
+    if numTempNodes == 0:
+      # this is probably do to the taskName not matching the name of the EMSTemplate - look up in mrml file 
+      Helper.Error( "Scene does not include any template node " + taskName + " after loading task!" )
+      return False
+
+    templateNode = templateNodes.GetItemAsObject( numTempNodes - 1 )
 
     loadResult = self.mrmlManager().SetLoadedParameterSetIndex( templateNode )
 

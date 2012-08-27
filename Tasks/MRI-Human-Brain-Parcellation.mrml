@@ -1,6 +1,6 @@
 <MRML >
 <EMSTemplate
-  id="vtkMRMLEMSTemplateNode1"  name="MRI Human Brain Parcellation (for Skull Stripped Images)"  hideFromEditors="false"  selectable="true"  selected="false"  TreeNodeID="vtkMRMLEMSTreeNode1"  GlobalParametersNodeID="vtkMRMLEMSGlobalParametersNode1"  SpatialAtlasNodeID="vtkMRMLEMSAtlasNode1"  SubParcellationNodeID="vtkMRMLEMSVolumeCollectionNode2"  EMSWorkingDataNodeID="" ></EMSTemplate>
+  id="vtkMRMLEMSTemplateNode1"  name="MRI Human Brain Parcellation" selected="false"  TreeNodeID="vtkMRMLEMSTreeNode1"  GlobalParametersNodeID="vtkMRMLEMSGlobalParametersNode1"  SpatialAtlasNodeID="vtkMRMLEMSAtlasNode1"  SubParcellationNodeID="vtkMRMLEMSVolumeCollectionNode2"  EMSWorkingDataNodeID="" ></EMSTemplate>
  <EMSTree
   id="vtkMRMLEMSTreeNode1"  name="Root"  hideFromEditors="false"  selectable="true"  selected="false"  ParentNodeID="NULL"  TreeParametersNodeID="NULL"  ChildNodeIDs="vtkMRMLEMSTreeNode2 vtkMRMLEMSTreeNode3 vtkMRMLEMSTreeNode4 vtkMRMLEMSTreeNode5"   ParentParametersNodeID="vtkMRMLEMSTreeParametersParentNode1"  LeafParametersNodeID="NULL"  ColorRGB="1 0 0"  InputChannelWeights="1 "  SpatialPriorVolumeName=""  SpatialPriorWeight="1"  ClassProbability="1"  ExcludeFromIncompleteEStep="0"  PrintWeights="0"  ></EMSTree>
  <EMSTree

@@ -269,13 +269,14 @@ char* vtkEMSegmentLogic::mktemp_dir()
 //----------------------------------------------------------------------------
 void vtkEMSegmentLogic::RemoveTempFilesAndDirs()
 {
+  cout << "vtkEMSegmentLogic::RemoveTempFilesAndDirs() Start" << endl;
   while (!this->tempFileList.empty())
     {
       std::string tempFile(this->tempFileList.back());
       if (remove(tempFile.c_str())) 
- {
+      {
            std::cout << "Cannot delete file " << tempFile.c_str() << std::endl;
- }    
+      }    
       this->tempFileList.pop_back();
     }
 
@@ -283,12 +284,12 @@ void vtkEMSegmentLogic::RemoveTempFilesAndDirs()
     {
       std::string tempDir(this->tempDirList.back());
       if (vtkDirectory::DeleteDirectory(tempDir.c_str())) 
- {
+      {
            std::cout << "Cannot delete dorectory " << tempDir.c_str() << std::endl;
- }    
+      }    
       this->tempDirList.pop_back();
     }
-
+  cout << "vtkEMSegmentLogic::RemoveTempFilesAndDirs() End" << endl;
 }
 
 //----------------------------------------------------------------------------
@@ -3650,11 +3651,13 @@ int vtkEMSegmentLogic::GetSlicerVersion()
 
 void vtkEMSegmentLogic::RemoveTaskAndTempFiles()
 {
-
+  cout << "vtkEMSegmentLogic::RemoveTaskAndTempFiles Start " << endl;
   if (this->MRMLManager)
     {
       this->MRMLManager->RemoveTaskRelatedNodesFromScene();
     }
+
   this->RemoveTempFilesAndDirs();
+  cout << "vtkEMSegmentLogic::RemoveTaskAndTempFiles end " << endl;
 }
 
