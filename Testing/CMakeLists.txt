@@ -81,6 +81,33 @@ mark_as_advanced(EMSEG_RUN_REG_TESTS)
 set(EMSEG_REMOVE_TMP_TEST_DATA "1" CACHE BOOL "Remove EMSegment temporary test data." FORCE)
 mark_as_advanced(EMSEG_REMOVE_TMP_TEST_DATA)
 
+
+macro(ADD_EMSEGMENT_DIFF_TEST)
+    set(options)
+    set(oneValueArgs NAME EXECUTABLE CMP_FILENAME STANDARD_DATA_FILENAME)
+    set(multiValueArgs ARGS)
+    cmake_parse_arguments(MY "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+    set(test_name        ${MY_NAME})
+    set(test_exe         ${Slicer_LAUNCH_COMMAND} ${MY_EXECUTABLE})
+    set(test_file_prefix "${EMSegment_TEST_DIR}/${test_name}_tmp")
+    set(test_cmp_file    "${MY_CMP_FILENAME}")
+    set(test_std_file    "${MY_STANDARD_DATA_FILENAME}")
+    set(test_rm_files)
+    if(${EMSEG_REMOVE_TMP_TEST_DATA})
+      set(test_rm_files ${test_file_prefix}.mhd ${test_file_prefix}.raw.gz ${test_file_prefix}.mrml)
+    endif()
+    set(test_args ${MY_ARGS})
+    add_test(NAME ${test_name} COMMAND
+      ${CMAKE_COMMAND} -V -VV "-Dtest_name:STRING=${test_name}"
+      "-Dtest_exe:STRING=${test_exe}"        "-Dtest_exe_args:STRING=${test_args}"
+      "-Dfile_cmp:FILEPATH=${test_cmp_file}" "-Dfile_std:FILEPATH=${test_std_file}"
+      "-Drm_files:STRING=${test_rm_files}"
+      -P "${EMSegment_SOURCE_DIR}/Testing/RunDiffRemoveTest.cmake"
+      )
+endmacro()
+
+
 if(NOT DISABLE_CXX_TESTING)
 
   ############################################################################
@@ -188,10 +215,10 @@ if(NOT DISABLE_CXX_TESTING)
   ############################################################################
 
   # Does the mrml manager's api function correctly?
-  ADD_EMSEGMENT_TEST(vtkEMSegmentMRMLManagerTest vtkEMSegmentMRMLManagerTest
+  ADD_EMSEGMENT_TEST(EMSeg_MRMLManagerTest vtkEMSegmentMRMLManagerTest
     ${EMSegment_TUTORIAL_DIR}/Template_small_normalizationOn.mrml "EMSegment Tutorial Template")
 
-  ADD_EMSEGMENT_TEST(vtkGetReferencedSubSceneWithEMTemplateTest vtkGetReferencedSubSceneWithEMTemplateTest
+  ADD_EMSEGMENT_TEST(EMSeg_GetReferencedSubSceneWithEMTemplateTest vtkGetReferencedSubSceneWithEMTemplateTest
     ${EMSegment_TUTORIAL_DIR}/Template_small.mrml )
 
   # Does the preprocessing function correctly?
@@ -202,14 +229,14 @@ if(NOT DISABLE_CXX_TESTING)
 
   # Test that the segmentation results match what the expected
   # results.  This is a legacy test that should not be removed.
-  ADD_EMSEGMENT_TEST(vtkEMSegmentBlackBoxSegmentationTest_TutorialDataSmallRead vtkEMSegmentBlackBoxSegmentationTest
+  ADD_EMSEGMENT_TEST(EMSeg_BlackBoxSegmentationTest_TutorialDataSmallRead vtkEMSegmentBlackBoxSegmentationTest
     ${EMSegment_TUTORIAL_DIR}/Template_small.mrml
     ${EMSegment_TUTORIAL_DIR}
     "EMSegment Tutorial Template"
     ${EMSegment_TUTORIAL_DIR}/StandardData/StandardSegmentationResult_small.mhd
     )
     
-  ADD_EMSEGMENT_TEST(vtkSlicerCommonInterfaceTest1 vtkSlicerCommonInterfaceTest1)
+  ADD_EMSEGMENT_TEST(EMSeg_SlicerCommonInterfaceTest1 vtkSlicerCommonInterfaceTest1)
 
   # Build parameters from scratch and run the segmentation
   #ADD_EMSEGMENT_TEST(vtkEMSegmentBuildAndRunNewSegmentationParameters001 vtkEMSegmentBuildAndRunNewSegmentationParameters001
@@ -219,34 +246,68 @@ if(NOT DISABLE_CXX_TESTING)
   #  ${EMSegment_TEST_DIR}/RGBSegmentationResult.mhd
   #  )
 
+  ############################################################################
+  #
+  # MRML---do the logic readers and writers work?
+  #
+  ############################################################################
+
+  #
+  # these tests break every time MRML is modified.  disable them for now.
+  #
+
+  if(EMSEG_RUN_EXTRA_SHORT_TESTS)
+    # Make sure the default parameter set has not changed
+    set(test_name "EMSeg_MRML_DiffDefaultNodes")
+    set(test_file_prefix "${EMSegment_TEST_DIR}/${test_name}_tmp")
+    if ("${Slicer_VERSION_MAJOR}" EQUAL "4")
+      set(test_std_file "${EMSegment_SOURCE_DIR}/Testing/TestData/DefaultMRMLNodes_Slicer4.mrml")
+    else()
+      set(test_std_file "${EMSegment_SOURCE_DIR}/Testing/TestData/DefaultMRMLNodes.mrml")
+    endif()
+    ADD_EMSEGMENT_DIFF_TEST(NAME "${test_name}" EXECUTABLE $<TARGET_FILE:EMSegmentCommandLine>
+      CMP_FILENAME "${test_file_prefix}.mrml"
+      STANDARD_DATA_FILENAME "${test_std_file}"
+      ARGS
+        ${Slicer_LAUNCHER_ADDITIONAL_ARGS}
+        --verbose
+        --generateEmptyMRMLSceneAndQuit "${test_file_prefix}.mrml"
+      )
+
+    # Test that the mrml readers/writers work.
+    set(test_name "EMSeg_MRML_DiffReadWriteNodes")
+    set(test_file_prefix "${EMSegment_TEST_DIR}/${test_name}_tmp")
+    if("${Slicer_VERSION_MAJOR}" EQUAL "4")
+      set(test_std_file "${EMSegment_TUTORIAL_DIR}/Template_Slicer4_small_normalizationOn_noImages.mrml")
+    else()
+      set(test_std_file "${EMSegment_TUTORIAL_DIR}/Template_small_normalizationOn_noImages.mrml")
+    endif()
+    set(test_cmp_file "${test_file_prefix}.mrml")
+    ADD_EMSEGMENT_DIFF_TEST(NAME "${test_name}" EXECUTABLE $<TARGET_FILE:vtkEMSegmentReadWriteMRMLTest>
+      CMP_FILENAME "${test_cmp_file}"
+      STANDARD_DATA_FILENAME "${test_std_file}"
+      ARGS
+        ${Slicer_LAUNCHER_ADDITIONAL_ARGS}
+        ${test_std_file} ${test_cmp_file}
+        0
+      )
+
+#    set(test_name "EMSegMRML_RemoveEMSNodes")
+#    ADD_TEST(NAME "${test_name}"   COMMAND ${Slicer_LAUNCH_COMMAND}  $<TARGET_FILE:vtkEMSegmentReadWriteMRMLTest> ${Slicer_LAUNCHER_ADDITIONAL_ARGS}
+#        /home/pohl/Desktop/SlicerDevel/MRI-Human-Brain.mrml /home/pohl/Desktop/SlicerDevel/MRI-Human-Brain-test.mrml 1
+#      )
+
+  endif(EMSEG_RUN_EXTRA_SHORT_TESTS)
+
+
+
+
+
+
   # Does help work right?
   ADD_EMSEGMENT_TEST(EMSegCL_Help EMSegmentCommandLine --help)
   set_tests_properties(EMSegCL_Help PROPERTIES PASS_REGULAR_EXPRESSION "USAGE")
 
-  macro(ADD_EMSEGMENT_DIFF_TEST)
-    set(options)
-    set(oneValueArgs NAME EXECUTABLE CMP_FILENAME STANDARD_DATA_FILENAME)
-    set(multiValueArgs ARGS)
-    cmake_parse_arguments(MY "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
-
-    set(test_name        ${MY_NAME})
-    set(test_exe         ${Slicer_LAUNCH_COMMAND} ${MY_EXECUTABLE})
-    set(test_file_prefix "${EMSegment_TEST_DIR}/${test_name}_tmp")
-    set(test_cmp_file    "${MY_CMP_FILENAME}")
-    set(test_std_file    "${MY_STANDARD_DATA_FILENAME}")
-    set(test_rm_files)
-    if(${EMSEG_REMOVE_TMP_TEST_DATA})
-      set(test_rm_files ${test_file_prefix}.mhd ${test_file_prefix}.raw.gz ${test_file_prefix}.mrml)
-    endif()
-    set(test_args ${MY_ARGS})
-    add_test(NAME ${test_name} COMMAND
-      ${CMAKE_COMMAND} -V -VV "-Dtest_name:STRING=${test_name}"
-      "-Dtest_exe:STRING=${test_exe}"        "-Dtest_exe_args:STRING=${test_args}"
-      "-Dfile_cmp:FILEPATH=${test_cmp_file}" "-Dfile_std:FILEPATH=${test_std_file}"
-      "-Drm_files:STRING=${test_rm_files}"
-      -P "${EMSegment_SOURCE_DIR}/Testing/RunDiffRemoveTest.cmake"
-      )
-  endmacro()
 
   if(EMSEG_RUN_REG_TESTS)
 
@@ -443,7 +504,7 @@ if(NOT DISABLE_CXX_TESTING)
     EMSegCL_IntermediateResults
     PROPERTIES
     FAIL_REGULAR_EXPRESSION
-    "ERROR;Error writing intermediate results"
+    "ERROR;Error writing intermediate results - run vtkGetReferencedSubSceneWithEMTemplateTest for debugging"
     )
 
 
@@ -476,62 +537,6 @@ if(NOT DISABLE_CXX_TESTING)
         --disableCompression
       )
   endif(EMSEG_RUN_EXTRA_LONG_TESTS)
-
-
-
-  ############################################################################
-  #
-  # MRML---do the logic readers and writers work?
-  #
-  ############################################################################
-
-  #
-  # these tests break every time MRML is modified.  disable them for now.
-  #
-
-  if(EMSEG_RUN_EXTRA_SHORT_TESTS)
-    # Make sure the default parameter set has not changed
-    set(test_name "EMSegMRML_DiffDefaultNodes")
-    set(test_file_prefix "${EMSegment_TEST_DIR}/${test_name}_tmp")
-    if ("${Slicer_VERSION_MAJOR}" EQUAL "4")
-      set(test_std_file "${EMSegment_SOURCE_DIR}/Testing/TestData/DefaultMRMLNodes_Slicer4.mrml")
-    else()
-      set(test_std_file "${EMSegment_SOURCE_DIR}/Testing/TestData/DefaultMRMLNodes.mrml")
-    endif()
-    ADD_EMSEGMENT_DIFF_TEST(NAME "${test_name}" EXECUTABLE $<TARGET_FILE:EMSegmentCommandLine>
-      CMP_FILENAME "${test_file_prefix}.mrml"
-      STANDARD_DATA_FILENAME "${test_std_file}"
-      ARGS
-        ${Slicer_LAUNCHER_ADDITIONAL_ARGS}
-        --verbose
-        --generateEmptyMRMLSceneAndQuit "${test_file_prefix}.mrml"
-      )
-
-    # Test that the mrml readers/writers work.
-    set(test_name "EMSegMRML_DiffReadWriteNodes")
-    set(test_file_prefix "${EMSegment_TEST_DIR}/${test_name}_tmp")
-    if("${Slicer_VERSION_MAJOR}" EQUAL "4")
-      set(test_std_file "${EMSegment_TUTORIAL_DIR}/Template_Slicer4_small_normalizationOn_noImages.mrml")
-    else()
-      set(test_std_file "${EMSegment_TUTORIAL_DIR}/Template_small_normalizationOn_noImages.mrml")
-    endif()
-    set(test_cmp_file "${test_file_prefix}.mrml")
-    ADD_EMSEGMENT_DIFF_TEST(NAME "${test_name}" EXECUTABLE $<TARGET_FILE:vtkEMSegmentReadWriteMRMLTest>
-      CMP_FILENAME "${test_cmp_file}"
-      STANDARD_DATA_FILENAME "${test_std_file}"
-      ARGS
-        ${Slicer_LAUNCHER_ADDITIONAL_ARGS}
-        ${test_std_file} ${test_cmp_file}
-        0
-      )
-
-#    set(test_name "EMSegMRML_RemoveEMSNodes")
-#    ADD_TEST(NAME "${test_name}"   COMMAND ${Slicer_LAUNCH_COMMAND}  $<TARGET_FILE:vtkEMSegmentReadWriteMRMLTest> ${Slicer_LAUNCHER_ADDITIONAL_ARGS}
-#        /home/pohl/Desktop/SlicerDevel/MRI-Human-Brain.mrml /home/pohl/Desktop/SlicerDevel/MRI-Human-Brain-test.mrml 1
-#      )
-
-  endif(EMSEG_RUN_EXTRA_SHORT_TESTS)
-
 
 
   ############################################################################
