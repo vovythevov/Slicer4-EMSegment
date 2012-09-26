@@ -180,14 +180,12 @@ void vtkMRMLEMSTreeParametersParentNode::ReadXMLAttributes(const char** attrs)
       vtksys_stl::stringstream ss;
       ss << val;
       ss >> this->BiasCorrectionType;
-      std::cout << "BiasCorrectionType: " << this->BiasCorrectionType << std::endl;
       }
     else if (!strcmp(key, "UseLLS_Recompute_Means"))
       {
       vtksys_stl::stringstream ss;
       ss << val;
       ss >> this->UseLLS_Recompute_Means;
-      std::cout << "UseLLS_Recompute_Means: " << this->UseLLS_Recompute_Means << std::endl;
       }
     else if (!strcmp(key, "StopEMType"))
       {

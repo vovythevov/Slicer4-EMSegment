@@ -1530,7 +1530,7 @@ void vtkEMSegmentLogic::CreatePackageFilenames(vtkMRMLScene* scene, const char* 
   if (rootDir.find_last_of("/") == rootDir.length() - 1)
     {
     vtkDebugMacro("em seg: found trailing slash in : " << rootDir);
-    rootDir = rootDir.substr(0, rootDir.length() - 1);
+   rootDir = rootDir.substr(0, rootDir.length() - 1);
     }
   vtkDebugMacro("em seg scene manager root dir = " << rootDir);
   vtksys::SystemTools::SplitPath(rootDir.c_str(), scenePathComponents);
@@ -2324,7 +2324,7 @@ bool vtkEMSegmentLogic::CreateIntermediateDirectory()
   bool createdOK = vtksys::SystemTools::MakeDirectory(outputDirectory.c_str());
   if (!createdOK)
     {
-      std::string msg = "SaveIntermediateResults: could not create "
+      std::string msg = "CreateIntermediateDirectory: could not create "
           + outputDirectory + "!";
       ErrorMsg += msg + "\n";
       vtkErrorMacro(<< msg);
@@ -2333,7 +2333,7 @@ bool vtkEMSegmentLogic::CreateIntermediateDirectory()
   // check again whether or not directory exists
   if (!vtksys::SystemTools::FileExists(outputDirectory.c_str()))
     {
-      std::string msg = "SaveIntermediateResults: Directory " + outputDirectory
+      std::string msg = "CreateIntermediateDirectory: Directory " + outputDirectory
         + " does not exist !";
       ErrorMsg += msg + "\n";
       vtkErrorMacro(<< msg);
@@ -2352,7 +2352,7 @@ bool vtkEMSegmentLogic::SaveIntermediateResults(vtkSlicerApplicationLogic *appLo
     }
   //
   // package EMSeg-related parameters together and write them to disk
-                  bool writeSuccessful = this->PackageAndWriteData(appLogic,this->GetMRMLManager()->GetSaveWorkingDirectory());
+   bool writeSuccessful = this->PackageAndWriteData(appLogic,this->GetMRMLManager()->GetSaveWorkingDirectory());
   return writeSuccessful;
 }
 
@@ -2376,10 +2376,12 @@ bool vtkEMSegmentLogic::PackageAndWriteData(vtkSlicerApplicationLogic* appLogic,
 
   VTK_CREATE(vtkDataIOManagerLogic, dataIOManagerLogic);
 
-  this->GetSlicerCommonInterface()->AddDataIOToScene(newScene, appLogic,
-      dataIOManagerLogic);
+  this->GetSlicerCommonInterface()->AddDataIOToScene(newScene, appLogic, dataIOManagerLogic);
 
+  // cout << "DEBUGGING" << endl;
+  // this->GetMRMLScene()->Commit("/tmp/blub_before.mrml");
   this->GetMRMLManager()->CopyEMRelatedNodesToMRMLScene(newScene);
+  // newScene->Commit("/tmp/blub_after.mrml");
 
   // update filenames to match standardized package structure
   this->CreatePackageFilenames(newScene, packageDirectory);

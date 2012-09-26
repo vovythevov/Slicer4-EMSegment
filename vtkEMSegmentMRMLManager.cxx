@@ -4072,7 +4072,7 @@ int vtkEMSegmentMRMLManager::CheckTemplateMRMLStructure(vtkMRMLEMSTemplateNode *
   vtkMRMLEMSAtlasNode *atlasNode = emsTemp->GetSpatialAtlasNode();
   if (atlasNode == NULL)
     {
-    vtkErrorMacro("Atlas node is NULL.");
+    vtkErrorMacro("CheckTemplateMRMLStructure::Atlas node is NULL.");
     return 0;
     }
 

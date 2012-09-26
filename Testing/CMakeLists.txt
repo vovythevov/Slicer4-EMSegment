@@ -139,6 +139,7 @@ if(NOT DISABLE_CXX_TESTING)
     vtkEMSegmentMRMLManagerTest.cxx
     vtkEMSegmentTestUtilities.cxx
     )
+
   target_link_libraries(
     vtkEMSegmentMRMLManagerTest
     ${TEST_LINK_LIBRARIES}
@@ -153,6 +154,17 @@ if(NOT DISABLE_CXX_TESTING)
     vtkEMSegmentPreprocessingManagerTest
     ${TEST_LINK_LIBRARIES}
     )
+
+
+ add_executable(
+    vtkGetReferencedSubSceneWithEMTemplateTest
+    vtkGetReferencedSubSceneWithEMTemplateTest.cxx
+    )
+  target_link_libraries(
+    vtkGetReferencedSubSceneWithEMTemplateTest
+    ${TEST_LINK_LIBRARIES}
+    )
+
 
   ############################################################################
   # The test is a stand-alone executable.  However, the Slicer
@@ -178,6 +190,9 @@ if(NOT DISABLE_CXX_TESTING)
   # Does the mrml manager's api function correctly?
   ADD_EMSEGMENT_TEST(vtkEMSegmentMRMLManagerTest vtkEMSegmentMRMLManagerTest
     ${EMSegment_TUTORIAL_DIR}/Template_small_normalizationOn.mrml "EMSegment Tutorial Template")
+
+  ADD_EMSEGMENT_TEST(vtkGetReferencedSubSceneWithEMTemplateTest vtkGetReferencedSubSceneWithEMTemplateTest
+    ${EMSegment_TUTORIAL_DIR}/Template_small.mrml )
 
   # Does the preprocessing function correctly?
   #ADD_EMSEGMENT_TEST(vtkEMSegmentPreprocessingManagerTest vtkEMSegmentPreprocessingManagerTest
