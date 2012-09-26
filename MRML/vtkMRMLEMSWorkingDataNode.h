@@ -35,6 +35,10 @@ public:
   virtual const char* GetNodeTagName() {return "EMSWorkingData";}
 
   // Description:
+  // Set the references of the node to the scene.
+  virtual void SetSceneReferences();
+
+  // Description:
   // Updates this node if it depends on other nodes
   // when the node is deleted in the scene
   virtual void UpdateReferences();

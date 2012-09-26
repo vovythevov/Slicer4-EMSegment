@@ -14,26 +14,34 @@
 // which is used by vtkEMSegmentLogic::PackageAndWriteData , which is called  vtkEMSegmentLogic::SaveIntermediateResults, which is test by EMSegCL_IntermediateResults
 
 void TestMRMLScene(vtkMRMLScene* scene )
-{ 
-    vtkMRMLEMSTemplateNode* templateNode = dynamic_cast<vtkMRMLEMSTemplateNode*> (scene->GetNthNodeByClass(0, "vtkMRMLEMSTemplateNode"));
-    if (templateNode == NULL)
-        {
-           std::cerr << "Error: No Template node in new scene" << std::endl;
-           throw std::runtime_error("Parameters Not Found!");
-        }
-
-    // check atlas node - atlas is part of the template -if it is not it - then template was not correctly created 
-    vtkMRMLEMSAtlasNode *atlasNode = templateNode->GetSpatialAtlasNode();
-    if (atlasNode == NULL)
+{
+  vtkMRMLEMSTemplateNode* templateNode = vtkMRMLEMSTemplateNode::SafeDownCast(
+    scene->GetNthNodeByClass(0, "vtkMRMLEMSTemplateNode"));
+  if (templateNode == NULL)
     {
-           std::cerr << "Error: Template node does not have correct structure" << std::endl;
-           throw std::runtime_error("Template structure not complete!");
+    std::cerr << "Error: No Template node in new scene" << std::endl;
+    throw std::runtime_error("Parameters Not Found!");
+    }
+
+  // check atlas node - atlas is part of the template -if it is not it - then template was not correctly created 
+  vtkMRMLEMSAtlasNode *atlasNode = templateNode->GetSpatialAtlasNode();
+  if (atlasNode == NULL)
+    {
+    std::cerr << "Error: Template node does not have correct structure" << std::endl;
+    throw std::runtime_error("Template structure not complete!");
     }
 }
 
-int main(int vtkNotUsed(argc), char** argv)
+//----------------------------------------------------------------------------
+int main(int argc, char** argv)
 {
-
+  if (argc < 2)
+    {
+    std::cout << "Usage: "
+              << "vtkGetReferenceSubSceneWithEMTemplateTest path/to/scene.mrml"
+              << std::endl;
+    return EXIT_FAILURE;
+    }
   std::string mrmlSceneFilename           = argv[1];
 
   bool passFlag = true;
@@ -51,12 +59,12 @@ int main(int vtkNotUsed(argc), char** argv)
   emLogic->InitializeEventListeners();
   emLogic->RegisterMRMLNodesWithScene();
 
-  try 
+  try
     {
     cout << "====================================" << endl; 
     cout << "Load and Check input " << endl; 
 
-    try 
+    try
       {
       mrmlScene->Import();
       std::cout << "Imported: " << mrmlScene->GetNumberOfNodes() << " nodes." << std::endl;
@@ -70,22 +78,24 @@ int main(int vtkNotUsed(argc), char** argv)
     TestMRMLScene(mrmlScene);
     std::cout << "... OK" << endl;
 
-    cout << "====================================" << endl; 
-     cout << "Checking GetReferencedSubScene ... " << endl;
-   
-     vtkMRMLEMSTemplateNode* templateNode = dynamic_cast<vtkMRMLEMSTemplateNode*> (mrmlScene->GetNthNodeByClass(0, "vtkMRMLEMSTemplateNode"));
-     // Copy Reference Scene - same as in CopyEMRelatedNodesToMRMLScene
-     mrmlScene->GetReferencedSubScene(templateNode, newScene);
-     TestMRMLScene(newScene);
-     cout << "... Copy function works " << endl;
+    cout << "====================================" << endl;
+    cout << "Checking GetReferencedSubScene ... " << endl;
+
+    vtkMRMLEMSTemplateNode* templateNode =
+      vtkMRMLEMSTemplateNode::SafeDownCast(
+        mrmlScene->GetNthNodeByClass(0, "vtkMRMLEMSTemplateNode"));
+    // Copy Reference Scene - same as in CopyEMRelatedNodesToMRMLScene
+    mrmlScene->GetReferencedSubScene(templateNode, newScene);
+    TestMRMLScene(newScene);
+    cout << "... Copy function works " << endl;
 
     }
   catch(...)
     {
-      passFlag = false; 
+    passFlag = false;
     }
 
-   // clean up 
+   // clean up
    emLogic->SetAndObserveMRMLScene(NULL);
    emLogic->Delete();
 
@@ -94,7 +104,7 @@ int main(int vtkNotUsed(argc), char** argv)
 
    mrmlScene->Clear(true);
    mrmlScene->Delete();
-  
+
   return (passFlag ?  EXIT_SUCCESS : EXIT_FAILURE);
 }
 

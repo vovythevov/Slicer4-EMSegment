@@ -75,9 +75,17 @@ void vtkMRMLEMSSegmenterNode::WriteXML(ostream& of, int nIndent)
 }
 
 //-----------------------------------------------------------------------------
-void
-vtkMRMLEMSSegmenterNode::
-UpdateReferenceID(const char* oldID, const char* newID)
+void vtkMRMLEMSSegmenterNode::SetSceneReferences()
+{
+  this->Superclass::SetSceneReferences();
+  this->Scene->AddReferencedNodeID(this->TemplateNodeID, this);
+  this->Scene->AddReferencedNodeID(this->OutputVolumeNodeID, this);
+  this->Scene->AddReferencedNodeID(this->WorkingDataNodeID, this);
+}
+
+//-----------------------------------------------------------------------------
+void vtkMRMLEMSSegmenterNode
+::UpdateReferenceID(const char* oldID, const char* newID)
 {
   if (this->TemplateNodeID && !strcmp(oldID, this->TemplateNodeID))
     {
@@ -94,9 +102,8 @@ UpdateReferenceID(const char* oldID, const char* newID)
 }
 
 //-----------------------------------------------------------------------------
-void 
-vtkMRMLEMSSegmenterNode::
-UpdateReferences()
+void vtkMRMLEMSSegmenterNode
+::UpdateReferences()
 {
   Superclass::UpdateReferences();
 

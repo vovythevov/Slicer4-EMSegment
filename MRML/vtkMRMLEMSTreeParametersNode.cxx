@@ -108,9 +108,17 @@ void vtkMRMLEMSTreeParametersNode::WriteXML(ostream& of, int nIndent)
 }
 
 //-----------------------------------------------------------------------------
-void
-vtkMRMLEMSTreeParametersNode::
-UpdateReferenceID(const char* oldID, const char* newID)
+void vtkMRMLEMSTreeParametersNode
+::SetSceneReferences()
+{
+  this->Superclass::SetSceneReferences();
+  this->Scene->AddReferencedNodeID(this->LeafParametersNodeID, this);
+  this->Scene->AddReferencedNodeID(this->ParentParametersNodeID, this);
+}
+
+//-----------------------------------------------------------------------------
+void vtkMRMLEMSTreeParametersNode
+::UpdateReferenceID(const char* oldID, const char* newID)
 {
   if (this->LeafParametersNodeID && !strcmp(oldID, this->LeafParametersNodeID))
     {
@@ -124,9 +132,8 @@ UpdateReferenceID(const char* oldID, const char* newID)
 }
 
 //-----------------------------------------------------------------------------
-void 
-vtkMRMLEMSTreeParametersNode::
-UpdateReferences()
+void vtkMRMLEMSTreeParametersNode
+::UpdateReferences()
 {
   Superclass::UpdateReferences();
 

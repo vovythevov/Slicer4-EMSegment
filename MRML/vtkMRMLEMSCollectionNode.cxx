@@ -45,6 +45,7 @@ vtkMRMLEMSCollectionNode::~vtkMRMLEMSCollectionNode()
   // nothing to do here
 }
 
+//----------------------------------------------------------------------------
 void vtkMRMLEMSCollectionNode::WriteXML(ostream& of, int nIndent)
 {
   Superclass::WriteXML(of, nIndent);
@@ -66,10 +67,19 @@ void vtkMRMLEMSCollectionNode::WriteXML(ostream& of, int nIndent)
   of << "\" ";
 }
 
+//----------------------------------------------------------------------------
+void vtkMRMLEMSCollectionNode::SetSceneReferences()
+{
+  this->Superclass::SetSceneReferences();
+  for (KeyIterator i = this->KeyList.begin(); i != this->KeyList.end(); ++i)
+    {
+    this->Scene->AddReferencedNodeID(this->KeyToNodeIDMap[*i].c_str(), this);
+    }
+}
+
 //-----------------------------------------------------------------------------
-void
-vtkMRMLEMSCollectionNode::
-UpdateReferenceID(const char* oldID, const char* newID)
+void vtkMRMLEMSCollectionNode
+::UpdateReferenceID(const char* oldID, const char* newID)
 {
   for (KeyIterator i = this->KeyList.begin(); i != this->KeyList.end(); ++i)
     {
@@ -87,9 +97,7 @@ UpdateReferenceID(const char* oldID, const char* newID)
 }
 
 //-----------------------------------------------------------------------------
-void 
-vtkMRMLEMSCollectionNode::
-UpdateReferences()
+void vtkMRMLEMSCollectionNode::UpdateReferences()
 {
   Superclass::UpdateReferences();
 
@@ -113,6 +121,7 @@ UpdateReferences()
     }
 }
 
+//-----------------------------------------------------------------------------
 void vtkMRMLEMSCollectionNode::ReadXMLAttributes(const char** attrs)
 {
   Superclass::ReadXMLAttributes(attrs);

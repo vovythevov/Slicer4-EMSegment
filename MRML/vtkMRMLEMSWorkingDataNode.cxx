@@ -118,6 +118,20 @@ void vtkMRMLEMSWorkingDataNode::WriteXML(ostream& of, int nIndent)
 }
 
 //-----------------------------------------------------------------------------
+void vtkMRMLEMSWorkingDataNode
+::SetSceneReferences()
+{
+  this->Superclass::SetSceneReferences();
+  this->Scene->AddReferencedNodeID(this->InputTargetNodeID, this);
+  this->Scene->AddReferencedNodeID(this->AlignedTargetNodeID, this);
+  this->Scene->AddReferencedNodeID(this->AlignedAtlasNodeID, this);
+  this->Scene->AddReferencedNodeID(this->AlignedSubParcellationNodeID, this);
+  this->Scene->AddReferencedNodeID(this->OutputSegmentationNodeID, this);
+  this->Scene->AddReferencedNodeID(this->InputAtlasNodeID, this);
+  this->Scene->AddReferencedNodeID(this->InputSubParcellationNodeID, this);
+}
+
+//-----------------------------------------------------------------------------
 void
 vtkMRMLEMSWorkingDataNode::
 UpdateReferenceID(const char* oldID, const char* newID)

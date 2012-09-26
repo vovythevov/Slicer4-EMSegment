@@ -81,10 +81,20 @@ void vtkMRMLEMSTemplateNode::WriteXML(ostream& of, int nIndent)
 
 }
 
+//----------------------------------------------------------------------------
+void vtkMRMLEMSTemplateNode::SetSceneReferences()
+{
+  this->Superclass::SetSceneReferences();
+  this->Scene->AddReferencedNodeID(this->TreeNodeID, this);
+  this->Scene->AddReferencedNodeID(this->GlobalParametersNodeID, this);
+  this->Scene->AddReferencedNodeID(this->SpatialAtlasNodeID, this);
+  this->Scene->AddReferencedNodeID(this->SubParcellationNodeID, this);
+  this->Scene->AddReferencedNodeID(this->EMSWorkingDataNodeID, this);
+}
+
 //-----------------------------------------------------------------------------
-void
-vtkMRMLEMSTemplateNode::
-UpdateReferenceID(const char* oldID, const char* newID)
+void vtkMRMLEMSTemplateNode
+::UpdateReferenceID(const char* oldID, const char* newID)
 {
   if (this->TreeNodeID && !strcmp(oldID, this->TreeNodeID))
     {
@@ -112,9 +122,8 @@ UpdateReferenceID(const char* oldID, const char* newID)
 }
 
 //-----------------------------------------------------------------------------
-void 
-vtkMRMLEMSTemplateNode::
-UpdateReferences()
+void vtkMRMLEMSTemplateNode
+::UpdateReferences()
 {
   Superclass::UpdateReferences();
 
@@ -220,9 +229,8 @@ void vtkMRMLEMSTemplateNode::PrintSelf(ostream& os, vtkIndent indent)
 }
 
 //-----------------------------------------------------------------------------
-vtkMRMLEMSTreeNode*
-vtkMRMLEMSTemplateNode::
-GetTreeNode()
+vtkMRMLEMSTreeNode* vtkMRMLEMSTemplateNode
+::GetTreeNode()
 {
   vtkMRMLEMSTreeNode* node = NULL;
   if (this->GetScene() && this->GetTreeNodeID() )
@@ -234,9 +242,8 @@ GetTreeNode()
 }
 
 //-----------------------------------------------------------------------------
-vtkMRMLEMSGlobalParametersNode*
-vtkMRMLEMSTemplateNode::
-GetGlobalParametersNode()
+vtkMRMLEMSGlobalParametersNode* vtkMRMLEMSTemplateNode
+::GetGlobalParametersNode()
 {
   vtkMRMLEMSGlobalParametersNode* node = NULL;
   if (this->GetScene() && this->GetGlobalParametersNodeID() )
@@ -248,8 +255,7 @@ GetGlobalParametersNode()
   return node;
 }
 //-----------------------------------------------------------------------------
-vtkMRMLEMSAtlasNode* 
-vtkMRMLEMSTemplateNode::GetSpatialAtlasNode()
+vtkMRMLEMSAtlasNode* vtkMRMLEMSTemplateNode::GetSpatialAtlasNode()
 {
   vtkMRMLEMSAtlasNode* node = NULL;
   if (this->GetScene() && this->SpatialAtlasNodeID )
@@ -262,9 +268,8 @@ vtkMRMLEMSTemplateNode::GetSpatialAtlasNode()
 }
 
 //-----------------------------------------------------------------------------
-vtkMRMLEMSVolumeCollectionNode*
-vtkMRMLEMSTemplateNode::
-GetSubParcellationNode()
+vtkMRMLEMSVolumeCollectionNode* vtkMRMLEMSTemplateNode
+::GetSubParcellationNode()
 {
   vtkMRMLEMSVolumeCollectionNode* node = NULL;
   if (this->GetScene() && this->SubParcellationNodeID )
@@ -276,6 +281,7 @@ GetSubParcellationNode()
   return node;
 }
 
+//-----------------------------------------------------------------------------
 vtkMRMLEMSWorkingDataNode* vtkMRMLEMSTemplateNode::GetEMSWorkingDataNode()
 {
   vtkMRMLEMSWorkingDataNode* node = NULL;
