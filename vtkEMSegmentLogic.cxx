@@ -363,7 +363,6 @@ void vtkEMSegmentLogic::RegisterMRMLNodesWithScene()
 //----------------------------------------------------------------------------
 void vtkEMSegmentLogic::RegisterNodes()
 {
-  // std::cout << "Registering Nodes.." << std::endl;
   // make sure the scene is attached
   this->MRMLManager->SetMRMLScene(this->GetMRMLScene());
   this->RegisterMRMLNodesWithScene();

@@ -3882,6 +3882,13 @@ RegisterMRMLNodesWithScene()
     return;
     }
 
+  // Issue 2625: Avoid warning "Node already registered" due to the fact both EMSegment
+  // and EMSegmentQuick module instantiate a EMSegmentLogic.
+  if (this->GetMRMLScene()->GetTagByClassName("vtkMRMLEMSTemplateNode") != 0)
+    {
+    return;
+    }
+
   // -----------------------
   // For legacy purpose
   // -----------------------
