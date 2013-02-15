@@ -18,6 +18,12 @@
 // Colors/Logic includes
 #include <vtkSlicerColorLogic.h>
 
+// ITK includes
+#include <itkConfigure.h> // For ITK_VERSION_MAJOR
+#if ITK_VERSION_MAJOR > 3
+# include "itkFactoryRegistration.h"
+#endif
+
 #ifdef Slicer3_USE_KWWIDGETS
 extern "C" int Atlascreatorcxxmodule_Init(Tcl_Interp *interp);
 extern "C" int Slicerbasegui_Init(Tcl_Interp *interp);
@@ -28,6 +34,9 @@ extern "C" int Slicerbasegui_Init(Tcl_Interp *interp);
 // =======================================================================
 int main(int argc, char** argv)
 {
+#if ITK_VERSION_MAJOR > 3
+  itk::itkFactoryRegistration(); 
+#endif
 
   // =======================================================================
   //

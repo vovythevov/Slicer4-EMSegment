@@ -10,6 +10,12 @@
 #include <vtkMRMLVolumeNode.h>
 #include <vtkMRMLScene.h>
 
+// ITK includes
+#include <itkConfigure.h>
+#if ITK_VERSION_MAJOR > 3
+  #include <itkFactoryRegistration.h>
+#endif
+
 // VTK includes
 #include <vtkImageData.h>
 
@@ -20,6 +26,11 @@
 int main(int argc, char** argv)
 {
   std::cerr << "Starting EM black box test..." << std::endl;
+  
+#if ITK_VERSION_MAJOR > 3
+  itk::itkFactoryRegistration();
+#endif
+  
   std::vector<std::string> targetImageFilenames;
   std::string mrmlSceneFilename;
   std::string sceneRootDirectory;
