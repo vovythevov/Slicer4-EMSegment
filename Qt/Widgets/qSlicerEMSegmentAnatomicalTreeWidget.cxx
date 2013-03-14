@@ -224,10 +224,11 @@ QStandardItem* qSlicerEMSegmentAnatomicalTreeWidgetPrivate::insertTreeRow(
 {
   Q_Q(qSlicerEMSegmentAnatomicalTreeWidget);
   Q_ASSERT(treeNode);
-
+  
   bool isLeaf = treeNode->GetNumberOfChildNodes() == 0;
 
   QList<QStandardItem*> itemList;
+  
 
   // Structure item
   QStandardItem * structureItem = NULL;
@@ -333,6 +334,7 @@ QStandardItem* qSlicerEMSegmentAnatomicalTreeWidgetPrivate::insertTreeRow(
   QStandardItem * parcellationMapItem = new QStandardItem();
   parcellationMapItem->setData(QVariant(treeNodeId), Self::TreeNodeIDRole);
   parcellationMapItem->setEditable(false);
+
   if (isLeaf) // Is treeNode a leaf ?
     {
     parcellationMapItem->setData(QVariant(Self::ParcellationMapItemType), Self::TreeItemTypeRole);
@@ -347,19 +349,21 @@ QStandardItem* qSlicerEMSegmentAnatomicalTreeWidgetPrivate::insertTreeRow(
     {
 
     qMRMLLabelComboBox * labelComboBox = new qMRMLLabelComboBox;
-
     // labelComboBox->setMaximumColorCount(100);
     labelComboBox->setMRMLScene(q->mrmlScene());
+
+
+    cout << "qSlicerEMSegmentAnatomicalTreeWidgetPrivate::insertTreeRow: Start slow" << endl; 
+    // The reason for it being slow is due to qMRMLLabelComboBox::updateWidgetFromMRML() which both of these functions call 
     labelComboBox->setMRMLColorNode(this->CurrentColorTableNode);
-    logger.debug(QString("insertTreeRow - IntensityLabel: %1").
-                 arg(q->mrmlManager()->GetTreeNodeIntensityLabel(treeNodeId)));
+    cout << "...." << endl; 
     labelComboBox->setLabelValueVisible(true);
-    labelComboBox->setCurrentColor(
-        q->mrmlManager()->GetTreeNodeIntensityLabel(treeNodeId));
-      this->TreeView->setIndexWidget(
-         this->TreeModel->indexFromItem(labelItem), labelComboBox);
-    connect(labelComboBox, SIGNAL(currentColorChanged(int)),this,SLOT(onCurrentColorChanged(int)));
-    }
+    cout << "qSlicerEMSegmentAnatomicalTreeWidgetPrivate::insertTreeRow: End slow" << endl; 
+    labelComboBox->setCurrentColor(q->mrmlManager()->GetTreeNodeIntensityLabel(treeNodeId));
+  
+     this->TreeView->setIndexWidget( this->TreeModel->indexFromItem(labelItem), labelComboBox);
+     connect(labelComboBox, SIGNAL(currentColorChanged(int)),this,SLOT(onCurrentColorChanged(int)));
+   }
 
   // Set widget associated with probabilityMapItem
   if (isLeaf && this->ProbabilityMapColumnVisible)
@@ -392,7 +396,6 @@ QStandardItem* qSlicerEMSegmentAnatomicalTreeWidgetPrivate::insertTreeRow(
     connect(probabilityMapComboBox, SIGNAL(currentNodeChanged(vtkMRMLNode*)),
             this, SLOT(onProbabilityMapChanged(vtkMRMLNode*)));
     }
-
   // Set widget associated with parcellationMapItem
   if (isLeaf && this->ParcellationMapColumnVisible)
     {
@@ -521,12 +524,15 @@ void qSlicerEMSegmentAnatomicalTreeWidgetPrivate::onTreeItemSelected(const QMode
 void qSlicerEMSegmentAnatomicalTreeWidgetPrivate::onProbabilityMapChanged(vtkMRMLNode * node)
 {
   Q_Q(qSlicerEMSegmentAnatomicalTreeWidget);
-  if (!node)
-    {
-    return;
-    }
   int treeNodeId = QObject::sender()->property("treeNodeId").toInt();
   Q_ASSERT(treeNodeId > 0);
+
+  if (!node)
+    {
+      // Set SpatialPriorVolumeNode to NULL !
+      q->mrmlManager()->SetTreeNodeSpatialPriorVolumeID(treeNodeId, -1);
+    return;
+    }
   q->mrmlManager()->SetTreeNodeSpatialPriorVolumeID(
       treeNodeId, q->mrmlManager()->MapMRMLNodeIDToVTKNodeID(node->GetID()));
 }
@@ -536,12 +542,15 @@ void qSlicerEMSegmentAnatomicalTreeWidgetPrivate::onParcellationMapChanged(vtkMR
 {
   Q_Q(qSlicerEMSegmentAnatomicalTreeWidget);
 
-  if (!node)
-    {
-    return;
-    }
   int treeNodeId = QObject::sender()->property("treeNodeId").toInt();
   Q_ASSERT(treeNodeId > 0);
+
+  if (!node)
+    {
+      // Set Subparcellation Node to NULL !
+      q->mrmlManager()->SetTreeNodeSubParcellationVolumeID(treeNodeId, -1);
+      return;
+    }
   q->mrmlManager()->SetTreeNodeSubParcellationVolumeID(
       treeNodeId, q->mrmlManager()->MapMRMLNodeIDToVTKNodeID(node->GetID()));
 }

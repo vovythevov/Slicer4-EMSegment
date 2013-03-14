@@ -49,7 +49,9 @@ class EMSegmentDefineMiscParametersStep( EMSegmentStep ) :
     self.__roi.SetXYZ( [0, 0, 0] );
     self.__roi.SetRadiusXYZ( 100, 100, 100 )
     self.__roi.Initialize( slicer.mrmlScene )
-    self.__roi.SetVisibility( 0 )
+    # since revision 21159 taken out  SetVisibility was Replaced with SetDisplayVisibility
+    # however when setting it I got a message that int values was not correct  
+    # self.__roi.SetDisplayVisibility( 0 )
     self.__roi.AddObserver( vtk.vtkCommand.ModifiedEvent, self.updateMRMLFromROI )
     self.__roiWidget.setMRMLAnnotationROINode( self.__roi )
     self.__roiWidget.setDisplayClippingBox( 0 )
