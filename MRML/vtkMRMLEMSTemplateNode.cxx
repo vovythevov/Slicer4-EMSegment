@@ -81,6 +81,8 @@ void vtkMRMLEMSTemplateNode::WriteXML(ostream& of, int nIndent)
 
 }
 
+//Slicer 4
+#ifndef Slicer3_USE_KWWIDGETS
 //----------------------------------------------------------------------------
 void vtkMRMLEMSTemplateNode::SetSceneReferences()
 {
@@ -91,6 +93,7 @@ void vtkMRMLEMSTemplateNode::SetSceneReferences()
   this->Scene->AddReferencedNodeID(this->SubParcellationNodeID, this);
   this->Scene->AddReferencedNodeID(this->EMSWorkingDataNodeID, this);
 }
+#endif 
 
 //-----------------------------------------------------------------------------
 void vtkMRMLEMSTemplateNode

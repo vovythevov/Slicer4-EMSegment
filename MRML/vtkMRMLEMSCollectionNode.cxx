@@ -67,6 +67,8 @@ void vtkMRMLEMSCollectionNode::WriteXML(ostream& of, int nIndent)
   of << "\" ";
 }
 
+//Slicer 4
+#ifndef Slicer3_USE_KWWIDGETS
 //----------------------------------------------------------------------------
 void vtkMRMLEMSCollectionNode::SetSceneReferences()
 {
@@ -76,6 +78,7 @@ void vtkMRMLEMSCollectionNode::SetSceneReferences()
     this->Scene->AddReferencedNodeID(this->KeyToNodeIDMap[*i].c_str(), this);
     }
 }
+#endif
 
 //-----------------------------------------------------------------------------
 void vtkMRMLEMSCollectionNode

@@ -78,12 +78,15 @@ void vtkMRMLEMSNode::WriteXML(ostream& of, int nIndent)
 
 }
 
+//Slicer 4
+#ifndef Slicer3_USE_KWWIDGETS
 //-----------------------------------------------------------------------------
 void vtkMRMLEMSNode::SetSceneReferences()
 {
   this->Superclass::SetSceneReferences();
   this->Scene->AddReferencedNodeID(this->SegmenterNodeID, this);
 }
+#endif 
 
 //-----------------------------------------------------------------------------
 void vtkMRMLEMSNode::UpdateReferenceID(const char* oldID, const char* newID)

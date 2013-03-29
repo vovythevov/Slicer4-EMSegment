@@ -134,6 +134,8 @@ void vtkMRMLEMSTreeNode::WriteXML(ostream& of, int nIndent)
 
 }
 
+//Slicer 4
+#ifndef Slicer3_USE_KWWIDGETS
 //-----------------------------------------------------------------------------
 void vtkMRMLEMSTreeNode::SetSceneReferences()
 {
@@ -147,6 +149,7 @@ void vtkMRMLEMSTreeNode::SetSceneReferences()
   this->Scene->AddReferencedNodeID(this->LeafParametersNodeID, this);
   this->Scene->AddReferencedNodeID(this->ParentParametersNodeID, this);
 }
+#endif 
 
 //-----------------------------------------------------------------------------
 void vtkMRMLEMSTreeNode

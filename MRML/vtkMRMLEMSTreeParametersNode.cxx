@@ -107,6 +107,8 @@ void vtkMRMLEMSTreeParametersNode::WriteXML(ostream& of, int nIndent)
   of << indent << "PrintWeights=\"" << this->PrintWeights << "\" ";
 }
 
+//Slicer 4
+#ifndef Slicer3_USE_KWWIDGETS
 //-----------------------------------------------------------------------------
 void vtkMRMLEMSTreeParametersNode
 ::SetSceneReferences()
@@ -115,6 +117,7 @@ void vtkMRMLEMSTreeParametersNode
   this->Scene->AddReferencedNodeID(this->LeafParametersNodeID, this);
   this->Scene->AddReferencedNodeID(this->ParentParametersNodeID, this);
 }
+#endif 
 
 //-----------------------------------------------------------------------------
 void vtkMRMLEMSTreeParametersNode

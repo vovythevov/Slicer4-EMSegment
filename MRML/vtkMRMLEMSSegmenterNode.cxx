@@ -74,6 +74,8 @@ void vtkMRMLEMSSegmenterNode::WriteXML(ostream& of, int nIndent)
      << (this->WorkingDirectory ? this->WorkingDirectory : "NULL") << "\" ";
 }
 
+//Slicer 4
+#ifndef Slicer3_USE_KWWIDGETS
 //-----------------------------------------------------------------------------
 void vtkMRMLEMSSegmenterNode::SetSceneReferences()
 {
@@ -82,6 +84,7 @@ void vtkMRMLEMSSegmenterNode::SetSceneReferences()
   this->Scene->AddReferencedNodeID(this->OutputVolumeNodeID, this);
   this->Scene->AddReferencedNodeID(this->WorkingDataNodeID, this);
 }
+#endif 
 
 //-----------------------------------------------------------------------------
 void vtkMRMLEMSSegmenterNode
