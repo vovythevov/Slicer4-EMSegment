@@ -108,8 +108,13 @@ void vtkMRMLEMSTreeParametersNode::WriteXML(ostream& of, int nIndent)
 }
 
 //Slicer 4
-#ifndef Slicer3_USE_KWWIDGETS
+#ifdef Slicer3_USE_KWWIDGETS
 //-----------------------------------------------------------------------------
+void vtkMRMLEMSTreeParametersNode
+::SetSceneReferences()
+{
+}
+#else
 void vtkMRMLEMSTreeParametersNode
 ::SetSceneReferences()
 {

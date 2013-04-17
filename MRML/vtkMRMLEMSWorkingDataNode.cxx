@@ -118,10 +118,14 @@ void vtkMRMLEMSWorkingDataNode::WriteXML(ostream& of, int nIndent)
 }
 
 //Slicer 4
-#ifndef Slicer3_USE_KWWIDGETS
+#ifdef Slicer3_USE_KWWIDGETS
 //-----------------------------------------------------------------------------
-void vtkMRMLEMSWorkingDataNode
-::SetSceneReferences()
+void vtkMRMLEMSWorkingDataNode::SetSceneReferences()
+{
+}
+#else
+//-----------------------------------------------------------------------------
+void vtkMRMLEMSWorkingDataNode::SetSceneReferences()
 {
   this->Superclass::SetSceneReferences();
   this->Scene->AddReferencedNodeID(this->InputTargetNodeID, this);

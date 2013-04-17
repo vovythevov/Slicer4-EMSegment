@@ -45,14 +45,12 @@ public:
   virtual const char* GetNodeTagName()
     {return "EMS";}
 
-//BTX
-//Slicer 4
-#ifndef Slicer3_USE_KWWIDGETS
   // Description:
-  // Set the references of the node to the scene.
+  // Set the references of the node to the scene. - only used in Slicer 4 - do not use 
+  // BTX 
+  // #ifndef Slicer3_USE_KWWIDGETS
+  // as otherwise pythong cannot call the function in Slicer4 which is a problem
   virtual void SetSceneReferences();
-#endif 
-//ETX
 
   // Description:
   // Updates this node if it depends on other nodes

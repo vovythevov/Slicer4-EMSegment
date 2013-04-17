@@ -38,14 +38,9 @@ public:
   // Get node XML tag name (like Volume, Model)
   virtual const char* GetNodeTagName() {return "EMSTree";}
 
-//BTX
-//Slicer 4
-#ifndef Slicer3_USE_KWWIDGETS
   // Description:
-  // Set the references of the node to the scene.
+  // Set the references of the node to the scene - only used in Slicer4 
   virtual void SetSceneReferences();
-#endif 
-//ETX
 
   // Description:
   // Updates this node if it depends on other nodes
