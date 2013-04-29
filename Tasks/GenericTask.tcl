@@ -886,6 +886,7 @@ namespace eval EMSegmenterPreProcessingTcl {
 
         $LOGIC PrintText "TCL: =========================================="
         $LOGIC PrintText "TCL: == SkullStripper"
+        $LOGIC PrintText "TCL: Type: $selectedRegistrationPackage"
 
         
         #set PLUGINS_DIR "[$::slicer3::Application GetPluginsDir]"
@@ -1003,7 +1004,7 @@ namespace eval EMSegmenterPreProcessingTcl {
 
                 set deformableType [ $mrmlManager GetRegistrationDeformableType ]
                 if { $deformableType == [$mrmlManager GetRegistrationTypeFromString RegistrationTest] } {
-                      set CMD "$CMD --numberOfIterations 3    --numberOfSamples 100"
+                      set CMD "$CMD --useRigid --numberOfIterations 3    --numberOfSamples 100"
                 } elseif { $deformableType == [$mrmlManager GetRegistrationTypeFromString RegistrationFast] } {
                       set CMD "$CMD --useRigid --useScaleSkewVersor3D --useAffine"
                       set CMD "$CMD --numberOfIterations 500  --numberOfSamples 30000"
