@@ -1853,7 +1853,12 @@ namespace eval EMSegmenterPreProcessingTcl {
             if { $tmpFileName == "" } {
                 return 1
             }
-            set CMD "$CMD --inputimage \"$tmpFileName\""
+ 
+            if {[$LOGIC GetSlicerVersion] == 3  } {
+                set CMD "$CMD --inputimage"
+            }
+
+            set CMD "$CMD \"$tmpFileName\""
 
             # set tmpFileName [WriteDataToTemporaryDir $inputICCMaskNode Volume ]
             # set RemoveFiles "$RemoveFiles \"$tmpFileName\""
@@ -1868,7 +1873,13 @@ namespace eval EMSegmenterPreProcessingTcl {
             if { $outputVolumeFileName == "" } {
                 return 1
             }
-            set CMD "$CMD --outputimage \"$outputVolumeFileName\""
+
+            if {[$LOGIC GetSlicerVersion] == 3  } {
+                set CMD "$CMD --outputimage"
+            }
+
+            set CMD "$CMD \"$outputVolumeFileName\""
+
             set RemoveFiles "$RemoveFiles \"$outputVolumeFileName\""
 
             # for test purposes(reduces execution time)
