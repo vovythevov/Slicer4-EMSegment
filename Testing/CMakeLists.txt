@@ -218,6 +218,8 @@ if(NOT DISABLE_CXX_TESTING)
   ADD_EMSEGMENT_TEST(EMSeg_MRMLManagerTest vtkEMSegmentMRMLManagerTest
     ${EMSegment_TUTORIAL_DIR}/Template_small_normalizationOn.mrml "EMSegment Tutorial Template")
 
+  set_tests_properties(EMSeg_MRMLManagerTest PROPERTIES FAIL_REGULAR_EXPRESSION "ERROR;Error" )
+
   ADD_EMSEGMENT_TEST(EMSeg_GetReferencedSubSceneWithEMTemplateTest vtkGetReferencedSubSceneWithEMTemplateTest
     ${EMSegment_TUTORIAL_DIR}/Template_small.mrml )
 
