@@ -4747,7 +4747,7 @@ vtkMRMLVolumeNode*  vtkEMSegmentMRMLManager::GetAlignedSpatialPriorFromTreeNodeI
    vtkMRMLEMSAtlasNode* workingAtlas = this->GetWorkingDataNode()->GetAlignedAtlasNode();
    if (workingAtlas == NULL)
      {
-     vtkErrorMacro("Invalid ID: " << nodeID);
+     vtkWarningMacro("GetAlignedSpatialPriorFromTreeNodeID: AlingedAtlasNode is not yet defined");
      return NULL;
      }
    std::string atlasVolumeKey = this->GetTreeNode(nodeID)->GetSpatialPriorVolumeName() ? this->GetTreeNode(nodeID)->GetSpatialPriorVolumeName() : "";
