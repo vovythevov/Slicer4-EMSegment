@@ -57,7 +57,7 @@ set(MIDAS_KEY_DIR "${EMSegment_SOURCE_DIR}/Testing/TestData/MIDAS_Keys")
 
 
 set(EMSEG_RUN_OLD_TESTS OFF CACHE BOOL "Enable old EMSegment tests." FORCE)
-mark_as_advanced(EMSEG_RUN_OLD_TEST)
+mark_as_advanced(EMSEG_RUN_OLD_TESTS)
 
 set(EMSEG_RUN_COMPARE_TESTS OFF CACHE BOOL "Enable EMSegment tests to compare segmentation results." FORCE)
 mark_as_advanced(EMSEG_RUN_COMPARE_TESTS)
@@ -70,6 +70,9 @@ mark_as_advanced(EMSEG_RUN_VALGRIND_TESTS)
 
 set(EMSEG_RUN_EXTRA_SHORT_TESTS ON CACHE BOOL "Enable EMSegment extra, short tests." FORCE)
 mark_as_advanced(EMSEG_RUN_EXTRA_SHORT_TESTS)
+
+set(EMSEG_RUN_EXTRA_DEFAULTNODES OFF CACHE BOOL "Enable for debugging RunDefaultNodes." FORCE)
+mark_as_advanced(EMSEG_RUN_EXTRA_DEFAULTNODES)
 
 set(EMSEG_RUN_EXTRA_LONG_TESTS OFF CACHE BOOL "Enable EMSegment extra, long tests." FORCE)
 mark_as_advanced(EMSEG_RUN_EXTRA_LONG_TESTS)
@@ -303,9 +306,6 @@ if(NOT DISABLE_CXX_TESTING)
 
 
 
-
-
-
   # Does help work right?
   ADD_EMSEGMENT_TEST(EMSegCL_Help EMSegmentCommandLine --help)
   set_tests_properties(EMSegCL_Help PROPERTIES PASS_REGULAR_EXPRESSION "USAGE")
@@ -385,6 +385,24 @@ if(NOT DISABLE_CXX_TESTING)
       --resultVolumeFileName "${test_file_prefix}.mhd"
       --disableCompression
     )
+
+  if(EMSEG_RUN_EXTRA_DEFAULTNODES)
+
+    set(test_name "EMSegCL_RunDefaultNodes_E_only")
+    set(test_file_prefix "${EMSegment_TEST_DIR}/${test_name}_tmp")
+    ADD_EMSEGMENT_DIFF_TEST(NAME "${test_name}" EXECUTABLE $<TARGET_FILE:EMSegmentCommandLine>
+      CMP_FILENAME "${test_file_prefix}.raw"
+      STANDARD_DATA_FILENAME "${EMSegment_TUTORIAL_DIR}/StandardData/StandardSegmentationResult_E_only_small.raw"
+      ARGS
+          ${Slicer_LAUNCHER_ADDITIONAL_ARGS}
+        --verbose
+        --mrmlSceneFileName "${EMSegment_TUTORIAL_DIR}/Template_small_E_only.mrml"
+        --resultVolumeFileName "${test_file_prefix}.mhd"
+        --disableCompression
+      )
+
+  endif(EMSEG_RUN_EXTRA_DEFAULTNODES)
+
 
   # Does the segmenter work and give the correct answer when
   # normalization is turned on?
