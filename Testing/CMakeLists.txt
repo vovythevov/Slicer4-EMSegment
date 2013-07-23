@@ -401,6 +401,19 @@ if(NOT DISABLE_CXX_TESTING)
         --disableCompression
       )
 
+    set(test_name "EMSegCL_RunDefaultNodes_MF_only")
+    set(test_file_prefix "${EMSegment_TEST_DIR}/${test_name}_tmp")
+    ADD_EMSEGMENT_DIFF_TEST(NAME "${test_name}" EXECUTABLE $<TARGET_FILE:EMSegmentCommandLine>
+      CMP_FILENAME "${test_file_prefix}.raw"
+      STANDARD_DATA_FILENAME "${EMSegment_TUTORIAL_DIR}/StandardData/StandardSegmentationResult_MF_only_small.raw"
+      ARGS
+          ${Slicer_LAUNCHER_ADDITIONAL_ARGS}
+        --verbose
+        --mrmlSceneFileName "${EMSegment_TUTORIAL_DIR}/Template_small_MF_only.mrml"
+        --resultVolumeFileName "${test_file_prefix}.mhd"
+        --disableCompression
+      )
+
   endif(EMSEG_RUN_EXTRA_DEFAULTNODES)
 
 
