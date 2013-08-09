@@ -28,84 +28,83 @@
 
 #define vtkTestSetGetMacro(pass, obj, var, val)                       \
 {                                                                     \
-std::cerr << "Testing Set/Get " #var "...";                           \
+std::cout << "Testing Set/Get " #var "...";                           \
 obj->Set##var (val);                                                  \
 bool match = val == obj->Get##var();                                  \
-std::cerr << (match ? "OK" : "FAILED") << std::endl;                  \
+std::cout << (match ? "OK" : "FAILED") << std::endl;                  \
 pass = pass && match;                                                 \
 }                                                                     \
 
 #define vtkTestSetGetStringMacro(pass, obj, var, val)                 \
 {                                                                     \
-std::cerr << "Testing Set/Get " #var "...";                           \
+std::cout << "Testing Set/Get " #var "...";                           \
 obj->Set##var (val);                                                  \
 bool match = std::string(val) == std::string(obj->Get##var());        \
-std::cerr << (match ? "OK" : "FAILED") << std::endl;                  \
+std::cout << (match ? "OK" : "FAILED") << std::endl;                  \
 pass = pass && match;                                                 \
 }                                                                     \
 
 #define vtkTestSetGetPoint3DMacro(pass, obj, var, arrayType, val)         \
 {                                                                         \
-std::cerr << "Testing Set/Get " #var "...";                               \
+std::cout << "Testing Set/Get " #var "...";                               \
 obj->Set##var (val);                                                      \
 arrayType outval[3];                                                      \
 obj->Get##var (outval);                                                   \
 bool match = val[0]==outval[0] && val[1]==outval[1] && val[2]==outval[2]; \
-std::cerr << (match ? "OK" : "FAILED") << std::endl;                      \
+std::cout << (match ? "OK" : "FAILED") << std::endl;                      \
 pass = pass && match;                                                     \
 }                                                                         \
 
 #define vtkTestSetGetMacroIndex(pass, obj, var, val, index)           \
 {                                                                     \
-std::cerr << "Testing Set/Get " #var "...";                           \
+std::cout << "Testing Set/Get " #var "...";                           \
 obj->Set##var (index, val);                                           \
 bool match = val == obj->Get##var(index);                             \
-std::cerr << (match ? "OK" : "FAILED") << std::endl;                  \
+std::cout << (match ? "OK" : "FAILED") << std::endl;                  \
 pass = pass && match;                                                 \
 }                                                                     \
 
 #define vtkTestSetGetMacroIndex2(pass, obj, var, val, index1, index2) \
 {                                                                     \
-std::cerr << "Testing Set/Get " #var "...";                           \
+std::cout << "Testing Set/Get " #var "...";                           \
 obj->Set##var (index1, index2, val);                                  \
 bool match = val == obj->Get##var(index1, index2);                    \
-std::cerr << (match ? "OK" : "FAILED") << std::endl;                  \
+std::cout << (match ? "OK" : "FAILED") << std::endl;                  \
 pass = pass && match;                                                 \
 }                                                                     \
 
 #define vtkTestSetGetMacroIndex3(pass, obj, var, val, i1, i2, i3)     \
 {                                                                     \
-std::cerr << "Testing Set/Get " #var "...";                           \
+std::cout << "Testing Set/Get " #var "...";                           \
 obj->Set##var (i1, i2, i3, val);                                      \
 bool match = val == obj->Get##var(i1, i2, i3);                        \
-std::cerr << (match ? "OK" : "FAILED") << std::endl;                  \
+std::cout << (match ? "OK" : "FAILED") << std::endl;                  \
 pass = pass && match;                                                 \
 }                                                                     \
 
-
 #define vtkTestSetGetStringMacroIndex(pass, obj, var, val, index)       \
 {                                                                       \
-std::cerr << "Testing Set/Get " #var "...";                             \
+std::cout << "Testing Set/Get " #var "...";                             \
 obj->Set##var (index, val);                                             \
 bool match = std::string(val) == std::string(obj->Get##var(index));     \
-std::cerr << (match ? "OK" : "FAILED") << std::endl;                    \
+std::cout << (match ? "OK" : "FAILED") << std::endl;                    \
 pass = pass && match;                                                   \
 }                                                                       \
 
 #define vtkTestSetGetPoint3DMacroIndex(pass, obj, var, arrayType, val, index)      \
 {                                                                         \
-std::cerr << "Testing Set/Get " #var "...";                               \
+std::cout << "Testing Set/Get " #var "...";                               \
 obj->Set##var (index, val);                                               \
 arrayType outval[3];                                                      \
 obj->Get##var (index, outval);                                            \
 bool match = val[0]==outval[0] && val[1]==outval[1] && val[2]==outval[2]; \
-std::cerr << (match ? "OK" : "FAILED") << std::endl;                    \
+std::cout << (match ? "OK" : "FAILED") << std::endl;                    \
 pass = pass && match;                                                   \
 }                                                                       \
 
 int main(int vtkNotUsed(argc), char** argv)
 {
-  std::cerr << "Starting EM mrml manager test..." << std::endl;
+  std::cout << "Starting EM mrml manager test..." << std::endl;
   
 #if ITK_VERSION_MAJOR > 3
   itk::itkFactoryRegistration();
@@ -165,7 +164,7 @@ int main(int vtkNotUsed(argc), char** argv)
     try 
       {
       mrmlScene->Import();
-      std::cerr << "Imported: " << mrmlScene->GetNumberOfNodes()
+      std::cout << "Imported: " << mrmlScene->GetNumberOfNodes()
                 << " nodes." << std::endl;
       }
     catch (...)
@@ -178,17 +177,17 @@ int main(int vtkNotUsed(argc), char** argv)
     // populate the logic class with testing data
     int numParameterSets = emLogic->GetMRMLManager()->
       GetNumberOfParameterSets();
-    std::cerr << "Found " << numParameterSets << " EM top level nodes."
+    std::cout << "Found " << numParameterSets << " EM top level nodes."
               << std::endl;
     bool foundParameters = false;
-    std::cerr << "Searching for an EM parameter node named: " 
+    std::cout << "Searching for an EM parameter node named: " 
               << parametersNodeName << std::endl;
 
     for (int i = 0; i < numParameterSets; ++i)
       {
       std::string 
         currentNodeName(emLogic->GetMRMLManager()->GetNthParameterSetName(i)); 
-      std::cerr << "Node " << i << " name: " << currentNodeName << std::endl;
+      std::cout << "Node " << i << " name: " << currentNodeName << std::endl;
       if (parametersNodeName == currentNodeName)
         {
         try
@@ -223,7 +222,7 @@ int main(int vtkNotUsed(argc), char** argv)
     vtkMRMLNode* nodeToPrint;
     while ((nodeToPrint = mrmlScene->GetNextNode()) && nodeToPrint)
       {
-      std::cerr << "Node ID/Name: " << nodeToPrint->GetID() 
+      std::cout << "Node ID/Name: " << nodeToPrint->GetID() 
                 << "/" << nodeToPrint->GetName() << std::endl;
       }
     m->PrintTree(rootID, static_cast<vtkIndent>(2));
@@ -278,7 +277,7 @@ int main(int vtkNotUsed(argc), char** argv)
     //                         MAGIC_DOUBLE, treeLeafNodeID, 0, 0);
 
 
-    std::cerr << "Testing sample point interface...";
+    std::cout << "Testing sample point interface...";
     double p1[3] = {MAGIC_DOUBLE, MAGIC_DOUBLE2, MAGIC_DOUBLE3};
     double p2[3] = {MAGIC_DOUBLE2, MAGIC_DOUBLE3, MAGIC_DOUBLE};
     double p3[3] = {MAGIC_DOUBLE3, MAGIC_DOUBLE, MAGIC_DOUBLE2};
@@ -308,7 +307,7 @@ int main(int vtkNotUsed(argc), char** argv)
       pass = false;
       localPass = false;
       }
-    std::cerr << (localPass ? "OK" : "FAILED") << std::endl;
+    std::cout << (localPass ? "OK" : "FAILED") << std::endl;
 
     // node-specific parameters
     vtkTestSetGetMacroIndex(pass, m,
@@ -428,12 +427,12 @@ int main(int vtkNotUsed(argc), char** argv)
       // manipulate tree structure
       /////////////////////////////////////////////////////////////////
       localPass = true;
-      std::cerr << "Adding/Removing/Moving tree nodes...";
+      std::cout << "Adding/Removing/Moving tree nodes...";
 
       // add node A under root
       int numChildren = m->GetTreeNodeNumberOfChildren(rootID);
       
-      std::cerr << "Adding A...";
+      std::cout << "Adding A...";
 
       vtkIdType idA = m->AddTreeNode(rootID);
       m->SetTreeNodeIntensityLabel(idA, int('A'));
@@ -447,14 +446,21 @@ int main(int vtkNotUsed(argc), char** argv)
         }
 
       // add node B and C under A
-      std::cerr << "Adding B&C under A...";
+      cout << "Adding B&C under A...";
+      cout << "Working :" << (m->GetWorkingDataNode() ? "y" : "n") << endl;
       vtkIdType idB = m->AddTreeNode(idA);
+      cout << "11" << endl; 
+      cout << "Working :" << (m->GetWorkingDataNode() ? "y" : "n") << endl;
       m->SetTreeNodeIntensityLabel(idB, int('B'));
+      cout << "111" << endl;
+      cout << "Working :" << (m->GetWorkingDataNode() ? "y" : "n") << endl;
       vtkIdType idC = m->AddTreeNode(idA);
+      cout << "1111" << endl; 
+      cout << "Working :" << (m->GetWorkingDataNode() ? "y" : "n") << endl;
       m->SetTreeNodeIntensityLabel(idC, int('C'));
-
+      cout << "1111" << endl; 
       // add node D under B
-      std::cerr << "Adding D under B...";
+      std::cout << "Adding D under B...";
       vtkIdType idD = m->AddTreeNode(idB);
       m->SetTreeNodeIntensityLabel(idD, int('D'));
 
@@ -469,7 +475,7 @@ int main(int vtkNotUsed(argc), char** argv)
         }
       
       // move node D to node C
-      std::cerr << "Moving D from under B to under  C...";
+      std::cout << "Moving D from under B to under  C...";
       m->SetTreeNodeParentNodeID(idD, idC);
       if (m->GetTreeNodeIsLeaf(idA) ||
           !m->GetTreeNodeIsLeaf(idB) || 
@@ -482,7 +488,7 @@ int main(int vtkNotUsed(argc), char** argv)
         }
 
       // remove node B
-      std::cerr << "Removing B...";
+      std::cout << "Removing B...";
       m->RemoveTreeNode(idB);
       if (m->GetTreeNodeNumberOfChildren(idA) != 1 ||
           m->GetTreeNodeIsLeaf(idC) ||
@@ -501,7 +507,7 @@ int main(int vtkNotUsed(argc), char** argv)
         }
       
       // remove node A
-      std::cerr << "Removing A...";
+      std::cout << "Removing A...";
       m->RemoveTreeNode(idA);
       if (numChildren != m->GetTreeNodeNumberOfChildren(rootID) ||
           m->TreeNodeExists(idA)  || m->TreeNodeExists(idB)  || m->TreeNodeExists(idC) || m->TreeNodeExists(idD) )
@@ -510,7 +516,7 @@ int main(int vtkNotUsed(argc), char** argv)
         pass = false;
         localPass = false;
         }
-      std::cerr << (localPass ? "OK" : "FAILED") << std::endl;
+      std::cout << (localPass ? "OK" : "FAILED") << std::endl;
 
        /////////////////////////////////////////////////////////////////
       // manipulate atlas
@@ -519,13 +525,13 @@ int main(int vtkNotUsed(argc), char** argv)
       /////////////////////////////////////////////////////////////////
       // manipulate target
       /////////////////////////////////////////////////////////////////
-      std::cerr << "Adding/Removing/Moving target images...";
+      std::cout << "Adding/Removing/Moving target images...";
       localPass = true;
       // remove all targets
-      std::cerr << "Removing all targets...";
+      std::cout << "Removing all targets...";
       while (m->GetTargetNumberOfSelectedVolumes() > 0)
         {
-        std::cerr << m->GetTargetNumberOfSelectedVolumes() << ",";
+        std::cout << m->GetTargetNumberOfSelectedVolumes() << ",";
         m->RemoveTargetSelectedVolume(m->GetTargetSelectedVolumeNthID(0));
         }
       if (m->GetTargetNumberOfSelectedVolumes() != 0)
@@ -536,7 +542,7 @@ int main(int vtkNotUsed(argc), char** argv)
         }
 
       // add back some targets
-      std::cerr << "Adding back some targets...";
+      std::cout << "Adding back some targets...";
       m->AddTargetSelectedVolume(m->GetVolumeNthID(0));
       m->AddTargetSelectedVolume(m->GetVolumeNthID(1));
       m->AddTargetSelectedVolume(m->GetVolumeNthID(2));
@@ -550,7 +556,7 @@ int main(int vtkNotUsed(argc), char** argv)
         }
 
       // set some parameters that we can check later
-      std::cerr << "Set some log mean parameters...";
+      std::cout << "Set some log mean parameters...";
       m->SetTreeNodeDistributionLogMean(treeLeafNodeID, 0, MAGIC_DOUBLE);
       m->SetTreeNodeDistributionLogMean(treeLeafNodeID, 1, MAGIC_DOUBLE2);
       m->SetTreeNodeDistributionLogMean(treeLeafNodeID, 2, MAGIC_DOUBLE3);
@@ -591,7 +597,7 @@ int main(int vtkNotUsed(argc), char** argv)
 
 
       // remove a target
-      std::cerr << "Removing a target...";
+      std::cout << "Removing a target...";
       m->RemoveTargetSelectedVolume(m->GetVolumeNthID(2));
       if (m->GetTargetNumberOfSelectedVolumes() != 4)
         {
@@ -601,7 +607,7 @@ int main(int vtkNotUsed(argc), char** argv)
         }
 
       // move some targets
-      std::cerr << "Moving some targetsx...";
+      std::cout << "Moving some targetsx...";
       m->MoveTargetSelectedVolume(m->GetVolumeNthID(1), 2);
       m->MoveTargetSelectedVolume(m->GetVolumeNthID(4), 0);
       if (m->GetTargetNumberOfSelectedVolumes() != 4)
@@ -613,7 +619,7 @@ int main(int vtkNotUsed(argc), char** argv)
 
       // check that all is ok
       // we should have changed 0, 1, 2, 3, 4 to 4, 0, 3, 1
-      std::cerr << "Checking that parameters moved ok...";
+      std::cout << "Checking that parameters moved ok...";
       if (m->GetTreeNodeDistributionLogMeanWithCorrection(treeLeafNodeID, 0) != MAGIC_DOUBLE5 ||
           m->GetTreeNodeDistributionLogMeanWithCorrection(treeLeafNodeID, 1) != MAGIC_DOUBLE ||
           m->GetTreeNodeDistributionLogMeanWithCorrection(treeLeafNodeID, 2) != MAGIC_DOUBLE4 ||
@@ -682,7 +688,7 @@ int main(int vtkNotUsed(argc), char** argv)
         localPass = false;
         }
       
-      std::cerr << (localPass ? "OK" : "FAILED") << std::endl;
+      std::cout << (localPass ? "OK" : "FAILED") << std::endl;
     }
   catch(...)
     {

@@ -71,7 +71,7 @@ mark_as_advanced(EMSEG_RUN_VALGRIND_TESTS)
 set(EMSEG_RUN_EXTRA_SHORT_TESTS ON CACHE BOOL "Enable EMSegment extra, short tests." FORCE)
 mark_as_advanced(EMSEG_RUN_EXTRA_SHORT_TESTS)
 
-set(EMSEG_RUN_EXTRA_DEFAULTNODES OFF CACHE BOOL "Enable for debugging RunDefaultNodes." FORCE)
+set(EMSEG_RUN_EXTRA_DEFAULTNODES ON CACHE BOOL "Enable for debugging RunDefaultNodes." FORCE)
 mark_as_advanced(EMSEG_RUN_EXTRA_DEFAULTNODES)
 
 set(EMSEG_RUN_EXTRA_LONG_TESTS OFF CACHE BOOL "Enable EMSegment extra, long tests." FORCE)
@@ -98,7 +98,7 @@ macro(ADD_EMSEGMENT_DIFF_TEST)
     set(test_std_file    "${MY_STANDARD_DATA_FILENAME}")
     set(test_rm_files)
     if(${EMSEG_REMOVE_TMP_TEST_DATA})
-      set(test_rm_files ${test_file_prefix}.mhd ${test_file_prefix}.raw.gz ${test_file_prefix}.mrml)
+      set(test_rm_files ${test_file_prefix}.mhd ${test_file_prefix}.raw ${test_file_prefix}.raw.gz ${test_file_prefix}.mrml)
     endif()
     set(test_args ${MY_ARGS})
     add_test(NAME ${test_name} COMMAND
