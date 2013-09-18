@@ -447,18 +447,10 @@ int main(int vtkNotUsed(argc), char** argv)
 
       // add node B and C under A
       cout << "Adding B&C under A...";
-      cout << "Working :" << (m->GetWorkingDataNode() ? "y" : "n") << endl;
       vtkIdType idB = m->AddTreeNode(idA);
-      cout << "11" << endl; 
-      cout << "Working :" << (m->GetWorkingDataNode() ? "y" : "n") << endl;
       m->SetTreeNodeIntensityLabel(idB, int('B'));
-      cout << "111" << endl;
-      cout << "Working :" << (m->GetWorkingDataNode() ? "y" : "n") << endl;
       vtkIdType idC = m->AddTreeNode(idA);
-      cout << "1111" << endl; 
-      cout << "Working :" << (m->GetWorkingDataNode() ? "y" : "n") << endl;
       m->SetTreeNodeIntensityLabel(idC, int('C'));
-      cout << "1111" << endl; 
       // add node D under B
       std::cout << "Adding D under B...";
       vtkIdType idD = m->AddTreeNode(idB);
@@ -572,7 +564,7 @@ int main(int vtkNotUsed(argc), char** argv)
       m->SetTreeNodeDistributionLogCovariance(treeLeafNodeID, 1, 1, 7);
       m->SetTreeNodeDistributionLogCovariance(treeLeafNodeID, 1, 2, 8);
       m->SetTreeNodeDistributionLogCovariance(treeLeafNodeID, 1, 3, 9);
-      m->SetTreeNodeDistributionLogCovariance(treeLeafNodeID, 1, 4, 20);
+      m->SetTreeNodeDistributionLogCovariance(treeLeafNodeID, 1, 4, 10);
       m->SetTreeNodeDistributionLogCovariance(treeLeafNodeID, 2, 0, 11);
       m->SetTreeNodeDistributionLogCovariance(treeLeafNodeID, 2, 1, 12);
       m->SetTreeNodeDistributionLogCovariance(treeLeafNodeID, 2, 2, 13);
@@ -589,12 +581,12 @@ int main(int vtkNotUsed(argc), char** argv)
       m->SetTreeNodeDistributionLogCovariance(treeLeafNodeID, 4, 3, 24);
       m->SetTreeNodeDistributionLogCovariance(treeLeafNodeID, 4, 4, 25);
 
+
       m->SetTreeNodeInputChannelWeight(treeLeafNodeID, 0, MAGIC_DOUBLE);
       m->SetTreeNodeInputChannelWeight(treeLeafNodeID, 1, MAGIC_DOUBLE2);
       m->SetTreeNodeInputChannelWeight(treeLeafNodeID, 2, MAGIC_DOUBLE3);
       m->SetTreeNodeInputChannelWeight(treeLeafNodeID, 3, MAGIC_DOUBLE4);
       m->SetTreeNodeInputChannelWeight(treeLeafNodeID, 4, MAGIC_DOUBLE5);
-
 
       // remove a target
       std::cout << "Removing a target...";
@@ -623,7 +615,7 @@ int main(int vtkNotUsed(argc), char** argv)
       if (m->GetTreeNodeDistributionLogMeanWithCorrection(treeLeafNodeID, 0) != MAGIC_DOUBLE5 ||
           m->GetTreeNodeDistributionLogMeanWithCorrection(treeLeafNodeID, 1) != MAGIC_DOUBLE ||
           m->GetTreeNodeDistributionLogMeanWithCorrection(treeLeafNodeID, 2) != MAGIC_DOUBLE4 ||
-          m->GetTreeNodeDistributionLogMeanWithCorrection(treeLeafNodeID, 3) != MAGIC_DOUBLE2)
+          m->GetTreeNodeDistributionLogMeanWithCorrection(treeLeafNodeID, 3) != MAGIC_DOUBLE2 )
         {
         std::cerr << "Error moving log mean" << std::endl;
         std::cerr << "M1 " << MAGIC_DOUBLE << std::endl;
@@ -657,11 +649,10 @@ int main(int vtkNotUsed(argc), char** argv)
           m->GetTreeNodeDistributionLogCovarianceWithCorrection(treeLeafNodeID, 2, 1) != 16 ||
           m->GetTreeNodeDistributionLogCovarianceWithCorrection(treeLeafNodeID, 2, 2) != 19 ||
           m->GetTreeNodeDistributionLogCovarianceWithCorrection(treeLeafNodeID, 2, 3) != 17 ||
-          m->GetTreeNodeDistributionLogCovarianceWithCorrection(treeLeafNodeID, 3, 0) != 20 ||
+          m->GetTreeNodeDistributionLogCovarianceWithCorrection(treeLeafNodeID, 3, 0) != 10 ||
           m->GetTreeNodeDistributionLogCovarianceWithCorrection(treeLeafNodeID, 3, 1) != 6 ||
           m->GetTreeNodeDistributionLogCovarianceWithCorrection(treeLeafNodeID, 3, 2) != 9 ||
-          m->GetTreeNodeDistributionLogCovarianceWithCorrection(treeLeafNodeID, 3, 3) != 7 
-          )
+          m->GetTreeNodeDistributionLogCovarianceWithCorrection(treeLeafNodeID, 3, 3) != 7 )
         {
         std::cerr << "Error moving log covariance" << std::endl;
 

@@ -1978,12 +1978,13 @@ SetTreeNodeSpatialPriorVolumeID(vtkIdType nodeID,
       // add key value pair to atlas
       int modifiedFlag = this->GetAtlasInputNode()->AddVolume(priorVolumeName.c_str(), volumeMRMLID);
 
+      // check that spatial prior volume name is correctly set.
       if (!n->GetSpatialPriorVolumeName() || strcmp(n->GetSpatialPriorVolumeName(),priorVolumeName.c_str()))
-    {
-      // set name of atlas volume in tree node
-      n->SetSpatialPriorVolumeName(priorVolumeName.c_str());
-      modifiedFlag = 1;
-    }
+      {
+        // set name of atlas volume in tree node
+        n->SetSpatialPriorVolumeName(priorVolumeName.c_str());
+        modifiedFlag = 1;
+      }
       // Nothing has changed so do not change status of ValidFlag
       if (!modifiedFlag) {return;}
     }
