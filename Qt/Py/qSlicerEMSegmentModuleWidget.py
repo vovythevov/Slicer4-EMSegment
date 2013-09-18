@@ -45,9 +45,6 @@ class qSlicerEMSegmentModuleWidget:
     workflowWidget = ctk.ctkWorkflowStackedWidget()
     workflowWidget.setWorkflow( workflow )
 
-    workflowWidget.buttonBoxWidget().nextButtonDefaultText = ""
-    workflowWidget.buttonBoxWidget().backButtonDefaultText = ""
-
     # create all wizard steps
     selectTaskStep = EMSegmentWizard.EMSegmentSelectTaskStep( Helper.GetNthStepId( 1 ) )
     defineInputChannelsSimpleStep = EMSegmentWizard.EMSegmentDefineInputChannelsStep( Helper.GetNthStepId( 2 ) + 'Simple' ) # simple branch
