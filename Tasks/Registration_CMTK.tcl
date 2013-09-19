@@ -269,7 +269,7 @@ proc CMTKRegistration { fixedVolumeNode movingVolumeNode outVolumeNode backgroun
     $SCENE Edited
 
     # return transformation directory name or ""
-    puts "outTransformDirName: $outTransformDirName"
+    # puts "outTransformDirName: $outTransformDirName"
     return $outTransformDirName
 }
 

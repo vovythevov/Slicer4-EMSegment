@@ -65,13 +65,16 @@ mark_as_advanced(EMSEG_RUN_COMPARE_TESTS)
 set(EMSEG_RUN_LOCAL_TESTS OFF CACHE BOOL "Enable local EMSegment tests." FORCE)
 mark_as_advanced(EMSEG_RUN_LOCAL_TESTS)
 
+set(EMSEG_RUN_CMTK_TESTS OFF CACHE BOOL "Use CMTK instead of BRAINS for testing." FORCE)
+mark_as_advanced(EMSEG_RUN_CMTK_TESTS)
+
 set(EMSEG_RUN_VALGRIND_TESTS OFF CACHE BOOL "Enable EMSegment Valgrind test." FORCE)
 mark_as_advanced(EMSEG_RUN_VALGRIND_TESTS)
 
 set(EMSEG_RUN_EXTRA_SHORT_TESTS ON CACHE BOOL "Enable EMSegment extra, short tests." FORCE)
 mark_as_advanced(EMSEG_RUN_EXTRA_SHORT_TESTS)
 
-set(EMSEG_RUN_EXTRA_DEFAULTNODES ON CACHE BOOL "Enable for debugging RunDefaultNodes." FORCE)
+set(EMSEG_RUN_EXTRA_DEFAULTNODES OFF CACHE BOOL "Enable for debugging RunDefaultNodes." FORCE)
 mark_as_advanced(EMSEG_RUN_EXTRA_DEFAULTNODES)
 
 set(EMSEG_RUN_EXTRA_LONG_TESTS OFF CACHE BOOL "Enable EMSegment extra, long tests." FORCE)
@@ -600,6 +603,10 @@ if(NOT DISABLE_CXX_TESTING)
     set(sizes small)
   endif()
 
+  if(EMSEG_RUN_CMTK_TESTS)
+    set(registrationpackages CMTK) 
+    set(scalartypes short float)
+  endif()
 
 
   #==== Scalartype tests ============================

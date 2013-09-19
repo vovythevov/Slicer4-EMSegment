@@ -261,21 +261,31 @@ namespace eval EMSegmenterPreProcessingTcl {
         return ""
     }
 
+    # Search for installation path 
     proc Get_Installation_Path { myfolder myfile } {
         variable LOGIC
-
         set REGISTRATION_PACKAGE_FOLDER ""
         # search for directories , sorted with the highest svn first
+        set DIR [[$LOGIC GetSlicerCommonInterface] GetExtensionsDirectory]
+       
+        # Slicer Extension         
         set dirs [lsort -decreasing [glob -nocomplain -directory [[$LOGIC GetSlicerCommonInterface] GetExtensionsDirectory] -type d * ] ]
+
+        # allows user to define specific path independent from Slicer if you do not want to use extension system for pipeline but your own build
+        # In Slicer 4 this directory will be ~/.config/EMSegmentCustom
+        # now if you want to run a custom CMTK version just copy  the bin directory of CMTK (or create link)  to ~/.config/EMSegmentCustom/CMTK4Slicer
+        set dirs "[file normalize [file join  $DIR ../EMSegmentCustom]] $dirs"
+
+        # search for directories , sorted with the highest svn first
         foreach dir $dirs {
             set filename $dir\/$myfolder\/$myfile
             if { [file exists $filename] } {
                 set REGISTRATION_PACKAGE_FOLDER  $dir\/$myfolder
-                $LOGIC PrintText "TCL: Found PLASTIMATCH in $dir\/$myfolder"
+                $LOGIC PrintText "TCL: Found $dir\/$myfolder"
                 break
             }
         }
-
+        
         return $REGISTRATION_PACKAGE_FOLDER
     }
 
@@ -433,6 +443,8 @@ namespace eval EMSegmenterPreProcessingTcl {
                 } else {
                     $LOGIC PrintText "TCL: WARNING: Could not find CMTK, switch back to BRAINSTools"
                     set selectedRegistrationPackage "BRAINS"
+                    # $LOGIC PrintText "enter something"
+                    # gets stdin blub
                 }
             }
             "PLASTIMATCH" {
