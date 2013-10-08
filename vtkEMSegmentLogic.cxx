@@ -2900,7 +2900,7 @@ std::string vtkEMSegmentLogic::GetTclTaskDirectory()
 {
   //workaround for the mrml library, we need to have write access to this folder
   const char* tmp_dir =
-    this->GetSlicerCommonInterface()->GetTemporaryDirectory();
+    this->GetTemporaryDirectory();
 
   if (tmp_dir)
     {
