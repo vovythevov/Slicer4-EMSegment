@@ -245,24 +245,35 @@ char* vtkEMSegmentLogic::mktemp_file(const char* postfix)
 }
 
 //----------------------------------------------------------------------------
-char* vtkEMSegmentLogic::mktemp_dir()
+char* vtkEMSegmentLogic::mktemp_dir(const char *postfix)
 {
   char *ptr;
-  char filename[256];
-
-  std::ostringstream mytemplate;
-  mytemplate << this->GetTemporaryDirectory() << "/EMSD" << rand() << "XXXXXX";
+  {
+    char filename[256];
+    std::ostringstream dirTemplate;
+    dirTemplate << this->GetTemporaryDirectory() << "/EMSD" << rand() << "XXXXXX";
 
 #if _WIN32
-  //todo, on windows _mkdtemp is not available
-  strcpy_s( filename, sizeof(filename), mytemplate.str().c_str() );
-  ptr = _mktemp(filename);
+    //todo, on windows _mkdtemp is not available
+    strcpy_s( filename, sizeof(filename), dirTemplate.str().c_str() );
+    ptr = _mktemp(filename);
 #else
-  strcpy(filename, mytemplate.str().c_str());
-  ptr = mkdtemp(filename);
+    strcpy(filename, dirTemplate.str().c_str());
+    ptr = mkdtemp(filename);
 #endif
-  this->tempDirList.push_back(std::string(ptr));
+    this->tempDirList.push_back(std::string(ptr));
+  }
 
+  // have to do it seperately bc otherwise mkdtemp does not work
+  // so two directy are created where the first one is just used as a tag 
+  if ( postfix ) 
+    {
+      std::ostringstream tmpdir;
+      tmpdir <<  ptr << postfix ;
+      vtksys::SystemTools::MakeDirectory( tmpdir.str().c_str());
+      this->tempDirList.push_back(tmpdir.str());
+    }
+  // return without extension
   return ptr;
 }
 
@@ -1405,7 +1416,7 @@ void vtkEMSegmentLogic::TransferIJKToRAS(vtkMRMLVolumeNode* volumeNode, int ijk[
   VTK_CREATE(vtkMatrix4x4, matrix);
   volumeNode->GetIJKToRASMatrix(matrix);
   float input[4] =
-  { ijk[0], ijk[1], ijk[2], 1 };
+    { float(ijk[0]), float(ijk[1]), float(ijk[2]), 1 };
   float output[4];
   matrix->MultiplyPoint(input, output);
   ras[0] = output[0];

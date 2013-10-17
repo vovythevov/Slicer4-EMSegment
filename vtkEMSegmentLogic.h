@@ -43,7 +43,8 @@ public:
   vtkSetStringMacro(CurrentTmpFileName)
   
   char* mktemp_file(const char* postfix);
-  char* mktemp_dir();
+  // Returns directory name without postfix ! 
+  char* mktemp_dir(const char* postfix);
 
   //
   // actions

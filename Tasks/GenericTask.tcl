@@ -134,31 +134,9 @@ namespace eval EMSegmenterPreProcessingTcl {
 
     #
     proc CreateDirName { type } {
-#        variable GUI
         variable LOGIC
 
-        set basefilename [ $LOGIC mktemp_dir ]
-
-        set dirname ""
-        set NAME ""
-
-        if { $type == "xform" } {
-            set NAME .xform
-        } elseif { $type == "tmp" } {
-            set NAME .tmp
-        } else {
-            PrintError "CreateDirName: Unknown type"
-        }
-
-        if { $NAME != "" } {
-            set dirname $basefilename$NAME
-            $LOGIC PrintText "TCL: Create directory: $dirname"
-            set CMD "mkdir \"$dirname\""
-            eval exec $CMD
-        } else {
-            PrintError "Could not create file: $basefilename$NAME"
-        }
-
+        set dirname [ $LOGIC mktemp_dir ".$type" ]
         return $dirname
     }
 
