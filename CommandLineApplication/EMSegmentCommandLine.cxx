@@ -1,4 +1,9 @@
 
+// XXX # Workaround bug in packaging of DCMTK 3.6.0 on Debian.
+//     # See http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=637687
+#ifdef HAVE_CONFIG_H
+#undef HAVE_CONFIG_H
+#endif
 
 // EMSegment includes
 #include "vtkSlicerCommonInterface.h"
