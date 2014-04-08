@@ -56,12 +56,6 @@ add_custom_target(copytesting ALL
   -DDST=${CMAKE_BINARY_DIR}/${EM_SHARE_DIR}/${EXTENSION_NAME}/Testing
   -P ${CMAKE_CURRENT_SOURCE_DIR}/CMake/EM_InstallTasksSubScript.cmake
   )
-install(DIRECTORY
-  Testing/TestData
-  DESTINATION ${EM_INSTALL_SHARE_DIR}/${EXTENSION_NAME}/Testing
-  FILES_MATCHING PATTERN "*"
-  REGEX "/\\.svn" EXCLUDE
-  )
 
 # --------------------------------------------------------------------------
 if("${Slicer_VERSION_MAJOR}" EQUAL "4")
