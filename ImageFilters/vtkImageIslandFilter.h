@@ -45,16 +45,20 @@ PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define IMAGEISLANDFILTER_NEIGHBORHOOD_3D 6
 #define IMAGEISLANDFILTER_NEIGHBORHOOD_2D 4
 
-#include <stdio.h>
-#include <math.h>
-#include <ctype.h>
-#include <string.h>
-#include "assert.h"
- 
-
+// VTK includes
+#if VTK_MAJOR_VERSION <= 5
 #include "vtkImageToImageFilter.h"
+#else
+#include <vtkImageAlgorithm.h>
+#endif
 class vtkImageData;
 
+// STD includes
+#include <cassert>
+#include <ctype.h>
+#include <math.h>
+#include <stdio.h>
+#include <string.h>
 
 //BTX
 template<class T> class IslandMemory {
@@ -216,11 +220,20 @@ template<class T> class EMStack {
 };
 //ETX
 
-class VTK_EMSEGMENT_EXPORT  vtkImageIslandFilter : public vtkImageToImageFilter
+class VTK_EMSEGMENT_EXPORT  vtkImageIslandFilter
+#if VTK_MAJOR_VERSION <= 5
+  : public vtkImageToImageFilter
+#else
+  : public vtkImageAlgorithm
+#endif
 {
   public:
   static vtkImageIslandFilter *New();
+#if VTK_MAJOR_VERSION <= 5
   vtkTypeMacro(vtkImageIslandFilter,vtkImageToImageFilter);
+#else
+  vtkTypeMacro(vtkImageIslandFilter,vtkImageAlgorithm);
+#endif
   void PrintSelf(ostream& os, vtkIndent indent);
 
   vtkSetMacro(IslandMinSize,int);
@@ -296,9 +309,16 @@ protected:
   // When it works on parallel machines use : 
   //  void ThreadedExecute(vtkImageData *inData, vtkImageData *outData,int outExt[6], int id);
   // If you do not want to have it multi threaded 
+#if VTK_MAJOR_VERSION <= 5
   void ExecuteData(vtkDataObject *);
   void ExecuteInformation(){this->vtkImageToImageFilter::ExecuteInformation();};
   void ExecuteInformation(vtkImageData *inData,vtkImageData *outData);
+#else
+  virtual int RequestData(vtkInformation* request,
+                          vtkInformationVector** inputVector,
+                          vtkInformationVector* outputVector);
+#endif
+
   void ComputeInputUpdateExtent(int inExt[6], int outExt[6]);
 
   int IslandMinSize;        // Smalles size of islands allowed, otherwise will be erased

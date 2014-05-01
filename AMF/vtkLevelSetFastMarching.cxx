@@ -207,7 +207,12 @@ void vtkLevelSetFastMarching::InitParam()
   //  fprintf(stderr,"vtkLevelSetFastMarching::InitParam() begin\n");
 
   // Get force image from input
-  force  = this->GetInput();
+#if VTK_MAJOR_VERSION <= 5
+  vtkImageData* input = this->GetInput();
+#else
+  vtkImageData* input = vtkImageData::SafeDownCast(this->GetInputDataObject(0,0));
+#endif
+  force = input;
   if (force == NULL)
     {
       vtkErrorMacro("Missing input");
@@ -219,14 +224,17 @@ void vtkLevelSetFastMarching::InitParam()
     vtkDebugMacro(<<"making a copy of the input into float format");
     // Create a copy of the data
     force = vtkImageData::New();
+    force->SetDimensions( input->GetDimensions());
+    force->SetOrigin(     input->GetOrigin());
+    force->SetSpacing(    input->GetSpacing());
+#if VTK_MAJOR_VERSION <= 5
     force->SetScalarType( VTK_FLOAT);
     force->SetNumberOfScalarComponents(1);
-    force->SetDimensions( this->GetInput()->GetDimensions());
-    force->SetOrigin(     this->GetInput()->GetOrigin());
-    force->SetSpacing(    this->GetInput()->GetSpacing());
+#else
+    force->AllocateScalars(VTK_FLOAT, 1);
+#endif
 
-    force->CopyAndCastFrom(this->GetInput(),
-               this->GetInput()->GetExtent());
+    force->CopyAndCastFrom(input, input->GetExtent());
     force_allocated = 1;
   }
 
@@ -239,12 +247,16 @@ void vtkLevelSetFastMarching::InitParam()
       // Create a copy of the data
       vtkImageData* mask1;
       mask1 = vtkImageData::New();
-      mask1->SetScalarType( VTK_UNSIGNED_CHAR);
-      mask1->SetNumberOfScalarComponents(1);
       mask1->SetDimensions( this->mask->GetDimensions());
       mask1->SetOrigin(     this->mask->GetOrigin());
       mask1->SetSpacing(    this->mask->GetSpacing());
-      
+#if VTK_MAJOR_VERSION <= 5
+      mask1->SetScalarType( VTK_UNSIGNED_CHAR);
+      mask1->SetNumberOfScalarComponents(1);
+#else
+      mask1->AllocateScalars(VTK_UNSIGNED_CHAR, 1);
+#endif
+
       mask1->CopyAndCastFrom(this->mask,
                  this->mask->GetExtent());
       mask           = mask1;
@@ -292,18 +304,19 @@ void vtkLevelSetFastMarching::InitParam()
   // Get the time image (output of the algorithm)
   T      = this->GetOutput();
   
-  T->SetDimensions(this->GetInput()->GetDimensions());
-  T->SetSpacing(   this->GetInput()->GetSpacing());
-  T->SetScalarType(VTK_FLOAT); 
+  T->SetDimensions(input->GetDimensions());
+  T->SetSpacing(   input->GetSpacing());
+#if VTK_MAJOR_VERSION <= 5
+  T->SetScalarType(VTK_FLOAT);
   T->SetNumberOfScalarComponents(1);
-
+  T->AllocateScalars();
+#else
+  T->AllocateScalars(VTK_FLOAT, 1);
+#endif
   if (output_array != NULL) {
     vtkFloatArray* da = vtkFloatArray::New();
     da->SetArray(output_array,imsize,1);
     T->GetPointData()->SetScalars(da);
-  } 
-  else {
-    T->AllocateScalars();
   }
 
   // initialization of the buffers:

@@ -35,16 +35,20 @@ class EMTriVolume;
 // Class Definition 
 //--------------------------------------------------------------------
 //ETX 
-class VTK_EMSEGMENT_EXPORT vtkImageEMLocalSegmenter : public vtkImageEMGeneral
+class VTK_EMSEGMENT_EXPORT vtkImageEMLocalSegmenter
+  : public vtkImageEMGeneral
 {
   public:
   // -----------------------------------------------------
   // General Functions for the filter
   // -----------------------------------------------------
   static vtkImageEMLocalSegmenter *New();
+#if VTK_MAJOR_VERSION <= 5
   vtkTypeMacro(vtkImageEMLocalSegmenter,vtkObject);
-
-  void PrintSelf(ostream& os, vtkIndent indent);
+#else
+  vtkTypeMacro(vtkImageEMLocalSegmenter,vtkImageEMGeneral);
+#endif
+  virtual void PrintSelf(ostream& os, vtkIndent indent);
 
   // -----------------------------------------------------
   // Message Protocol
@@ -87,8 +91,7 @@ class VTK_EMSEGMENT_EXPORT vtkImageEMLocalSegmenter : public vtkImageEMGeneral
   vtkGetStringMacro(PrintDir);
   vtkSetStringMacro(PrintDir);
 
-
-  void SetImageInput(int index, vtkImageData *image) {this->SetInput(index,image);}
+  void SetImageInput(int index, vtkImageData *image);
 
   vtkGetMacro(ImageProd, int); 
 
@@ -161,7 +164,16 @@ protected:
   void operator=(const vtkImageEMLocalSegmenter&);
   void DeleteVariables();
 
-  void ExecuteData(vtkDataObject *);   
+#if VTK_MAJOR_VERSION <= 5
+  void ExecuteData(vtkDataObject *);
+#else
+  virtual int RequestInformation(vtkInformation* request,
+                                 vtkInformationVector** inInfoVec,
+                                 vtkInformationVector* outInfoVec);
+  virtual int RequestData(vtkInformation* request,
+                          vtkInformationVector** inInfoVec,
+                          vtkInformationVector* outInfoVec);
+#endif
 
  // Description:
   // Resets the error flag and messages 
@@ -169,7 +181,13 @@ protected:
 
   // Description:
   // Checks all input image if they have corresponding dimensions
-  int CheckInputImage(vtkImageData * inData,int DataTypeOrig, vtkFloatingPointType DataSpacingOrig[3], int num);
+  int CheckInputImage(vtkImageData * inData,int DataTypeOrig,
+#if VTK_MAJOR_VERSION <= 5
+                      vtkFloatingPointType DataSpacingOrig[3],
+#else
+                      double DataSpacingOrig[3],
+#endif
+                      int num);
 
 
   int SmoothingWidth;  // Width for Gaussian to regularize weights

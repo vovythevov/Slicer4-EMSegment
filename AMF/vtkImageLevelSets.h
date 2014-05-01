@@ -28,8 +28,14 @@
 #define __vtkImageLevelSets_h
 
 #include <vtkEMSegment.h>
+
+// VTK includes
 #include "vtkImageData.h"
+#if VTK_MAJOR_VERSION <= 5
 #include "vtkImageToImageFilter.h"
+#else
+#include <vtkImageAlgorithm.h>
+#endif
 
 #include "vtkLevelSets.h"
 #include "vtkLevelSetFastMarching.h"
@@ -40,12 +46,20 @@
 // Kilian: IPMI07 
 #define DISTMAP_LOGODDS      4
 
-
-class VTK_EMSEGMENT_EXPORT vtkImageLevelSets : public vtkImageToImageFilter
+class VTK_EMSEGMENT_EXPORT vtkImageLevelSets
+#if VTK_MAJOR_VERSION <= 5
+  : public vtkImageToImageFilter
+#else
+  : public vtkImageAlgorithm
+#endif
 {
 public:
   static vtkImageLevelSets *New();
+#if VTK_MAJOR_VERSION <= 5
   vtkTypeMacro(vtkImageLevelSets,vtkImageToImageFilter);
+#else
+  vtkTypeMacro(vtkImageLevelSets, vtkImageAlgorithm);
+#endif
   void PrintSelf(ostream& vtkNotUsed(os), vtkIndent vtkNotUsed(indent));
   
   vtkSetMacro(isotropic_voxels,int);

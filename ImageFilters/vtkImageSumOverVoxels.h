@@ -24,15 +24,30 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkImageSumOverVoxels_h
 #define __vtkImageSumOverVoxels_h
 
-#include "vtkImageToImageFilter.h"
+// EMSegment includes
 #include "vtkEMSegment.h"
-#include "vtkDoubleArray.h"
 
-class VTK_EMSEGMENT_EXPORT vtkImageSumOverVoxels : public vtkImageToImageFilter
+// VTK includes
+#if VTK_MAJOR_VERSION <= 5
+#include "vtkImageToImageFilter.h"
+#else
+#include <vtkImageAlgorithm.h>
+#endif
+
+class VTK_EMSEGMENT_EXPORT vtkImageSumOverVoxels
+#if VTK_MAJOR_VERSION <= 5
+  : public vtkImageToImageFilter
+#else
+  : public vtkImageAlgorithm
+#endif
 {
   public:
   static vtkImageSumOverVoxels *New();
+#if VTK_MAJOR_VERSION <= 5
   vtkTypeMacro(vtkImageSumOverVoxels,vtkImageToImageFilter);
+#else
+  vtkTypeMacro(vtkImageSumOverVoxels, vtkImageAlgorithm);
+#endif
   void PrintSelf(ostream& os, vtkIndent indent);
   
   double GetVoxelSum() {return this->VoxelSum;}
@@ -43,7 +58,7 @@ class VTK_EMSEGMENT_EXPORT vtkImageSumOverVoxels : public vtkImageToImageFilter
 
 protected:
 
-  vtkImageSumOverVoxels() {VoxelSum = -1;Centroid[0] =Centroid[1] =  Centroid[2] = -1; ComputeCentroid = 0; };
+  vtkImageSumOverVoxels();
   //  vtkImageSumOverVoxels(const vtkImageSumOverVoxels&) {};
   ~vtkImageSumOverVoxels(){};
 
@@ -52,11 +67,17 @@ protected:
   // When it works on parallel machines use : 
   //  void ThreadedExecute(vtkImageData *inData, vtkImageData *outData,int outExt[6], int id);
   // If you do not want to have it multi threaded 
+#if VTK_MAJOR_VERSION <= 5
+  void ComputeInputUpdateExtent(int inExt[6], int outExt[6]);
   void ExecuteData(vtkDataObject *);
   void ExecuteInformation(){this->vtkImageToImageFilter::ExecuteInformation();};
   void ExecuteInformation(vtkImageData *inData,vtkImageData *outData);
-  void ComputeInputUpdateExtent(int inExt[6], int outExt[6]);
-  
+#else
+  virtual int RequestData(vtkInformation* request,
+                          vtkInformationVector** inputVector,
+                          vtkInformationVector* outputVector);
+#endif
+
   double VoxelSum;
   double Centroid[3];
   int ComputeCentroid;

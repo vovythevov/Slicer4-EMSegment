@@ -36,8 +36,15 @@ PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================auto=*/
 #include "vtkImageIslandFilter.h"
-#include "vtkObjectFactory.h"
-#include "vtkImageData.h"
+
+// VTK includes
+#include <vtkImageData.h>
+#if VTK_MAJOR_VERSION > 5
+#include <vtkInformation.h>
+#include <vtkInformationVector.h>
+#include <vtkStreamingDemandDrivenPipeline.h>
+#endif
+#include <vtkObjectFactory.h>
 
 #define IMAGEISLANDFILTER_DYNAMIC 0
 #define IMAGEISLANDFILTER_STATIC 1
@@ -419,11 +426,13 @@ vtkImageIslandFilter::vtkImageIslandFilter()
 vtkImageIslandFilter::~vtkImageIslandFilter(){ }
 
 //----------------------------------------------------------------------------
-void vtkImageIslandFilter::ComputeInputUpdateExtent(int inExt[6], int vtkNotUsed(outExt)[6])
+#if VTK_MAJOR_VERSION <= 5
+void vtkImageIslandFilter
+::ComputeInputUpdateExtent(int inExt[6], int vtkNotUsed(outExt)[6])
 {
   this->GetInput()->GetWholeExtent(inExt);
 }
-
+#endif
 
 //----------------------------------------------------------------------------
 void vtkImageIslandFilter::PrintSelf(ostream& vtkNotUsed(os), vtkIndent vtkNotUsed(indent))
@@ -432,7 +441,8 @@ void vtkImageIslandFilter::PrintSelf(ostream& vtkNotUsed(os), vtkIndent vtkNotUs
 
 // To chage anything about output us this executed before Thread
 //----------------------------------------------------------------------------
-void vtkImageIslandFilter::ExecuteInformation(vtkImageData *inData, vtkImageData *outData) 
+#if VTK_MAJOR_VERSION <= 5
+void vtkImageIslandFilter::ExecuteInformation(vtkImageData *inData, vtkImageData *outData)
 {
   outData->SetOrigin(inData->GetOrigin());
   outData->SetNumberOfScalarComponents(1);
@@ -440,6 +450,7 @@ void vtkImageIslandFilter::ExecuteInformation(vtkImageData *inData, vtkImageData
   outData->SetSpacing(inData->GetSpacing());
   outData->SetScalarType(inData->GetScalarType());
 }
+#endif
 //----------------------------------------------------------------------------
 template <class T>
 static void vtkImageIslandFilter_FindIslands(int* Checked,int index,int & IslandSize,T Label, int ID, T* inPtr, int const SizeX, int const SizeY, int const SizeXY, int const SizeZ, EMStack<int> *Stack) {
@@ -1039,15 +1050,11 @@ static void vtkImageIslandFilterExecuteBySlice(vtkImageIslandFilter *self, T *in
 // the datas data types.
 
 // void vtkImageIslandFilter::ThreadedExecute(vtkImageData *inData, vtkImageData *outData,int outExt[6], int id)
+#if VTK_MAJOR_VERSION <= 5
 void vtkImageIslandFilter::ExecuteData(vtkDataObject *)
 {
-  void *inPtr;
-  void *outPtr;
-
   int inExt[6];
-  vtkIdType inInc[3];
   int outExt[6];
-  vtkIdType outInc[3];
   // Necessary  for VTK
   this->ComputeInputUpdateExtent(inExt,outExt);
  // vtk4
@@ -1058,7 +1065,7 @@ void vtkImageIslandFilter::ExecuteData(vtkDataObject *)
   outData->GetWholeExtent(outExt);
   // vtk4
   vtkDebugMacro(<< "Execute: inData = " << inData << ", outData = " << outData);
- 
+
   if (inData == NULL) {
     vtkErrorMacro(<< "Input " << 0 << " must be specified.");
     return;
@@ -1067,57 +1074,109 @@ void vtkImageIslandFilter::ExecuteData(vtkDataObject *)
      vtkErrorMacro(<< "Number Of Scalar Components for Input has to be 1.");
      return;
   }
+#else
+int vtkImageIslandFilter::RequestData(
+  vtkInformation* vtkNotUsed( request ),
+  vtkInformationVector** inputVector,
+  vtkInformationVector* outputVector)
+{
+  // get the input
+  vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
+  vtkImageData *inData = vtkImageData::SafeDownCast(
+    inInfo->Get(vtkDataObject::DATA_OBJECT()));
+
+  // get the output
+  vtkInformation *outInfo = outputVector->GetInformationObject(0);
+  vtkImageData *outData = vtkImageData::SafeDownCast(
+    outInfo->Get(vtkDataObject::DATA_OBJECT()));
+
+  int inExt[6];
+  inInfo->Get(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT(), inExt);
+  int outExt[6];
+  outInfo->Get(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT(), outExt);
+#endif
+
+  vtkIdType inInc[3];
+  vtkIdType outInc[3];
   inData->GetContinuousIncrements(inExt, inInc[0], inInc[1], inInc[2]);
   outData->GetContinuousIncrements(outExt, outInc[0], outInc[1], outInc[2]);
   if ( inInc[0] || inInc[1] || inInc[2] || outInc[0] || outInc[1] || outInc[2] ) {
      vtkErrorMacro(<< "Increments for input and output have to be 0!");
+#if VTK_MAJOR_VERSION <= 5
      return;
+#else
+     return 0;
+#endif
   }
 
-  // Check IslandROI 
+  // Check IslandROI
   short *islandROIPtr = NULL;
   if (IslandROI) {
     int islandExt[6];
-    vtkIdType islandInc[3];
+#if VTK_MAJOR_VERSION <= 5
     this->IslandROI->GetWholeExtent(islandExt);
-    this->IslandROI->GetContinuousIncrements(islandExt, islandInc[0], islandInc[1], islandInc[2]);
-    assert((islandExt[1] - islandExt[0] == inExt[1] - inExt[0]) && (islandExt[3] - islandExt[2] == inExt[3] - inExt[2]) && (islandExt[5] - islandExt[4] == inExt[5] - inExt[4])); 
+#else
+    this->IslandROI->GetExtent(islandExt);
+#endif
+
+    vtkIdType islandInc[3];
+    this->IslandROI->GetContinuousIncrements(
+      islandExt, islandInc[0], islandInc[1], islandInc[2]);
+    assert((islandExt[1] - islandExt[0] == inExt[1] - inExt[0]) &&
+           (islandExt[3] - islandExt[2] == inExt[3] - inExt[2]) &&
+           (islandExt[5] - islandExt[4] == inExt[5] - inExt[4]));
     assert((!islandInc[0]) && (!islandInc[1]) && (!islandInc[2]));
     assert(VTK_SHORT == this->IslandROI->GetScalarType());
     islandROIPtr = (short*)this->IslandROI->GetScalarPointerForExtent(islandExt);
   }
 
-  inPtr = inData->GetScalarPointerForExtent(inExt);
-  outPtr = outData->GetScalarPointerForExtent(outExt);
+  void* inPtr = inData->GetScalarPointerForExtent(inExt);
+  void* outPtr = outData->GetScalarPointerForExtent(outExt);
 
-  if (PrintInformation > IMAGEISLANDFILTER_PRINT_DISABLED) { 
+  if (PrintInformation > IMAGEISLANDFILTER_PRINT_DISABLED)
+    {
     cout << "====================================================== " << endl;
     cout << "vtkImageIslandFilter::ExecuteData: Delete Islands smaller " << this->IslandMinSize << " in Mode " << (this->NeighborhoodDim == IMAGEISLANDFILTER_NEIGHBORHOOD_3D ? 3 : 2) << "D" << endl;  
-  }
+    }
 
 
   if (this->NeighborhoodDim == IMAGEISLANDFILTER_NEIGHBORHOOD_3D) {
     switch (inData->GetScalarType()) {
-      vtkTemplateMacro(vtkImageIslandFilterExecute(this, (VTK_TT *)(inPtr),inExt, islandROIPtr, (VTK_TT *)(outPtr)));
+      vtkTemplateMacro(vtkImageIslandFilterExecute(
+                         this, (VTK_TT *)(inPtr),inExt, islandROIPtr,
+                         (VTK_TT *)(outPtr)));
     default:
       vtkErrorMacro(<< "Execute: Unknown ScalarType");
+#if VTK_MAJOR_VERSION <= 5
       return;
+#else
+      return 0;
+#endif
     }
   } else {
       switch (inData->GetScalarType()) {
-    vtkTemplateMacro(vtkImageIslandFilterExecuteBySlice(this, (VTK_TT *)(inPtr),inExt, islandROIPtr, (VTK_TT *)(outPtr)));
+    vtkTemplateMacro(vtkImageIslandFilterExecuteBySlice(
+                       this, (VTK_TT *)(inPtr),inExt, islandROIPtr,
+                       (VTK_TT *)(outPtr)));
       default:
-    vtkErrorMacro(<< "Execute: Unknown ScalarType");
-    return;
+        vtkErrorMacro(<< "Execute: Unknown ScalarType");
+#if VTK_MAJOR_VERSION <= 5
+        return;
+#else
+        return 0;
+#endif
       }
   }
   if (PrintInformation > IMAGEISLANDFILTER_PRINT_DISABLED) {
     cout << "vtkImageIslandFilter::ExecuteData: Finished Deleting " << endl;
     cout << "====================================================== " << endl;
   }
-
+#if VTK_MAJOR_VERSION > 5
+  return 1;
+#endif
 }
 
+//----------------------------------------------------------------------------
 template <class T>
 static void vtkImageIslandFilter_GetMaxIslandSize(T* inPtr, int LabelMin , int LabelMax, int inExt[6], int& maxSize ) {
 
@@ -1148,7 +1207,7 @@ static void vtkImageIslandFilter_GetMaxIslandSize(T* inPtr, int LabelMin , int L
    delete[] Checked;
 }
 
-
+//----------------------------------------------------------------------------
 int vtkImageIslandFilter::GetMaxIslandSize(vtkImageData *InputData) {
    int IslandInputLabelMin  = this->GetIslandInputLabelMin();
    int IslandInputLabelMax  = this->GetIslandInputLabelMax();
@@ -1158,7 +1217,11 @@ int vtkImageIslandFilter::GetMaxIslandSize(vtkImageData *InputData) {
    }
 
    int inExt[6];
+#if VTK_MAJOR_VERSION <= 5
    InputData->GetWholeExtent(inExt);
+#else
+   InputData->GetExtent(inExt);
+#endif
    void* inPtr = InputData->GetScalarPointerForExtent(inExt);
    int result;
    switch (InputData->GetScalarType()) {

@@ -19,10 +19,16 @@
 
 #ifndef __vtkImageEMGenericClass_h
 #define __vtkImageEMGenericClass_h 
-  
-#include "vtkEMSegment.h"
-#include "vtkImageMultipleInputFilter.h"
+
+// EMSegment includes
 #include "vtkImageEMGeneral.h"
+
+// VTK includes
+#if VTK_MAJOR_VERSION <= 5
+#include "vtkImageMultipleInputFilter.h"
+#else
+#include <vtkImageAlgorithm.h>
+#endif
 
 // #ifndef EM_VTK_OLD_SETTINGS
 // #if (VTK_MAJOR_VERSION == 4 && (VTK_MINOR_VERSION >= 3 || (VTK_MINOR_VERSION == 2 && VTK_BUILD_VERSION > 5)))
@@ -32,15 +38,24 @@
 // #endif
 // #endif
 
-class VTK_EMSEGMENT_EXPORT vtkImageEMGenericClass : public vtkImageMultipleInputFilter
+class VTK_EMSEGMENT_EXPORT vtkImageEMGenericClass
+#if VTK_MAJOR_VERSION <= 5
+  : public vtkImageMultipleInputFilter
+#else
+  : public vtkImageAlgorithm
+#endif
 {
   public:
   // -----------------------------------------------------
   // Genral Functions for the filter
   // -----------------------------------------------------
   static vtkImageEMGenericClass *New();
-  vtkTypeMacro(vtkImageEMGenericClass,vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent);
+#if VTK_MAJOR_VERSION <= 5
+  vtkTypeMacro(vtkImageEMGenericClass,vtkImageMultipleInputFilter);
+#else
+  vtkTypeMacro(vtkImageEMGenericClass,vtkImageAlgorithm);
+#endif
+  virtual void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
   // Global Tissue Probability
@@ -101,7 +116,7 @@ class VTK_EMSEGMENT_EXPORT vtkImageEMGenericClass : public vtkImageMultipleInput
 
   // Description:
   // Make sure older version get an error message
-  void SetInputIndex(vtkImageData *, int )  {
+  virtual void SetInputIndex(vtkImageData *, int )  {
     vtkErrorMacro(<< "In the new version SetInputIndex is disabled! Please look into vtkImageEM*Class.h to find out how to set the given parameters !");
     return;
   }
@@ -151,7 +166,23 @@ protected:
   // We do not have any input here
   //void  ExecuteData(vtkDataObject *) {this->Execute();}
   //void  Execute();
+#if VTK_MAJOR_VERSION <= 5
   void  ExecuteData(vtkDataObject *) ;
+#else
+  virtual int RequestData(vtkInformation *request,
+                          vtkInformationVector **inputVector,
+                          vtkInformationVector *outputVector);
+#endif
+
+  enum {
+#if VTK_MAJOR_VERSION <= 5
+    DummyInputPort = 0,
+    NumberOfInputPorts,
+#else
+    NumberOfInputPorts = 0,
+#endif
+    FakeInputPorts = NumberOfInputPorts
+  };
 
   float  ProbDataWeight;              // How much influence should the LocalPriorData have in the segmentation process 
   int    ProbDataScalarType;          // Scalar Type of ProbData

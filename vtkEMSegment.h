@@ -6,3 +6,5 @@
 #else
   #include "vtkSlicerEMSegmentModuleLogicExport.h"
 #endif
+
+#include <vtkVersion.h>

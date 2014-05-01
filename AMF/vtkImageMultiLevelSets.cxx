@@ -21,10 +21,17 @@ THE SOFTWARE IS PROVIDED "AS IS."  MIT HAS NO OBLIGATION TO PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================auto=*/
-#include "vtkImageMultiLevelSets.h" 
-#include "vtkObjectFactory.h"
-#include "vtkImageData.h"
-#include "vtkMultiThreader.h"
+
+// EMSegment includes
+#include "vtkImageMultiLevelSets.h"
+
+// VTK includes
+#include <vtkImageData.h>
+#include <vtkObjectFactory.h>
+#include <vtkMultiThreader.h>
+
+// STD includes
+#include <cassert>
 
 //---------------------------------------------------------------------------
 VTK_THREAD_RETURN_TYPE vtkImageMultiLevelSets_ComputeLogOddsComponent_Threaded(void *arg )
@@ -74,7 +81,9 @@ vtkImageMultiLevelSets* vtkImageMultiLevelSets::New()
 //----------------------------------------------------------------------------
 vtkImageMultiLevelSets::vtkImageMultiLevelSets() { 
   //  We do not have any outputs - but do not remove first output ever - otherwise seg fault!
-  this->vtkSource::RemoveOutput(this->Outputs[0]);
+#if VTK_MAJOR_VERSION <= 5
+  this->RemoveOutput(this->Outputs[0]);
+#endif
 
   this->Curves= NULL;
   this->CurvesOutputWithoutLogOdds = NULL;
@@ -136,11 +145,18 @@ int  vtkImageMultiLevelSets::CheckInput(vtkImageData *InData) {
     vtkIdType Inc[3];
 
     assert(InData);
+#if VTK_MAJOR_VERSION <= 5
     InData->GetWholeExtent(Ext);
-    if ((this->XDim != Ext[1] -Ext[0] +1) || (this->YDim != Ext[3] -Ext[2] +1) || (this->ZDim != Ext[5] -Ext[4] +1)) {
+#else
+    InData->GetExtent(Ext);
+#endif
+    if ((this->XDim != Ext[1] -Ext[0] +1) ||
+        (this->YDim != Ext[3] -Ext[2] +1) ||
+        (this->ZDim != Ext[5] -Ext[4] +1))
+      {
       vtkErrorMacro(<< "Input does not have the correct dimensions - should: ("<< this->XDim <<"," << this->YDim <<"," << this->ZDim <<") has: ("<< Ext[1] -Ext[0] +1 <<"," <<Ext[3] -Ext[2] +1 <<","<< Ext[5] -Ext[4] +1 << ")" );
       return 1;
-    }
+      }
     InData->GetContinuousIncrements(Ext, Inc[0],Inc[1],Inc[2]);
     // We can easily adjust the algorithm to take care of it 
     if (Inc[1] != 0 || Inc[2] != 0) {
@@ -228,8 +244,12 @@ void vtkImageMultiLevelSets::SetCurve(int initID, vtkImageLevelSets  *initWithou
 
   this->CurvesOutputComplete[initID] = initFinalCurve;
 
-  // Define parameters specific to MultiLevelSet   
+  // Define parameters specific to MultiLevelSet
+#if VTK_MAJOR_VERSION <= 5
   this->SetInput(initID,initLogCondIntImage);
+#else
+  this->SetInputData(initID,initLogCondIntImage);
+#endif
   this->logCondIntensityCoefficient[initID] = initLogCondIntCoeff;
   this->logCurveCouplingCoefficient[initID] = initLogCurveCouplingCoeff;
 }
@@ -238,12 +258,20 @@ void vtkImageMultiLevelSets::SetCurve(int initID, vtkImageLevelSets  *initWithou
 
 //----------------------------------------------------------------------------
 int vtkImageMultiLevelSets::InitParam()
-{   
+{
+#if VTK_MAJOR_VERSION <= 5
    vtkImageData **inData  = (vtkImageData **) this->GetInputs();
-   int Ext[6];
- 
    assert(inData[0]);
+
+   int Ext[6];
    inData[0]->GetWholeExtent(Ext);
+#else
+   vtkImageData* inData = this->GetImageDataInput(0);
+   assert(inData);
+
+   int Ext[6];
+   inData->GetExtent(Ext);
+#endif
    this->XDim= Ext[1] - Ext[0] + 1;
    this->YDim= Ext[3] - Ext[2] + 1;
    this->ZDim= Ext[5] - Ext[4] + 1;
@@ -257,11 +285,16 @@ int vtkImageMultiLevelSets::InitParam()
 
    vtkIdType  IncX, IncY, IncZ;
    for (int i=0; i < this->NumberOfCurves; i++) {
+#if VTK_MAJOR_VERSION <= 5
      this->CurvesOutputComplete[i]->SetWholeExtent(Ext);
-     this->CurvesOutputComplete[i]->SetExtent(Ext); 
+     this->CurvesOutputComplete[i]->SetExtent(Ext);
      this->CurvesOutputComplete[i]->SetNumberOfScalarComponents(1);
      this->CurvesOutputComplete[i]->SetScalarType(VTK_FLOAT);
      this->CurvesOutputComplete[i]->AllocateScalars();
+#else
+     this->CurvesOutputComplete[i]->SetExtent(Ext);
+     this->CurvesOutputComplete[i]->AllocateScalars(VTK_FLOAT, 1);
+#endif
      this->CurvesOutputComplete[i]->GetContinuousIncrements(Ext,IncX,IncY,IncZ);
 
     // Can be easily changed 
@@ -280,13 +313,21 @@ int vtkImageMultiLevelSets::InitParam()
    return 0;
 }
 
-int vtkImageMultiLevelSets::InitEvolution() {
-  assert(this->vtkProcessObject::GetNumberOfInputs()== this->NumberOfCurves && this->NumberOfCurves);
+int vtkImageMultiLevelSets::InitEvolution()
+{
+#if VTK_MAJOR_VERSION <= 5
+  assert(this->GetNumberOfInputs()== this->NumberOfCurves &&
+         this->NumberOfCurves);
    vtkImageData **inData  = (vtkImageData **) this->GetInputs();
-  
+#endif
+
   for (int i=0; i < this->NumberOfCurves; i++) {
     Curves[i]->InitEvolution();
+#if VTK_MAJOR_VERSION <= 5
     if (this->CheckInput(inData[i])) return 1;
+#else
+    if (this->CheckInput(this->GetImageDataInput(i))) return 1;
+#endif
     // sign can be flipped which is done in InitEvolution
     this->CurvesOutputComplete[i]->CopyAndCastFrom(this->CurvesOutputWithoutLogOdds[i],this->CurvesOutputWithoutLogOdds[i]->GetExtent());
   }
@@ -318,11 +359,19 @@ void vtkImageMultiLevelSets::ComputeLogOddsComponent(const int first, const int 
 
   float* logOddsDiffTerm             = new float[this->NumberOfCurves];
   float* ProbTerm                    = new float[this->NumberOfCurves];
+#if VTK_MAJOR_VERSION <= 5
   vtkImageData** inData  = (vtkImageData**) this->GetInputs();
+#endif
 
   for (int i = 0 ; i < this->NumberOfCurves; i++) { 
      previousIterationPtr[i]         = (float*) this->CurvesOutputComplete[i]->GetScalarPointer();
+#if VTK_MAJOR_VERSION <= 5
      logCondIntensityImagePtr[i]     = (float*) inData[i]->GetScalarPointerForExtent(inData[i]->GetExtent()); 
+#else
+     logCondIntensityImagePtr[i]     = reinterpret_cast<float*>(
+       this->GetImageDataInput(i)->GetScalarPointerForExtent(
+         this->GetImageDataInput(i)->GetExtent()));
+#endif
      // Result after smoothing - Here we took a short cut in the curve evolution as we only computed the weight for the smoothing term via the bimodal setting !
      currentIterationPtr[i]          = (float*) this->CurvesOutputWithoutLogOdds[i]->GetScalarPointer();
   }
@@ -391,11 +440,19 @@ void vtkImageMultiLevelSets::ComputeLogOddsComponent_IPMICorrect(const int first
   // LogOdds value from the previous iteration
   float* para                        = new float[this->NumberOfCurves];
 
+#if VTK_MAJOR_VERSION <= 5
   vtkImageData** inData  = (vtkImageData**) this->GetInputs();
+#endif
 
   for (int i = 0 ; i < this->NumberOfCurves; i++) { 
      previousIterationPtr[i]         = (float*) this->CurvesOutputComplete[i]->GetScalarPointer();
+#if VTK_MAJOR_VERSION <= 5
      logCondIntensityImagePtr[i]     = (float*) inData[i]->GetScalarPointerForExtent(inData[i]->GetExtent()); 
+#else
+     logCondIntensityImagePtr[i]     = reinterpret_cast<float*>(
+       this->GetImageDataInput(i)->GetScalarPointerForExtent(
+         this->GetImageDataInput(i)->GetExtent()));
+#endif
      currentIterationPtr[i]          = (float*) this->CurvesOutputWithoutLogOdds[i]->GetScalarPointer();
   }
  
@@ -473,11 +530,19 @@ void vtkImageMultiLevelSets::ComputeLogOddsComponent_journal(const int first, co
   // LogOdds value from the previous iteration
   float* para                        = new float[this->NumberOfCurves];
 
+#if VTK_MAJOR_VERSION <= 5
   vtkImageData** inData  = (vtkImageData**) this->GetInputs();
+#endif
 
   for (int i = 0 ; i < this->NumberOfCurves; i++) { 
      previousIterationPtr[i]         = (float*) this->CurvesOutputComplete[i]->GetScalarPointer();
+#if VTK_MAJOR_VERSION <= 5
      logCondIntensityImagePtr[i]     = (float*) inData[i]->GetScalarPointerForExtent(inData[i]->GetExtent()); 
+#else
+     logCondIntensityImagePtr[i]     = reinterpret_cast<float*>(
+       this->GetImageDataInput(i)->GetScalarPointerForExtent(
+         this->GetImageDataInput(i)->GetExtent()));
+#endif
      currentIterationPtr[i]          = (float*) this->CurvesOutputWithoutLogOdds[i]->GetScalarPointer();
   }
  

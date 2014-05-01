@@ -331,8 +331,9 @@ void  vtkImageLogOdds::InitializeOutputs()
   Ext[5] = this->ZDim-1;
   vtkIdType IncX, IncY, IncZ;
   for (int i=0; i < this->DimOutput; i++) {
+#if VTK_MAJOR_VERSION <= 5
     this->results[i]->SetWholeExtent(Ext);
-    this->results[i]->SetExtent(Ext); 
+    this->results[i]->SetExtent(Ext);
     this->results[i]->SetNumberOfScalarComponents(1);
     // Can be easily changed if needed
     if (this->Mode != LOGODDS_LOG2MAP ) {
@@ -340,7 +341,19 @@ void  vtkImageLogOdds::InitializeOutputs()
     } else {
       this->results[i]->SetScalarType(VTK_SHORT);
     }
-    this->results[i]->AllocateScalars(); 
+    this->results[i]->AllocateScalars();
+#else
+    this->results[i]->SetExtent(Ext);
+    // Can be easily changed if needed
+    if (this->Mode != LOGODDS_LOG2MAP )
+      {
+      this->results[i]->AllocateScalars(VTK_FLOAT, 1);
+      }
+    else
+      {
+      this->results[i]->AllocateScalars(VTK_SHORT, 1);
+      }
+#endif
 
     this->results[i]->GetContinuousIncrements(Ext,IncX,IncY,IncZ);
     // Can be easily changed 
@@ -357,7 +370,11 @@ int  vtkImageLogOdds::CheckInput(vtkImageData *InData) {
     int Ext[6];
     vtkIdType Inc[3];
 
+#if VTK_MAJOR_VERSION <= 5
     InData->GetWholeExtent(Ext);
+#else
+    InData->GetExtent(Ext);
+#endif
     if ((this->XDim != Ext[1] -Ext[0] +1) || (this->YDim != Ext[3] -Ext[2] +1) || (this->ZDim != Ext[5] -Ext[4] +1)) {
       vtkErrorMacro(<< "Input does not have the correct dimensions - should: ("<< this->XDim <<"," << this->YDim <<"," << this->ZDim <<") has: ("<< Ext[1] -Ext[0] +1 <<"," <<Ext[3] -Ext[2] +1 <<","<< Ext[5] -Ext[4] +1 << ")" );
       return 1;
@@ -392,7 +409,11 @@ void vtkImageLogOdds::ExecuteData(vtkDataObject *)
    // Initial Check
    assert(this->Mode);
 
-   int NumInputs = this->vtkProcessObject::GetNumberOfInputs();
+#if VTK_MAJOR_VERSION <= 5
+   int NumInputs = this->GetNumberOfInputs();
+#else
+   int NumInputs = this->GetNumberOfInputPorts();
+#endif
 
    if(!NumInputs) {
     vtkErrorMacro(<<"No input!");
@@ -404,11 +425,18 @@ void vtkImageLogOdds::ExecuteData(vtkDataObject *)
   assert((NumInputs == this->DimInput) || ((NumInputs == 1) && (this->DimInput == 2) && (this->Mode ==  LOGODDS_PROB2LOG)));
 
 
-  // Redefine ImageRelatedClass Parameters   
+  // Redefine ImageRelatedClass Parameters
+#if VTK_MAJOR_VERSION <= 5
   vtkImageData **inData  = (vtkImageData **) this->GetInputs();
-  { 
+  {
     int Ext[6];
     inData[0]->GetWholeExtent(Ext);
+#else
+  vtkImageData* inData = this->GetImageDataInput(0);
+  {
+    int Ext[6];
+    inData->GetExtent(Ext);
+#endif
     this->XDim= Ext[1] - Ext[0] + 1;
     this->YDim= Ext[3] - Ext[2] + 1;
     this->ZDim= Ext[5] - Ext[4] + 1;
@@ -420,7 +448,11 @@ void vtkImageLogOdds::ExecuteData(vtkDataObject *)
     this->InputScalarType = VTK_FLOAT; 
   }
   for (int i = 0; i < NumInputs; i++) {
+#if VTK_MAJOR_VERSION <= 5
     if (this->CheckInput(inData[i])) return;
+#else
+    if (this->CheckInput(this->GetImageDataInput(i))) return;
+#endif
   }
 
   // -----------------------------------------------
@@ -434,8 +466,17 @@ void vtkImageLogOdds::ExecuteData(vtkDataObject *)
 
   // Run Algorithm  
   float** inPtr = new float*[NumInputs];
-  for (int i = 0 ; i <  NumInputs; i++) inPtr[i] = (float*) (inData[i]->GetScalarPointerForExtent(inData[i]->GetExtent()));
-  switch (this->Mode) 
+  for (int i = 0 ; i <  NumInputs; i++)
+    {
+#if VTK_MAJOR_VERSION <= 5
+    inPtr[i] = (float*) (inData[i]->GetScalarPointerForExtent(inData[i]->GetExtent()));
+#else
+    inPtr[i] = reinterpret_cast<float*> (
+      this->GetImageDataInput(i)->GetScalarPointerForExtent(
+        this->GetImageDataInput(i)->GetExtent()));
+#endif
+    }
+  switch (this->Mode)
     {
     case LOGODDS_LOG2PROB : this->GeneralizedLogistic(inPtr,(float**)outPtr); break;
     case LOGODDS_PROB2LOG : this->MultiNomialLogOdds(inPtr,(float**)outPtr); break;
@@ -449,17 +490,26 @@ void vtkImageLogOdds::ExecuteData(vtkDataObject *)
   delete[] inPtr;
 }
 
-
-void vtkImageLogOdds::SetProbabilities(int index, vtkImageData *image) 
+//----------------------------------------------------------------------------
+void vtkImageLogOdds::SetProbabilities(int index, vtkImageData *image)
 {
-     assert(this->Mode ==  LOGODDS_PROB2LOG); 
-     this->SetInput(index,image);
+  assert(this->Mode ==  LOGODDS_PROB2LOG);
+#if VTK_MAJOR_VERSION <= 5
+  this->SetInput(index,image);
+#else
+  this->SetInputData(index,image);
+#endif
 }
 
+//----------------------------------------------------------------------------
 void vtkImageLogOdds::SetLogOdds(int index, vtkImageData *image)
 {
-      assert(this->Mode > LOGODDS_PROB2LOG);  
-      this->SetInput(index,image);
+  assert(this->Mode > LOGODDS_PROB2LOG);
+#if VTK_MAJOR_VERSION <= 5
+  this->SetInput(index,image);
+#else
+  this->SetInputData(index,image);
+#endif
 }
 
  // See earlier explanations about different modes

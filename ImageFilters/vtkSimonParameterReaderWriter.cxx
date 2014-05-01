@@ -13,15 +13,23 @@
 =========================================================================auto=*/
 // -------------------------------------------------------------------
 /* Copyright (c) 1997 Simon Warfield simonw@bwh.harvard.edu */
+
+// EMSegment includes
 #include "vtkSimonParameterReaderWriter.h"
-#include "vtkObjectFactory.h"
+
+// VTK includes
+#include <vtkObjectFactory.h>
+
+// STD includes
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <ctype.h>
-vtkCxxRevisionMacro(vtkSimonParameterReaderWriter, "$Revision: 1.1 $");
-vtkStandardNewMacro(vtkSimonParameterReaderWriter);
 
+#if VTK_MAJOR_VERSION <= 5
+vtkCxxRevisionMacro(vtkSimonParameterReaderWriter, "$Revision: 1.1 $");
+#endif
+vtkStandardNewMacro(vtkSimonParameterReaderWriter);
 
 // from UtilsInC.c
 #ifndef UCHAR
@@ -146,7 +154,7 @@ printf("in[6] %g inout[3] %g in[7] %g inout[4] %g in[8] %g inout[5] %g == %g\n",
 }
 
 /// *out and inA or inB can be the same pointer
-inline void vtkSimonParameterReaderWriter::matmult_3x3(float *inA, float *inB, float *out)
+void vtkSimonParameterReaderWriter::matmult_3x3(float *inA, float *inB, float *out)
 {
   matmult_3x3Template(inA,inB,out);
 }

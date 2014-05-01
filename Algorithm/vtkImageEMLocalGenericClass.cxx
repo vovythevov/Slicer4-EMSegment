@@ -39,9 +39,11 @@ vtkImageEMLocalGenericClass::vtkImageEMLocalGenericClass()
   this->PrintRegistrationParameters = 0;
   this->PrintRegistrationSimularityMeasure = 0 ; 
 
-  this->RegistrationInvCovariance[0] =   this->RegistrationInvCovariance[1] =   this->RegistrationInvCovariance[2] =   this->RegistrationInvCovariance[3] 
-                                     =   this->RegistrationInvCovariance[4] =   this->RegistrationInvCovariance[5] = 1.0;
-  this->RegistrationInvCovariance[6] =   this->RegistrationInvCovariance[7] =   this->RegistrationInvCovariance[8] = 100; 
+  this->RegistrationInvCovariance[0] = this->RegistrationInvCovariance[1]
+    = this->RegistrationInvCovariance[2] =  this->RegistrationInvCovariance[3]
+    = this->RegistrationInvCovariance[4] =  this->RegistrationInvCovariance[5] = 1.0;
+  this->RegistrationInvCovariance[6] = this->RegistrationInvCovariance[7]
+    = this->RegistrationInvCovariance[8] = 100;
 
   memset(this->Extent,0,sizeof(int)*6);
 
@@ -53,16 +55,19 @@ vtkImageEMLocalGenericClass::vtkImageEMLocalGenericClass()
 
 }
 
+//----------------------------------------------------------------------------
 vtkImageEMLocalGenericClass::~vtkImageEMLocalGenericClass()
 {
   this->ProbImageData = NULL;
   this->SetPosteriorImageData(NULL);
 }
 
+//----------------------------------------------------------------------------
 void vtkImageEMLocalGenericClass::SetRegistrationCovariance(double Init[9]) {
   for (int i = 0; i < 9;i ++) 
     if (Init[i] <= 0.0) {
-      vtkEMAddErrorMessage("Error:vtkImageEMLocalGenericClass::SetRegistrationCovariance Input has to be greater 0 (" << i <<"th input : " << Init[i] << ")!");
+      vtkEMAddErrorMessage("Error:vtkImageEMLocalGenericClass::SetRegistrationCovariance"
+                           " Input has to be greater 0 (" << i <<"th input : " << Init[i] << ")!");
     }
     else this->RegistrationInvCovariance[i] = 1.0/(Init[i]*Init[i]);
 }
@@ -101,10 +106,17 @@ void vtkImageEMLocalGenericClass::PrintSelf(ostream& os,vtkIndent indent) {
 //----------------------------------------------------------------------------
 // SegmentationBoundary condition are taken into account (BoundaryType == 1) or not (BoundaryType == 0);
 void* vtkImageEMLocalGenericClass::GetDataPtr(vtkImageData* ImageData,int BoundaryType) {
-  if (!ImageData) return NULL;
+  if (!ImageData)
+    {
+    return NULL;
+    }
 
   int extent[6];
+#if VTK_MAJOR_VERSION <= 5
   ImageData->GetWholeExtent(extent);
+#else
+  ImageData->GetExtent(extent);
+#endif
   //vtkIndent indent;
   // ImageData->PrintSelf(std::cerr, indent);
   if (BoundaryType) {
@@ -146,7 +158,11 @@ int vtkImageEMLocalGenericClass::GetImageDataInc(vtkImageData* ImageData, int Bo
     return 0;
     }
   int extent[6];
+#if VTK_MAJOR_VERSION <= 5
   ImageData->GetWholeExtent(extent);
+#else
+  ImageData->GetExtent(extent);
+#endif
   vtkIdType DataIncX, DataIncY, DataIncZ;
   ImageData->GetContinuousIncrements(extent, DataIncX, DataIncY, DataIncZ);
   if (BoundaryType) {
@@ -164,12 +180,31 @@ int vtkImageEMLocalGenericClass::GetImageDataInc(vtkImageData* ImageData, int Bo
   }
 }
 
+//------------------------------------------------------------------------------
+#if VTK_MAJOR_VERSION <= 5
+void vtkImageEMLocalGenericClass::SetProbDataPtr(vtkImageData *image)
+{
+  this->SetInput(ProbInputPort,image);
+}
+#else
+void vtkImageEMLocalGenericClass::SetProbConnection(vtkAlgorithmOutput* probConnection)
+{
+  this->SetNumberOfInputPorts(
+    std::max(this->GetNumberOfInputPorts(), ProbInputPort + 1));
+  this->SetInputConnection(ProbInputPort, probConnection);
+}
+#endif
+
 
 //------------------------------------------------------------------------------
 int vtkImageEMLocalGenericClass::CheckInputImage(vtkImageData * inData, int DataTypeOrig, int num) {
   // Check if InData is defined 
   int inExt[6];
+#if VTK_MAJOR_VERSION <= 5
   vtkFloatingPointType DataSpacingNew[3];
+#else
+  double DataSpacingNew[3];
+#endif
 
   if (inData == 0) {
     vtkEMAddErrorMessage("CheckInputImage: Input "<< num << " must be specified.");
@@ -178,31 +213,52 @@ int vtkImageEMLocalGenericClass::CheckInputImage(vtkImageData * inData, int Data
 
   // Check for Data Type if correct : Remember ProbabilityData all has to be of the same data Type
   if (DataTypeOrig != inData->GetScalarType()) {
-    vtkEMAddErrorMessage("CheckInputImage: Input "<< num << " has wrong data type ("<< inData->GetScalarType() << ") instead of " 
-          << DataTypeOrig << "! Note: VTK_FLOAT="<< VTK_FLOAT <<", VTK_SHORT=" << VTK_SHORT );
+    vtkEMAddErrorMessage("CheckInputImage: Input "<< num << " has wrong data type ("
+                         << inData->GetScalarType() << ") instead of "
+                         << DataTypeOrig << "! Note: VTK_FLOAT="<< VTK_FLOAT <<", VTK_SHORT=" << VTK_SHORT );
     return 1;
   }
 
 
-  // Check for dimenstion of InData
-  // Could be easily fixed if needed 
+  // Check for dimension of InData
+  // Could be easily fixed if needed
+#if VTK_MAJOR_VERSION <= 5
   inData->GetWholeExtent(inExt);
-  if ((inExt[1] != this->Extent[1]) || (inExt[0] != this->Extent[0]) || (inExt[3] != this->Extent[3]) || (inExt[2] != this->Extent[2]) || (inExt[5] != this->Extent[5]) || (inExt[4] != this->Extent[4])) {
-    vtkEMAddErrorMessage("CheckInputImage: Extension of Input Image " << num << ", " << inExt[0] << "," << inExt[1] << "," << inExt[2] << "," << inExt[3] << "," << inExt[4] << "," << inExt[5] 
-                  << "is not alligned with output image "  << this->Extent[0] << "," << this->Extent[1] << "," << this->Extent[2] << "," << this->Extent[3] << "," << this->Extent[4] << " " << this->Extent[5]);
+#else
+  inData->GetExtent(inExt);
+#endif
+
+  if ((inExt[1] != this->Extent[1]) || (inExt[0] != this->Extent[0]) ||
+      (inExt[3] != this->Extent[3]) || (inExt[2] != this->Extent[2]) ||
+      (inExt[5] != this->Extent[5]) || (inExt[4] != this->Extent[4]))
+    {
+    vtkEMAddErrorMessage("CheckInputImage: Extension of Input Image " << num << ", "
+                         << inExt[0] << "," << inExt[1] << ", "
+                         << inExt[2] << "," << inExt[3] << ", "
+                         << inExt[4] << "," << inExt[5]
+                         << "is not alligned with output image "
+                         << this->Extent[0] << "," << this->Extent[1] << ", "
+                         << this->Extent[2] << "," << this->Extent[3] << ","
+                         << this->Extent[4] << " " << this->Extent[5]);
     return 1;
-  }
-  if (inData->GetNumberOfScalarComponents() != 1) { 
-    vtkEMAddErrorMessage("CheckInputImage: This filter assumes input to filter is defined with one scalar component. Input Image "<< num  << " has " 
-                          << inData->GetNumberOfScalarComponents() << " Can be easily changed !");
+    }
+  if (inData->GetNumberOfScalarComponents() != 1)
+    {
+    vtkEMAddErrorMessage("CheckInputImage: This filter assumes input to filter "
+                         "is defined with one scalar component. Input Image "
+                         << num  << " has " << inData->GetNumberOfScalarComponents()
+                         << " Can be easily changed !");
     return 1;
-  }
+    }
   inData->GetSpacing(DataSpacingNew);
-  if ((this->DataSpacing[0] !=  float(DataSpacingNew[0])) || (this->DataSpacing[1] !=  float(DataSpacingNew[1])) || (this->DataSpacing[2] !=  float(DataSpacingNew[2]))) {
+  if ((this->DataSpacing[0] !=  float(DataSpacingNew[0])) ||
+      (this->DataSpacing[1] !=  float(DataSpacingNew[1])) ||
+      (this->DataSpacing[2] !=  float(DataSpacingNew[2])))
+    {
     vtkEMAddErrorMessage("CheckInputImage: Data Spacing of input images is unequal" );
     std::cerr << this->DataSpacing[0] << " " << DataSpacingNew[0] << " + " << this->DataSpacing[1] << " " << DataSpacingNew[1] << " + " << this->DataSpacing[2] << " " << DataSpacingNew[2] << endl;
     return 1;
-  }
+    }
   // Kilian Check for orientation has to be done in TCL !!!!
   return 0;
 }
@@ -212,56 +268,107 @@ int vtkImageEMLocalGenericClass::CheckInputImage(vtkImageData * inData, int Data
 // -----------------------------------------------------
 
 int vtkImageEMLocalGenericClass::CheckAndAssignProbImageData(vtkImageData *inData) {
-  if (this->CheckInputImage(inData, inData->GetScalarType(), 1)) return 0;
+  if (this->CheckInputImage(inData, inData->GetScalarType(), ProbInputPort)) return 0;
   this->ProbImageData  = inData;
   this->ProbDataScalarType  = inData->GetScalarType();
   return 1;
 }
 
 
-
 //----------------------------------------------------------------------------
-void  vtkImageEMLocalGenericClass::ExecuteData(vtkDataObject*) {
+#if VTK_MAJOR_VERSION <= 5
+void  vtkImageEMLocalGenericClass::ExecuteData(vtkDataObject*)
+#else
+int vtkImageEMLocalGenericClass
+::RequestData(vtkInformation* request,
+              vtkInformationVector** inputVector,
+              vtkInformationVector* outputVector)
+#endif
+{
     // Check All Values that are defined here 
     // std::cerr << "vtkImageEMGenericClass::ExecuteData" << endl; 
 
     // -----------------------------------------------------
     // Check Generic Class Setting 
+#if VTK_MAJOR_VERSION <= 5
     this->vtkImageEMGenericClass::ExecuteData(NULL);
+#else
+    this->Superclass::RequestData(request, inputVector, outputVector);
+#endif
 
     // -----------------------------------------------------    
     // Define General ImageDataSettings
     // First input (input[0]) is a fake 
-    int NumberOfRealInputData = this->vtkProcessObject::GetNumberOfInputs() -1;
-    if (NumberOfRealInputData == 0) { return; }  
-
+#if VTK_MAJOR_VERSION <= 5
+    int NumberOfRealInputData = this->GetNumberOfInputs() -1;
+    if (NumberOfRealInputData == 0)
+      {
+      return;
+      }
     vtkImageData **inData  = (vtkImageData **) this->GetInputs();
     int FirstData = 1;
     while (FirstData <= NumberOfRealInputData && !inData[FirstData])  FirstData++;
     if (FirstData > NumberOfRealInputData) {
       // This error should not be possible 
-      vtkEMAddErrorMessage("No image data defined as input even though vtkProcessObject::GetNumberOfInputs > 0 !");
+      vtkEMAddErrorMessage("No image data defined as input even though GetNumberOfInputs > 0 !");
       return;
     }
-    inData[FirstData]->GetWholeExtent(this->Extent);
+    vtkImageData* firstImageData = inData[FirstData];
+    firstImageData->GetWholeExtent(this->Extent);
+#else
+    if ( this->GetNumberOfInputPorts() <= FakeInputPorts )
+      {
+      return 1;
+      }
+    vtkImageData* firstImageData = 0;
+    for (int i = ProbInputPort; i < this->GetNumberOfInputPorts(); ++i)
+      {
+      firstImageData = this->GetImageDataInput(i);
+      if (firstImageData)
+        {
+        break;
+        }
+      }
+    if (!firstImageData)
+      {
+      vtkEMAddErrorMessage("No image data defined as input "
+                           << "even though GetNumberOfInputs > 0 !"
+                           << this->GetNumberOfInputPorts());
+      return 0;
+      }
 
-    this->DataDim[0] = ( this->SegmentationBoundaryMax[0] - this->SegmentationBoundaryMin[0] +1)*inData[FirstData]->GetNumberOfScalarComponents();
-    this->DataDim[1] = this->SegmentationBoundaryMax[1] - this->SegmentationBoundaryMin[1] + 1; // this->Extent[3/2] = Relative Maximum/Minimum Y index  
+  firstImageData->GetExtent(this->Extent);
+#endif
+
+    this->DataDim[0] = ( this->SegmentationBoundaryMax[0] - this->SegmentationBoundaryMin[0] +1)
+      *firstImageData->GetNumberOfScalarComponents();
+    // this->Extent[3/2] = Relative Maximum/Minimum Y ind
+    this->DataDim[1] = this->SegmentationBoundaryMax[1] - this->SegmentationBoundaryMin[1] + 1;
     this->DataDim[2] = this->SegmentationBoundaryMax[2] - this->SegmentationBoundaryMin[2] + 1;
 
-    if (!(this->DataDim[0] * this->DataDim[1] * this->DataDim[2])) {
+    if (!(this->DataDim[0] * this->DataDim[1] * this->DataDim[2]))
+      {
       vtkEMAddErrorMessage("Input has no points!" );
+#if VTK_MAJOR_VERSION <= 5
       return;
-    }
+#else
+      return 0;
+#endif
+      }
 
-    this->DataSpacing[0] = (float)inData[FirstData]->GetSpacing()[0];
-    this->DataSpacing[1] = (float)inData[FirstData]->GetSpacing()[1];
-    this->DataSpacing[2] = (float)inData[FirstData]->GetSpacing()[2];
+    this->DataSpacing[0] = (float)firstImageData->GetSpacing()[0];
+    this->DataSpacing[1] = (float)firstImageData->GetSpacing()[1];
+    this->DataSpacing[2] = (float)firstImageData->GetSpacing()[2];
 
     // ================================================== 
-    // Load Probabiity Data 
-    if (inData[1]) {   
-
+    // Load Probability Data
+#if VTK_MAJOR_VERSION <= 5
+    vtkImageData* probabilityImageData = inData[ProbInputPort];
+#else
+    vtkImageData* probabilityImageData = this->GetImageDataInput(ProbInputPort);
+#endif
+    if (probabilityImageData)
+      {
 #if (EMVERBOSE)
       {
         // If ProbDataPtr points to weird values then do an Update of the original source of the data before assigning it to this class
@@ -271,8 +378,14 @@ void  vtkImageEMLocalGenericClass::ExecuteData(vtkDataObject*) {
         inData[1]->PrintSelf(std::cerr,indent); 
       }
 #endif
-      if (this->ProbDataWeight > 0.0) {
-        this->CheckAndAssignProbImageData(inData[1]);
+      if (this->ProbDataWeight > 0.0)
+        {
+        this->CheckAndAssignProbImageData(probabilityImageData);
+        }
       }
-    }
+#if VTK_MAJOR_VERSION <= 5
+  return;
+#else
+  return 1;
+#endif
 }

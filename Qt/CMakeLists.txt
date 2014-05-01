@@ -38,12 +38,23 @@ SET(qt_module_MOC_SRCS
 SET(qt_module_UI_SRCS
   )
 
+if(${VTK_VERSION_MAJOR} GREATER 5)
+  set(VTK_LIBRARIES
+    vtkChartsCore
+    )
+else()
+  set(VTK_LIBRARIES
+    vtkCharts
+    )
+endif()
+
+
 # Additional Target libraries
 SET(qt_module_target_libraries
   vtkSlicerEMSegmentModuleLogic
   qSlicerEMSegmentModuleWidgets
-  vtkCharts
   MRMLLogic
+  ${VTK_LIBRARIES}
   )
 
 # Resources

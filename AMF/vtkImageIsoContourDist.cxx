@@ -131,35 +131,41 @@ vtkImageIsoContourDist::~vtkImageIsoContourDist()
 void vtkImageIsoContourDist::InitParam( )
 //                   ---------
 {
-  int type;
+#if VTK_MAJOR_VERSION <= 5
+  vtkImageData* input = this->GetInput();
+  this->inputImage = input;
+#else
+  vtkImageData* input = this->GetImageDataInput(0);
+  this->inputImage = input;
+#endif
 
-  inputImage = this->GetInput();
-
-  if (inputImage == NULL) {
+  if (this->inputImage == NULL) {
     vtkErrorMacro("Missing input");
     return;
   }
   else {
 
     // check the image is in float format, or convert
-    type = inputImage->GetScalarType();
+    int type = this->inputImage->GetScalarType();
     if (type != VTK_FLOAT) {
       vtkDebugMacro(<<"making a copy of the input into float format");
       // Create a copy of the data
-      inputImage = vtkImageData::New();
+      this->inputImage = vtkImageData::New();
 
-      inputImage->SetScalarType( VTK_FLOAT);
-      inputImage->SetNumberOfScalarComponents(1);
-      inputImage->SetDimensions( this->GetInput()->GetDimensions());
-      inputImage->SetOrigin(     this->GetInput()->GetOrigin());
-      inputImage->SetSpacing(    this->GetInput()->GetSpacing());
-      
-      inputImage->CopyAndCastFrom(this->GetInput(),
-                  this->GetInput()->GetExtent());
+      this->inputImage->SetDimensions( input->GetDimensions());
+      this->inputImage->SetOrigin(     input->GetOrigin());
+      this->inputImage->SetSpacing(    input->GetSpacing());
+#if VTK_MAJOR_VERSION <= 5
+      this->inputImage->SetScalarType( VTK_FLOAT);
+      this->inputImage->SetNumberOfScalarComponents(1);
+#endif
+
+      this->inputImage->CopyAndCastFrom(input,
+                  input->GetExtent());
       inputImage_allocated = 1;
     }
     else {
-      inputImage = this->GetInput();
+      this->inputImage = input;
       inputImage_allocated = 0;
     }
     //    fprintf(stderr,"vtkImageIsoContourDist \t inputImage allocated %d \n",
@@ -175,12 +181,12 @@ void vtkImageIsoContourDist::InitParam( )
     //--- outputImage
     outputImage      = this->GetOutput();
       
-    outputImage->SetDimensions(inputImage->GetDimensions() );
-    outputImage->SetSpacing(   inputImage->GetSpacing() );
-    outputImage->SetScalarType(VTK_FLOAT); 
+    outputImage->SetDimensions(this->inputImage->GetDimensions() );
+    outputImage->SetSpacing(   this->inputImage->GetSpacing() );
+#if VTK_MAJOR_VERSION <= 5
+    outputImage->SetScalarType(VTK_FLOAT);
     outputImage->SetNumberOfScalarComponents(1);
-     
-    
+#endif
     if (output_array != NULL) {
       if (float_array_allocated) {
     float_array->Delete();
@@ -193,7 +199,11 @@ void vtkImageIsoContourDist::InitParam( )
       outputImage->GetPointData()->SetScalars(float_array);
     } 
     else {
+#if VTK_MAJOR_VERSION <= 5
       outputImage->AllocateScalars();
+#else
+      outputImage->AllocateScalars(VTK_FLOAT, 1);
+#endif
     }
     
     if (output_array == NULL) {
@@ -258,7 +268,11 @@ void vtkImageIsoContourDist::IsoSurfDist2D( )
   register float        val0_new,val1_new;
   int          displace[2];  
   float        Grad[2] = {0,0};
+#if VTK_MAJOR_VERSION <= 5
   vtkFloatingPointType   vs[3];
+#else
+  double   vs[3];
+#endif
   register float        norm = 0 ;
   unsigned char         grad_computed;
   register float*       inPtr;
@@ -369,7 +383,11 @@ void vtkImageIsoContourDist::IsoSurfDist3D( )
   float        Grad0[3] = {0,0,0};
   float        Grad1[3];
   float        Grad[3];
+#if VTK_MAJOR_VERSION <= 5
   vtkFloatingPointType        vs[3];
+#else
+  double vs[3];
+#endif
   register float        vs0_2;
   register float        vs1_2;
   register float        vs2_2;
@@ -570,20 +588,26 @@ void vtkImageIsoContourDist::IsoSurfDist3D_band( )
 
   IsoSurfDistInit( );
 
-  if (this->GetNumberOfThreads()<=1)
+#if VTK_MAJOR_VERSION <= 5
+  int numThreads = this->GetNumberOfThreads();
+#else
+  int numThreads = vtkMultiThreader::GetGlobalDefaultNumberOfThreads();
+#endif
+
+  if (numThreads <= 1)
     IsoSurfDist3D_band(0,this->bandsize-1);
   else {
   
 #ifdef _SOLARIS_
     int code;
-    fprintf(stderr,"thr_setconurrency(%d) \n",this->GetNumberOfThreads());
-    code = thr_setconcurrency(this->GetNumberOfThreads());
+    fprintf(stderr,"thr_setconurrency(%d) \n", numThreads);
+    code = thr_setconcurrency(numThreads);
 #endif
 
     vtkMultiThreader* threader = vtkMultiThreader::New();
 
     // Threaded execution
-    threader->SetNumberOfThreads(this->GetNumberOfThreads());
+    threader->SetNumberOfThreads(numThreads);
 
     // setup threading and the invoke threadedExecute
     threader->SetSingleMethod(vtkImageIsoContourDist_ThreadedBand3D, this);
@@ -630,7 +654,11 @@ void vtkImageIsoContourDist::IsoSurfDist3D_band( int first_band, int last_band)
   register float        val0_new,val1_new;
   int          displace[3];  
   float        Grad[3];
+#if VTK_MAJOR_VERSION <= 5
   vtkFloatingPointType        vs[3];
+#else
+  double vs[3];
+#endif
   register float        norm=0;
   unsigned char         grad_computed;
   register float*       inPtr0;
@@ -750,6 +778,6 @@ void vtkImageIsoContourDist::IsoSurfDist3D_band( int first_band, int last_band)
 //----------------------------------------------------------------------
 void vtkImageIsoContourDist::PrintSelf(ostream& os, vtkIndent indent)
 {
-   vtkImageToImageFilter::PrintSelf(os,indent);
+   this->Superclass::PrintSelf(os,indent);
 
 } // PrintSelf()

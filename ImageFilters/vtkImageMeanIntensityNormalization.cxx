@@ -11,11 +11,22 @@
   See License.txt or http://www.slicer.org/copyright/copyright.txt for details.
 
 ==========================================================================*/
+
+// EMSegment includes
 #include "vtkImageMeanIntensityNormalization.h"
-#include "vtkObjectFactory.h"
-#include "vtkImageData.h"
-#include "vtkImageMathematics.h"
-#include <assert.h>
+
+// VTK includes
+#include <vtkImageAccumulate.h>
+#include <vtkImageData.h>
+#include <vtkImageMathematics.h>
+#if VTK_MAJOR_VERSION > 5
+#include <vtkInformation.h>
+#include <vtkInformationVector.h>
+#endif
+#include <vtkObjectFactory.h>
+
+// STD includes
+#include <cassert>
 
 //------------------------------------------------------------------------------
 vtkImageMeanIntensityNormalization* vtkImageMeanIntensityNormalization::New()
@@ -42,10 +53,12 @@ vtkImageMeanIntensityNormalization::vtkImageMeanIntensityNormalization()
 vtkImageMeanIntensityNormalization::~vtkImageMeanIntensityNormalization(){ }
 
 //----------------------------------------------------------------------------
+#if VTK_MAJOR_VERSION <= 5
 void vtkImageMeanIntensityNormalization::ComputeInputUpdateExtent(int inExt[6], int vtkNotUsed(outExt)[6])
 {
   this->GetInput()->GetWholeExtent(inExt);
 }
+#endif
 
 //----------------------------------------------------------------------------
 void vtkImageMeanIntensityNormalization::PrintSelf(ostream& os, vtkIndent indent)
@@ -53,10 +66,17 @@ void vtkImageMeanIntensityNormalization::PrintSelf(ostream& os, vtkIndent indent
   Superclass::PrintSelf(os,indent);
 }
 
-int* vtkImageMeanIntensityNormalization::InitializeHistogram(vtkImageAccumulate *HIST, vtkImageData *Input, int &HistMin, int &HistMax)
+//----------------------------------------------------------------------------
+int* vtkImageMeanIntensityNormalization
+::InitializeHistogram(vtkImageAccumulate *HIST, vtkImageData *Input,
+                      int &HistMin, int &HistMax)
 {
-  // 1. Detect extrema 
+  // 1. Detect extrema
+#if VTK_MAJOR_VERSION <= 5
   HIST->SetInput(Input);
+#else
+  HIST->SetInputData(Input);
+#endif
   HIST->SetComponentSpacing(1,1,1);
   HIST->SetComponentOrigin(0,0,0);
   HIST->Update();
@@ -72,8 +92,12 @@ int* vtkImageMeanIntensityNormalization::InitializeHistogram(vtkImageAccumulate 
   int EXTENT[6] = {HistMin,HistMax,0,0,0,0};
   HIST->SetComponentExtent(EXTENT);
   HIST->Update();
-    
+
+#if VTK_MAJOR_VERSION <= 5
   HIST->GetOutput()->GetWholeExtent(EXTENT);
+#else
+  HIST->GetOutput()->GetExtent(EXTENT);
+#endif
   return (int*)(HIST->GetOutput()->GetScalarPointerForExtent(EXTENT));
 }
 
@@ -274,7 +298,11 @@ void vtkImageMeanIntensityNormalization::MeanMRI(vtkImageData *Input, vtkImageDa
   //  Correct Image 
   // -------------------------------------
   CORRECTED = vtkImageMathematics::New();
+#if VTK_MAJOR_VERSION <= 5
   CORRECTED->SetInput(0,Input);
+#else
+  CORRECTED->SetInputData(Input);
+#endif
   CORRECTED->SetConstantK(ImageIntensityCorrectionRatio);
   CORRECTED->SetOperationToMultiplyByK();
   CORRECTED->Update();
@@ -300,6 +328,7 @@ void vtkImageMeanIntensityNormalization::MeanMRI(vtkImageData *Input, vtkImageDa
 
 // To chage anything about output us this executed before Thread
 //----------------------------------------------------------------------------
+#if VTK_MAJOR_VERSION <= 5
 void vtkImageMeanIntensityNormalization::ExecuteInformation(vtkImageData *inData, vtkImageData *outData) 
 {
   outData->SetOrigin(inData->GetOrigin());
@@ -308,13 +337,14 @@ void vtkImageMeanIntensityNormalization::ExecuteInformation(vtkImageData *inData
   outData->SetSpacing(inData->GetSpacing());
   outData->SetScalarType(inData->GetScalarType());
 }
+#endif
 
 //----------------------------------------------------------------------------
 // This method is passed a input and output datas, and executes the filter
 // algorithm to fill the output from the inputs.
 // It just executes a switch statement to call the correct function for
 // the datas data types.
-
+#if VTK_MAJOR_VERSION <= 5
 void vtkImageMeanIntensityNormalization::ExecuteData(vtkDataObject *)
 {
   int inExt[6];
@@ -328,9 +358,6 @@ void vtkImageMeanIntensityNormalization::ExecuteData(vtkDataObject *)
   outData->AllocateScalars();
   outData->GetWholeExtent(outExt);
 
-  // vtk4
-  vtkDebugMacro(<< "Execute: inData = " << inData << ", outData = " << outData);
- 
   if (inData == NULL)
     {
     vtkErrorMacro(<< "Input " << 0 << " must be specified.");
@@ -344,6 +371,25 @@ void vtkImageMeanIntensityNormalization::ExecuteData(vtkDataObject *)
     this->ErrorExecutionFlag = true;
     return;
     }
+#else
+int vtkImageMeanIntensityNormalization::RequestData(
+  vtkInformation* vtkNotUsed(request),
+  vtkInformationVector** inputVector,
+  vtkInformationVector* outputVector)
+{
+  // get the input
+  vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
+  vtkImageData *inData = vtkImageData::SafeDownCast(
+    inInfo->Get(vtkDataObject::DATA_OBJECT()));
+
+  // get the output
+  vtkInformation *outInfo = outputVector->GetInformationObject(0);
+  vtkImageData *outData = vtkImageData::SafeDownCast(
+    outInfo->Get(vtkDataObject::DATA_OBJECT()));
+#endif
+
+  // vtk4
+  vtkDebugMacro(<< "Execute: inData = " << inData << ", outData = " << outData);
 
   switch (this->NormType)
     {
@@ -351,6 +397,13 @@ void vtkImageMeanIntensityNormalization::ExecuteData(vtkDataObject *)
     default:
       vtkErrorMacro(<< "Execute: Unknown Normalization Type");
       this->ErrorExecutionFlag = true;
+#if VTK_MAJOR_VERSION <= 5
       return;
+#else
+      return 0;
+#endif
     }
+#if VTK_MAJOR_VERSION > 5
+  return 1;
+#endif
 }

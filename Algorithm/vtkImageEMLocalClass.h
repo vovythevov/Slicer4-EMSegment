@@ -26,7 +26,11 @@ class VTK_EMSEGMENT_EXPORT vtkImageEMLocalClass : public vtkImageEMLocalGenericC
   // Genral Functions for the filter
   // -----------------------------------------------------
   static vtkImageEMLocalClass *New();
+#if VTK_MAJOR_VERSION <= 5
   vtkTypeMacro(vtkImageEMLocalClass,vtkObject);
+#else
+  vtkTypeMacro(vtkImageEMLocalClass,vtkImageEMLocalGenericClass);
+#endif
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // ----------------------------------------- 
@@ -57,7 +61,7 @@ class VTK_EMSEGMENT_EXPORT vtkImageEMLocalClass : public vtkImageEMLocalGenericC
 
   // Description:
   // Probability Data defining the spatial conditional label distribution
-  void   SetPCAMeanShape(vtkImageData *image) {this->SetInput(2,image);}
+  void SetPCAMeanShape(vtkImageData *image);
 
   //BTX
   void* GetPCAMeanShapePtr(int Type) { return this->GetDataPtr(this->PCAMeanShapeImageData,Type);}
@@ -80,7 +84,7 @@ class VTK_EMSEGMENT_EXPORT vtkImageEMLocalClass : public vtkImageEMLocalGenericC
 
   // Description:
   // Set the Number of Input Images for subclasses
-  void SetNumInputImages(int number); 
+  virtual void SetNumInputImages(int number);
 
   void     SetLogCovariance(double value, int y, int x);
   //BTX
@@ -160,7 +164,13 @@ protected:
                        vtkImageData *vtkNotUsed(outData),
                        int vtkNotUsed(outExt)[6], int vtkNotUsed(id)) {};
   //ETX
-  void ExecuteData(vtkDataObject *);   
+#if VTK_MAJOR_VERSION <= 5
+  virtual void ExecuteData(vtkDataObject *);
+#else
+  virtual int RequestData(vtkInformation* request,
+                          vtkInformationVector** inputVector,
+                          vtkInformationVector* outputVector);
+#endif
 
   double *LogMu;                 // Intensity distribution of the classes (changed for Multi Dim Version)
   double **LogCovariance;        // Intensity distribution of the classes (changed for Multi Dim Version) -> This is the Coveriance Matrix
@@ -173,6 +183,16 @@ protected:
 
    vtkImageData **PCAEigenVectorImageData;
    vtkImageData *PCAMeanShapeImageData;
+  enum{
+#if VTK_MAJOR_VERSION <= 5
+    PCAMeanShapeInputPort = vtkImageEMLocalGenericClass::NumberOfInputPorts,
+#else
+    PCAMeanShapeInputPort = Superclass::NumberOfInputPorts,
+#endif
+    PCAEigenVectorFirstInputPort,
+    NumberOfInputPorts // could be more if PCAEigenVectorModes > 1
+  };
+
 
    double *PCAEigenValues;
 

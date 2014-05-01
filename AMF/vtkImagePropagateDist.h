@@ -58,8 +58,15 @@
 #define POINT_SET_FRONT     3
 #define POINT_SET           4
 
+// EMSegment includes
 #include "vtkEMSegment.h"
+
+// VTK includes
+#if VTK_MAJOR_VERSION <= 5
 #include "vtkImageToImageFilter.h"
+#else
+#include <vtkImageAlgorithm.h>
+#endif
 
 //BTX
 
@@ -149,11 +156,20 @@ class PD_element {
 
 //ETX
 
-class VTK_EMSEGMENT_EXPORT vtkImagePropagateDist : public vtkImageToImageFilter
+class VTK_EMSEGMENT_EXPORT vtkImagePropagateDist
+#if VTK_MAJOR_VERSION <= 5
+  : public vtkImageToImageFilter
+#else
+  : public vtkImageAlgorithm
+#endif
 {
 public:
   static vtkImagePropagateDist *New();
+#if VTK_MAJOR_VERSION <= 5
   vtkTypeMacro(vtkImagePropagateDist,vtkImageToImageFilter);
+#else
+  vtkTypeMacro(vtkImagePropagateDist, vtkImageAlgorithm);
+#endif
   void PrintSelf(ostream& os, vtkIndent indent);
   
   // Description

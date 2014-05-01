@@ -39,17 +39,22 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
      PURPOSE.  See the above copyright notice for more information.
 
 =========================================================================*/
+
+// EMSegment includes
 #include "vtkImageLabelPropagation.h"
 
-#include "vtkImageData.h"
-#include "vtkObjectFactory.h"
-#include "vtkInformation.h"
-#include "vtkInformationVector.h"
-#include "vtkStreamingDemandDrivenPipeline.h"
+// VTK includes
+#include <vtkImageData.h>
+#include <vtkObjectFactory.h>
+#include <vtkInformation.h>
+#include <vtkInformationVector.h>
+#include <vtkStreamingDemandDrivenPipeline.h>
 
 #include <math.h>
 
+#if VTK_MAJOR_VERSION <= 5
 vtkCxxRevisionMacro(vtkImageLabelPropagation, "$Revision: 1.1 $");
+#endif
 vtkStandardNewMacro(vtkImageLabelPropagation);
 
 //----------------------------------------------------------------------------
@@ -561,8 +566,10 @@ void vtkImageLabelPropagationDefineSignedDistanceMap(
 //----------------------------------------------------------------------------
 void vtkImageLabelPropagation::AllocateOutputScalars(vtkImageData *outData)
 {
+#if VTK_MAJOR_VERSION <= 5
   outData->SetExtent(outData->GetWholeExtent());
   outData->AllocateScalars();
+#endif
 }
 //----------------------------------------------------------------------------
 // This method is passed input and output Datas, and executes the DistanceTransform
@@ -586,9 +593,19 @@ int vtkImageLabelPropagation::IterativeRequestData( vtkInformation* vtkNotUsed( 
   vtkDebugMacro(<<"Executing Label Probagation");
   
   int outExt[6];
+#if VTK_MAJOR_VERSION <= 5
   outData->GetWholeExtent( outExt );
-  
+#else
+  outInfo->Get(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT(), outExt);
+#endif
+
+#if VTK_MAJOR_VERSION <= 5
   inPtr = inData->GetScalarPointerForExtent(inData->GetUpdateExtent());
+#else
+  int inExt[6];
+  inInfo->Get(vtkStreamingDemandDrivenPipeline::UPDATE_EXTENT(), inExt);
+  inPtr = inData->GetScalarPointerForExtent(inExt);
+#endif
   outPtr = outData->GetScalarPointer();
 
   // this filter expects that the output be floats.
@@ -632,8 +649,14 @@ int vtkImageLabelPropagation::IterativeRequestData( vtkInformation* vtkNotUsed( 
         }
     }
   
-  // Call the specific algorithms. 
-  void *proPtr = this->PropagatedMap->GetScalarPointerForExtent(this->PropagatedMap->GetUpdateExtent());
+  // Call the specific algorithms.
+  int proExt[6];
+#if VTK_MAJOR_VERSION <= 5
+  this->PropagatedMap->GetUpdateExtent(proExt);
+#else
+  this->PropagatedMap->GetExtent(proExt);
+#endif
+  void *proPtr = this->PropagatedMap->GetScalarPointerForExtent(proExt);
 
   switch (this->PropagatedMap->GetScalarType())
   {
@@ -653,19 +676,25 @@ int vtkImageLabelPropagation::IterativeRequestData( vtkInformation* vtkNotUsed( 
     // if (this->GetSignedDistanceMap()) {
     if (1) {
       // be carefull - we need intial input - vtkImageIteration changes it every time 
+#if VTK_MAJOR_VERSION <= 5
+      int inExt[6];
       vtkImageData *OriginalInData = this->IterationData[0];
-
+      OriginalInData->GetUpdateExtent(inExt);
+#else
+      vtkImageData *OriginalInData = vtkImageData::SafeDownCast(
+        this->IterationData[0]->GetInputDataObject(0,0));
+#endif
 
       switch (OriginalInData->GetScalarType())
-    {
-      vtkTemplateMacro(vtkImageLabelPropagationDefineSignedDistanceMap(
-                OriginalInData, 
-                static_cast<VTK_TT *>(OriginalInData->GetScalarPointerForExtent(OriginalInData->GetUpdateExtent())), 
-                outData, outExt, (float *)(outPtr)));
-    default:
-      vtkErrorMacro(<< "Execute: Unknown ScalarType");
-      return 1;
-    } 
+        {
+        vtkTemplateMacro(vtkImageLabelPropagationDefineSignedDistanceMap(
+                           OriginalInData,
+                           static_cast<VTK_TT *>(OriginalInData->GetScalarPointerForExtent(inExt)),
+                           outData, outExt, (float *)(outPtr)));
+        default:
+          vtkErrorMacro(<< "Execute: Unknown ScalarType");
+          return 1;
+        }
     }
   }
 

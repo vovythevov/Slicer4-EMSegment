@@ -23,7 +23,9 @@
 #include "vtkImagePermute.h"
 #include "itkImageFileWriter.h"
 
+#if VTK_MAJOR_VERSION <= 5
 vtkCxxRevisionMacro(vtkRigidRegistrator, "$Revision: 0.0 $");
+#endif
 vtkStandardNewMacro(vtkRigidRegistrator);
 
 //
@@ -350,10 +352,19 @@ RegisterImagesInternal3()
   vtkImageChangeInformation* changeInformationFixedImage =
     vtkImageChangeInformation::New();
 
+#if VTK_MAJOR_VERSION <= 5
   permuteFixedImage->SetInput(this->FixedImage);
+#else
+  permuteFixedImage->SetInputData(this->FixedImage);
+#endif
   permuteFixedImage->SetFilteredAxes(filteredAxesForPermuteFilter);
 
+#if VTK_MAJOR_VERSION <= 5
   changeInformationFixedImage->SetInput(permuteFixedImage->GetOutput());
+#else
+  changeInformationFixedImage->SetInputConnection(
+    permuteFixedImage->GetOutputPort());
+#endif
   changeInformationFixedImage->
     SetOutputSpacing(spacingForChangeInformationFilter);
   changeInformationFixedImage->
@@ -376,10 +387,19 @@ RegisterImagesInternal3()
   vtkImageChangeInformation* changeInformationMovingImage =
     vtkImageChangeInformation::New();
 
+#if VTK_MAJOR_VERSION <= 5
   permuteMovingImage->SetInput(this->MovingImage);
+#else
+  permuteMovingImage->SetInputData(this->MovingImage);
+#endif
   permuteMovingImage->SetFilteredAxes(filteredAxesForPermuteFilter);
 
+#if VTK_MAJOR_VERSION <= 5
   changeInformationMovingImage->SetInput(permuteMovingImage->GetOutput());
+#else
+  changeInformationMovingImage->SetInputConnection(
+    permuteMovingImage->GetOutputPort());
+#endif
   changeInformationMovingImage->
     SetOutputSpacing(spacingForChangeInformationFilter);
   changeInformationMovingImage->
@@ -394,11 +414,21 @@ RegisterImagesInternal3()
 
   // fixed image ------
   vtkImageCast* fixedImageCaster              = vtkImageCast::New();
+#if VTK_MAJOR_VERSION <= 5
   fixedImageCaster->SetInput(changeInformationFixedImage->GetOutput());
+#else
+  fixedImageCaster->SetInputConnection(
+    changeInformationFixedImage->GetOutputPort());
+#endif
   fixedImageCaster->
     SetOutputScalarType(vtkTypeTraits<TVoxel>::VTKTypeID());
   vtkImageExport* fixedImageVTKToITKExporter  = vtkImageExport::New();
+#if VTK_MAJOR_VERSION <= 5
   fixedImageVTKToITKExporter->SetInput(fixedImageCaster->GetOutput());
+#else
+  fixedImageVTKToITKExporter->SetInputConnection(
+    fixedImageCaster->GetOutputPort());
+#endif
 
   typename ImageImportType::Pointer fixedImageITKImporter =
     ImageImportType::New();
@@ -407,11 +437,21 @@ RegisterImagesInternal3()
 
   // moving image ------
   vtkImageCast*   movingImageCaster           = vtkImageCast::New();
+#if VTK_MAJOR_VERSION <= 5
   movingImageCaster->SetInput(changeInformationMovingImage->GetOutput());
+#else
+  movingImageCaster->SetInputConnection(
+    changeInformationMovingImage->GetOutputPort());
+#endif
   movingImageCaster->
     SetOutputScalarType(vtkTypeTraits<TVoxel>::VTKTypeID());
   vtkImageExport* movingImageVTKToITKExporter = vtkImageExport::New();
+#if VTK_MAJOR_VERSION <= 5
   movingImageVTKToITKExporter->SetInput(movingImageCaster->GetOutput());
+#else
+  movingImageVTKToITKExporter->SetInputConnection(
+    movingImageCaster->GetOutputPort());
+#endif
 
   typename ImageImportType::Pointer movingImageITKImporter =
     ImageImportType::New();

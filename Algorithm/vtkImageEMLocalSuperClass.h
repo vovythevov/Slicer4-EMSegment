@@ -26,7 +26,11 @@ class VTK_EMSEGMENT_EXPORT vtkImageEMLocalSuperClass : public vtkImageEMLocalGen
   // Genral Functions for the filter
   // -----------------------------------------------------
   static vtkImageEMLocalSuperClass *New();
+#if VTK_MAJOR_VERSION <= 5
   vtkTypeMacro(vtkImageEMLocalSuperClass,vtkObject);
+#else
+  vtkTypeMacro(vtkImageEMLocalSuperClass,vtkImageEMLocalGenericClass);
+#endif
   void PrintSelf(ostream& os, vtkIndent indent);
 
   int           GetNumClasses() {return this->NumClasses;}
@@ -248,7 +252,13 @@ protected:
   void DeleteSuperClassVariables();
   void CreateVariables();
 
-  void ExecuteData(vtkDataObject *);   
+#if VTK_MAJOR_VERSION <= 5
+  virtual void ExecuteData(vtkDataObject *);
+#else
+  virtual int RequestData(vtkInformation* request,
+                          vtkInformationVector** inputVector,
+                          vtkInformationVector* outputVector);
+#endif
 
   void AddSubClass(void* ClassData, classType initType, int index);
   int  GetPCANumberOfEigenModesList(int *NumberOfEigenModesList, int index);

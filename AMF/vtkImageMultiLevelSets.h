@@ -24,22 +24,37 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // .NAME vtkImageMultiLevelSets
 // The filter computers the transform between log odds and probabilities 
 #ifndef __vtkImageMultiLevelSets_h
-#define __vtkImageMultiLevelSets_h 
-  
-#include <vtkEMSegment.h> 
-#include "vtkImageMultipleInputFilter.h"
-#include "vtkImageLevelSets.h" 
-#include "assert.h"
+#define __vtkImageMultiLevelSets_h
 
+// EMSegment includes
+#include <vtkEMSegment.h>
 
-class VTK_EMSEGMENT_EXPORT vtkImageMultiLevelSets : public vtkImageMultipleInputFilter
+// VTK includes
+#include <vtkImageLevelSets.h>
+#if VTK_MAJOR_VERSION <= 5
+#include <vtkImageMultipleInputFilter.h>
+#else
+#include <vtkImageAlgorithm.h>
+#endif
+class vtkMultiThreader;
+
+class VTK_EMSEGMENT_EXPORT vtkImageMultiLevelSets
+#if VTK_MAJOR_VERSION <= 5
+  : public vtkImageMultipleInputFilter
+#else
+  : public vtkImageAlgorithm
+#endif
 {
   public:
   // -----------------------------------------------------
   // Genral Functions for the filter
   // -----------------------------------------------------
   static vtkImageMultiLevelSets *New();
+#if VTK_MAJOR_VERSION <= 5
   vtkTypeMacro(vtkImageMultiLevelSets,vtkObject);
+#else
+  vtkTypeMacro(vtkImageMultiLevelSets,vtkImageAlgorithm);
+#endif
   void PrintSelf(ostream& os, vtkIndent indent);
 
   void SetprobCondWeightMin(float init){ this->probCondWeightMin = init;}
@@ -94,7 +109,7 @@ protected:
   void operator=(const vtkImageMultiLevelSets&) {};
  
   // Do not execute right now
-  void ExecuteData(vtkDataObject *);   
+  void ExecuteData(vtkDataObject *);
 
   // -------------------------------
   // Dimension of probability space

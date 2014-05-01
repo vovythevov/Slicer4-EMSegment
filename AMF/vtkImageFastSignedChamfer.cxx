@@ -144,12 +144,16 @@ void vtkImageFastSignedChamfer::InitParam( vtkImageData* input, vtkImageData* ou
       // Create a copy of the data
       inputImage = vtkImageData::New();
 
-      inputImage->SetScalarType( VTK_FLOAT);
-      inputImage->SetNumberOfScalarComponents(1);
       inputImage->SetDimensions( input->GetDimensions());
       inputImage->SetOrigin(     input->GetOrigin());
       inputImage->SetSpacing(    input->GetSpacing());
-      
+#if VTK_MAJOR_VERSION <= 5
+      inputImage->SetScalarType( VTK_FLOAT);
+      inputImage->SetNumberOfScalarComponents(1);
+#else
+      inputImage->AllocateScalars( VTK_FLOAT, 1);
+#endif
+
       inputImage->CopyAndCastFrom(input,input->GetExtent());
       inputImage_allocated = 1;
     }
@@ -174,16 +178,17 @@ void vtkImageFastSignedChamfer::InitParam( vtkImageData* input, vtkImageData* ou
     
     outputImage->SetDimensions(inputImage->GetDimensions() );
     outputImage->SetSpacing(   inputImage->GetSpacing() );
-    outputImage->SetScalarType(VTK_FLOAT); 
+#if VTK_MAJOR_VERSION <= 5
+    outputImage->SetScalarType(VTK_FLOAT);
     outputImage->SetNumberOfScalarComponents(1);
-
+    outputImage->AllocateScalars();
+#else
+    outputImage->AllocateScalars(VTK_FLOAT, 1);
+#endif
     if (input_output_array != NULL) {
       local_floatarray = vtkFloatArray::New();
       local_floatarray->SetArray(input_output_array,imsize,1);
       outputImage->GetPointData()->SetScalars(local_floatarray);
-    } 
-    else {
-      outputImage->AllocateScalars();
     }
 
     //    outputImage->CopyAndCastFrom(this->inputImage,
@@ -204,12 +209,15 @@ void vtkImageFastSignedChamfer::SetMinMaxX( int** minx, int** maxx)
 //----------------------------------------------------------------------------
 // This method is passed  input and output data, and executes the filter
 // algorithm to fill the output from the input.
-void vtkImageFastSignedChamfer::ExecuteData(vtkDataObject* vtkNotUsed(outData))
+void vtkImageFastSignedChamfer::ExecuteData(vtkDataObject* outData)
 //                   -------
 {
 
-  InitParam( this->GetInput(), this->GetOutput());
-
+#if VTK_MAJOR_VERSION <= 5
+  InitParam( this->GetInput(), vtkImageData::SafeDownCast(outData));
+#else
+  InitParam( this->GetImageDataInput(0), vtkImageData::SafeDownCast(outData));
+#endif
   if (tz == 1) {
     coeff_a = 1.;
     //    coeff_b = 1.32;
@@ -1009,6 +1017,6 @@ void vtkImageFastSignedChamfer::FastSignedChamfer3DBorders( )
 //----------------------------------------------------------------------
 void vtkImageFastSignedChamfer::PrintSelf(ostream& os, vtkIndent indent)
 {
-   vtkImageToImageFilter::PrintSelf(os,indent);
+   this->Superclass::PrintSelf(os,indent);
 
 } // PrintSelf()

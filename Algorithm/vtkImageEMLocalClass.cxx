@@ -12,9 +12,13 @@
 
 =========================================================================auto=*/
 #include "vtkImageEMLocalClass.h"
-#include "vtkObjectFactory.h"
-#include "vtkImageData.h"
-#include "assert.h"
+
+// VTK includes
+#include <vtkImageData.h>
+#include <vtkObjectFactory.h>
+
+// STD includes
+#include <cassert>
 
 //------------------------------------------------------------------------
 vtkImageEMLocalClass* vtkImageEMLocalClass::New()
@@ -56,11 +60,12 @@ vtkImageEMLocalClass::vtkImageEMLocalClass() {
   this->PCALogisticMin      = 0.0;
   this->PCALogisticMax      = 20.0;
 
+#if VTK_MAJOR_VERSION <= 5
   // Important to set it - otherwise set to 1 by default  
   // I disabled it bc if no image data is attached to this class 
   // => NumberOfInputs = 0 => Update is disabled.
   // this->vtkProcessObject::SetNumberOfInputs(0); 
-
+#endif
 }
 
 
@@ -154,7 +159,11 @@ void vtkImageEMLocalClass::PrintPCAParameters(ostream& os,vtkIndent indent) {
 //------------------------------------------------------------------------------
 void vtkImageEMLocalClass::SetNumInputImages(int number) {
   int OldNumber = this->NumInputImages;
+#if VTK_MAJOR_VERSION <= 5
   this->vtkImageEMLocalGenericClass::SetNumInputImages(number);
+#else
+  this->Superclass::SetNumInputImages(number);
+#endif
   if (OldNumber == number) return;
   this->DeleteClassVariables();
 
@@ -193,26 +202,40 @@ void vtkImageEMLocalClass::SetLogCovariance(double value, int y, int x){
 //----------------------------------------------------------------------------
 // PCA Stuff 
 //----------------------------------------------------------------------------
-void vtkImageEMLocalClass::SetPCANumberOfEigenModes(int init)  {
-     // std::cerr << "EMLocalClass::SetPCANumberOfEigenModes : Currently : " << this->PCANumberOfEigenModes << " New One: " << init << endl; 
-     if (this->PCANumberOfEigenModes != init) {
-        this->DeletePCAParameters();
-        this->PCANumberOfEigenModes =  init;
+void vtkImageEMLocalClass::SetPCANumberOfEigenModes(int init)
+{
+  // std::cerr << "EMLocalClass::SetPCANumberOfEigenModes : Currently : " << this->PCANumberOfEigenModes << " New One: " << init << endl; 
+  if (this->PCANumberOfEigenModes != init)
+    {
+    this->DeletePCAParameters();
+    this->PCANumberOfEigenModes =  init;
     this->PCAShapeParameters = new float[this->PCANumberOfEigenModes];
-    memset(this->PCAShapeParameters,0,sizeof(float)*this->PCANumberOfEigenModes); 
-        this->PCAEigenVectorImageData  = new vtkImageData*[this->PCANumberOfEigenModes];
-        this->PCAEigenValues     = new double[this->PCANumberOfEigenModes]; 
-     }
-} 
+    memset(this->PCAShapeParameters,0,sizeof(float)*this->PCANumberOfEigenModes);
+    this->PCAEigenVectorImageData  = new vtkImageData*[this->PCANumberOfEigenModes];
+    this->PCAEigenValues     = new double[this->PCANumberOfEigenModes];
+    }
+}
 
 //----------------------------------------------------------------------------
-void vtkImageEMLocalClass::SetPCAEigenVector(vtkImageData *image, int index) {
+void vtkImageEMLocalClass::SetPCAEigenVector(vtkImageData *image, int index)
+{
   // std::cerr << "vtkImageEMLocalClass::SetPCAEigenVector" << endl;
-    if (index < 1 || index > this->PCANumberOfEigenModes ) {
-      vtkEMAddErrorMessage("Error:SetPCAEigenVector: index has to be greater 0 and not greater than NumberOfEigenModes(" << this->PCANumberOfEigenModes << ")");
-      return;
+  // \fixme: index should be [0, PCANumberOfEigenModes[
+  if (index < 1 || index > this->PCANumberOfEigenModes )
+    {
+    vtkEMAddErrorMessage("Error:SetPCAEigenVector: index has to be greater 0"
+                         " and not greater than NumberOfEigenModes("
+                         << this->PCANumberOfEigenModes << ")");
+    return;
     }
-    this->SetInput(index+2,image);
+  int port = PCAMeanShapeInputPort+index;
+#if VTK_MAJOR_VERSION <= 5
+  this->SetInput(port,image);
+#else
+  this->SetNumberOfInputPorts(
+    std::max(this->GetNumberOfInputPorts(), port+1));
+  this->SetInputData(port,image);
+#endif
 }
 
 //----------------------------------------------------------------------------
@@ -231,10 +254,12 @@ void vtkImageEMLocalClass::SetPrintQuality(int init) {
 // > 2 = PCA Eigenvecotrs
 
 int vtkImageEMLocalClass::CheckAndAssignPCAImageData(vtkImageData *inData, int DataTypeIndex) {
-   // For Mean Shape and EigenVectors we currently only accepts float 
-  if (this->CheckInputImage(inData,VTK_FLOAT, DataTypeIndex)) return 0;          
-  if (DataTypeIndex > 2) this->PCAEigenVectorImageData[DataTypeIndex -3] = inData;
-  else this->PCAMeanShapeImageData = inData; 
+   // For Mean Shape and EigenVectors we currently only accepts float
+  if (this->CheckInputImage(inData, VTK_FLOAT, DataTypeIndex)) return 0;
+  if (DataTypeIndex >= PCAEigenVectorFirstInputPort)
+    this->PCAEigenVectorImageData[DataTypeIndex - PCAEigenVectorFirstInputPort] = inData;
+  else
+    this->PCAMeanShapeImageData = inData;
   return 1;
 }
 
@@ -243,7 +268,13 @@ int vtkImageEMLocalClass::CheckAndAssignPCAImageData(vtkImageData *inData, int D
 // algorithm to fill the output from the inputs.
 // It just executes a switch statement to call the correct function for
 // the datas data types.
+#if VTK_MAJOR_VERSION <= 5
 void vtkImageEMLocalClass::ExecuteData(vtkDataObject *)
+#else
+int vtkImageEMLocalClass::RequestData(vtkInformation* request,
+                          vtkInformationVector** inputVector,
+                          vtkInformationVector* outputVector)
+#endif
 {
   // std::cerr << "Start vtkImageEMLocalClass::ExecuteData " << endl;
   // std::cerr << "PCANumberOfEigenModes " << this->PCANumberOfEigenModes << endl;
@@ -258,18 +289,37 @@ void vtkImageEMLocalClass::ExecuteData(vtkDataObject *)
      vtkEMAddWarningMessage("The error flag for this module was set with the following messages (the error messages will be reset now:\n"<<this->GetErrorMessages());
 
    this->ResetErrorMessage();
+#if VTK_MAJOR_VERSION <= 5
    this->vtkImageEMLocalGenericClass::ExecuteData(NULL);
-   if (this->GetErrorFlag()) return;
+#else
+   this->Superclass::RequestData(request, inputVector, outputVector);
+#endif
+   if (this->GetErrorFlag())
+     {
+#if VTK_MAJOR_VERSION <= 5
+     return;
+#else
+     return 0;
+#endif
+     }
 
    if (this->Label < 0) {
      vtkEMAddErrorMessage("Not all labels are defined for the classes");
+#if VTK_MAJOR_VERSION <= 5
      return ;
+#else
+     return 0;
+#endif
    } 
    for (int j = 0; j < this->NumInputImages; j++) {
      // Check Mu
      if (this->LogMu[j] < 0) {
        vtkEMAddErrorMessage("Mu[" << j <<"] = " << this->LogMu[j] << " for class with label " << this->Label <<" must be greater than 0!");
+#if VTK_MAJOR_VERSION <= 5
        return;
+#else
+       return 0;
+#endif
      } 
      for (int k=j+1; k <   NumInputImages; k++) {
      if (fabs(this->LogCovariance[j][k] - this->LogCovariance[k][j]) > 0.000001) 
@@ -277,7 +327,11 @@ void vtkImageEMLocalClass::ExecuteData(vtkDataObject *)
            vtkEMAddErrorMessage("Covariance must be symetric for class with label " << this->Label);
            vtkIndent indent;
            this->PrintSelf(cout,indent);
+#if VTK_MAJOR_VERSION <= 5
            return;
+#else
+           return 0;
+#endif
          }
      }
    }
@@ -285,62 +339,165 @@ void vtkImageEMLocalClass::ExecuteData(vtkDataObject *)
    // ==================================================
    // Define Parameters
 
-   // First input (input[0]) is a fake 
-
-   int NumberOfRealInputData = this->vtkProcessObject::GetNumberOfInputs() -1;
-   if (this->PCANumberOfEigenModes && (this->PCANumberOfEigenModes + 2 > NumberOfRealInputData )) {
-      vtkEMAddErrorMessage("Number of Eingemodes is "<< this->PCANumberOfEigenModes << " but only " << NumberOfRealInputData -2 << " were defined!" );
+#if VTK_MAJOR_VERSION <= 5
+   // First input (input[0]) is a fake
+   int NumberOfRealInputData = this->GetNumberOfInputs() - FakeInputPorts;
+#else
+   int NumberOfRealInputData = this->GetNumberOfInputPorts() - FakeInputPorts;
+#endif
+   if (this->PCANumberOfEigenModes && (this->PCANumberOfEigenModes + PCAMeanShapeInputPort > NumberOfRealInputData ))
+     {
+     vtkEMAddErrorMessage("Number of Eingemodes is "<< this->PCANumberOfEigenModes
+                          << " but only " << NumberOfRealInputData - PCAMeanShapeInputPort << " were defined!" );
+#if VTK_MAJOR_VERSION <= 5
       return;
+#else
+      return 0;
+#endif
    }
 
 
    // No inputs defined we do not need to do here anything
    if (NumberOfRealInputData == 0) {
-     if (this->ProbDataWeight > 0.0)  vtkEMAddErrorMessage("ProbDataWeight > 0.0 and no Probability Map defined !" );
+     if (this->ProbDataWeight > 0.0)
+       {
+       vtkEMAddErrorMessage("ProbDataWeight > 0.0 and no Probability Map defined !" );
+#if VTK_MAJOR_VERSION <= 5
+       return;
+#else
+       return 0;
+#endif
+       }
+#if VTK_MAJOR_VERSION <= 5
      return;
-   }  
+#else
+     return 1;
+#endif
+   }
 
    // Redefine ImageRelatedClass Parameters   
+#if VTK_MAJOR_VERSION <= 5
    vtkImageData **inData  = (vtkImageData **) this->GetInputs();
+#endif
 
    // ================================================== 
    // Load the images
  
    // Check if everything is OK with proabability data
-   if (NumberOfRealInputData < 2) {
-     if (inData[1] == NULL) {
-       if (this->ProbDataWeight > 0.0) {
-     vtkEMAddErrorMessage("ProbDataWeight > 0.0 but no Probability Map defined !" );
-     return;
-       } else {
-     vtkEMAddWarningMessage("No probability map is defined for class with Label " << this->Label);
+   if (NumberOfRealInputData <= PCAMeanShapeInputPort)
+     {
+#if VTK_MAJOR_VERSION <= 5
+     if (inData[ProbInputPort] == NULL)
+       {
+#else
+     if (this->GetInputDataObject(ProbInputPort,0) == NULL)
+       {
+#endif
+       if (this->ProbDataWeight > 0.0)
+         {
+         vtkEMAddErrorMessage("ProbDataWeight > 0.0 but no Probability Map defined !" );
+#if VTK_MAJOR_VERSION <= 5
+         return;
+#else
+         return 0;
+#endif
+         }
+       else
+         {
+         vtkEMAddWarningMessage("No probability map is defined for class with Label " << this->Label);
+         }
        }
-     }
      // Job is done - No PCA data
+#if VTK_MAJOR_VERSION <= 5
      return;
-   }
+#else
+     return 1;
+#endif
+     }
    
    // Check and set PCA Mean Shape    
-   if (inData[2]) {
-     
-     if (!this->CheckAndAssignPCAImageData(inData[2], 2)) return;
-   } else {
+#if VTK_MAJOR_VERSION <= 5
+   if (inData[PCAMeanShapeInputPort])
+     {
+     if (!this->CheckAndAssignPCAImageData(
+           inData[PCAMeanShapeInputPort], PCAMeanShapeInputPort))
+#else
+   if (this->GetImageDataInput(PCAMeanShapeInputPort))
+     {
+     if (!this->CheckAndAssignPCAImageData(
+           this->GetImageDataInput(PCAMeanShapeInputPort), PCAMeanShapeInputPort))
+#endif
+       {
+#if VTK_MAJOR_VERSION <= 5
+       return;
+#else
+       return 1;
+#endif
+       }
+     }
+   else
+     {
      vtkEMAddErrorMessage("PCA Eigen Vectors defined but PCA Mean Shape is missing!");
+#if VTK_MAJOR_VERSION <= 5
      return;
-   }
+#else
+     return 0;
+#endif
+     }
 
    // Check and Read in Eigenvectors
-   for (int j = 0 ; j < this->PCANumberOfEigenModes; j++) {
-      if (inData[j+3]) {
-    if (!this->CheckAndAssignPCAImageData(inData[j+3], j+3)) return;
-      } else {
-    vtkEMAddErrorMessage(j +1 << ". PCA Eigen Vector is not defined !");
-    return;
-      }
-   }
+   for (int j = 0 ; j < this->PCANumberOfEigenModes; j++)
+     {
+#if VTK_MAJOR_VERSION <= 5
+     if (inData[j+PCAEigenVectorFirstInputPort])
+       {
+       if (!this->CheckAndAssignPCAImageData(inData[j+PCAEigenVectorFirstInputPort],
+                                             j+PCAEigenVectorFirstInputPort))
+#else
+     if (this->GetImageDataInput(j+PCAEigenVectorFirstInputPort))
+       {
+       if (!this->CheckAndAssignPCAImageData(this->GetImageDataInput(j+PCAEigenVectorFirstInputPort),
+                                             j+PCAEigenVectorFirstInputPort))
+#endif
+         {
+#if VTK_MAJOR_VERSION <= 5
+         return;
+#else
+         return 1;
+#endif
+         }
+       }
+     else
+       {
+       vtkEMAddErrorMessage(j << ". PCA Eigen Vector is not defined !");
+#if VTK_MAJOR_VERSION <= 5
+       return;
+#else
+       return 0;
+#endif
+       }
+     }
+#if VTK_MAJOR_VERSION <= 5
+  return;
+#else
+  return 1;
+#endif
 }
 
+//----------------------------------------------------------------------------
 void* vtkImageEMLocalClass::GetPCAEigenVectorPtr(int index, int type) { 
    assert(this->PCAEigenVectorImageData); 
    return this->GetDataPtr(this->PCAEigenVectorImageData[index],type); 
+}
+
+//----------------------------------------------------------------------------
+void vtkImageEMLocalClass::SetPCAMeanShape(vtkImageData *image)
+{
+#if VTK_MAJOR_VERSION <= 5
+  this->SetInput(PCAMeanShapeInputPort,image);
+#else
+  this->SetNumberOfInputPorts(
+    std::max(this->GetNumberOfInputPorts(), PCAMeanShapeInputPort + 1));
+  this->SetInputData(PCAMeanShapeInputPort,image);
+#endif
 }
