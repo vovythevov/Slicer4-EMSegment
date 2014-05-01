@@ -53,10 +53,17 @@
 #ifndef __vtkLevelSetFastMarching_h
 #define __vtkLevelSetFastMarching_h
 
+// EMSegment includes
 #include "vtkEMSegment.h"
-#include "vtkPointData.h"
-#include "vtkImageData.h"
-#include "vtkImageToImageFilter.h"
+
+// VTK includes
+#include <vtkPointData.h>
+#include <vtkImageData.h>
+#if VTK_MAJOR_VERSION <= 5
+#include <vtkImageToImageFilter.h>
+#else
+#include <vtkImageAlgorithm.h>
+#endif
 
 
 //BTX
@@ -158,10 +165,19 @@ public:
 //ETX
 
 //----------------------------------------------------------------------
-class VTK_EXPORT vtkLevelSetFastMarching : public vtkImageToImageFilter
+class VTK_EXPORT vtkLevelSetFastMarching
+#if VTK_MAJOR_VERSION <= 5
+  : public vtkImageToImageFilter
+#else
+  : public vtkImageAlgorithm
+#endif
 {
 public:
+#if VTK_MAJOR_VERSION <= 5
   vtkTypeMacro(vtkLevelSetFastMarching,vtkImageToImageFilter);
+#else
+  vtkTypeMacro(vtkLevelSetFastMarching,vtkImageAlgorithm);
+#endif
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -253,11 +269,19 @@ protected:
   // image size
   int tx,ty,tz,txy,imsize;
 
+#if VTK_MAJOR_VERSION <= 5
   // voxel size
   vtkFloatingPointType vs[3];
 
   // inverse of the squared voxel size
   vtkFloatingPointType ivs2[3];
+#else
+  // voxel size
+  double vs[3];
+
+  // inverse of the squared voxel size
+  double ivs2[3];
+#endif
 
   // center of the initial sphere
   int cx,cy,cz;

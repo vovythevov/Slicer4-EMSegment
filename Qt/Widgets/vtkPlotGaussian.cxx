@@ -26,6 +26,7 @@
 #include "vtkPoints2D.h"
 #include "vtkTable.h"
 #include "vtkTransform2D.h"
+#include <vtkVersion.h>
 
 // STD includes
 #include <cmath>
@@ -87,7 +88,11 @@ vtkPlotGaussian::vtkPlotGaussian()
   table->AddColumn(yArray);
   xArray->Delete();
   yArray->Delete();
+#if VTK_MAJOR_VERSION <= 5
   this->SetInput(table, "x", "y");
+#else
+  this->SetInputData(table, "x", "y");
+#endif
   table->Delete();
 }
 

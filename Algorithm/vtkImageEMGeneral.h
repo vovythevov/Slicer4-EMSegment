@@ -17,17 +17,26 @@
 // different EM Segmentation tools. The tool is put together in four parts
 // - the special made header files
 // - files needed so it is a vtk filter
-// - Genral Math Functions 
+// - General Math Functions
 
 // ------------------------------------
 // Standard EM necessaties
 // ------------------------------------
 #ifndef __vtkImageEMGeneral_h
 #define __vtkImageEMGeneral_h
+
+// EMSegment includes
 #include "vtkEMSegment.h"
-#include "vtkImageMultipleInputFilter.h"
+
+// VTK includes
+#if VTK_MAJOR_VERSION <= 5
+#include <vtkImageMultipleInputFilter.h>
+#else
+#include <vtkImageAlgorithm.h>
+#endif
 class vtkImageData;
 class vtkImageReader;
+
 // Just made for vtkImageEMGeneral and its kids
 
 // ------------------------------------
@@ -116,6 +125,7 @@ enum classType {CLASS, SUPERCLASS};
 #define EMSEGMENT_PCASHAPE_DEPENDENT 0
 #define EMSEGMENT_PCASHAPE_INDEPENDENT 1
 #define EMSEGMENT_PCASHAPE_APPLY 2
+//ETX
 
 //BTX
 // Class for  capturing different protocols throughout the segmentation process
@@ -205,19 +215,27 @@ private:
 
 
 
-//ETX
-class VTK_EMSEGMENT_EXPORT vtkImageEMGeneral : public vtkImageMultipleInputFilter
+class VTK_EMSEGMENT_EXPORT vtkImageEMGeneral
+#if VTK_MAJOR_VERSION <= 5
+  : public vtkImageMultipleInputFilter
+#else
+  : public vtkImageAlgorithm
+#endif
 {
   public:
   // -------------------------------
   // General vtk Functions
   // -------------------------------
   static vtkImageEMGeneral *New();
+#if VTK_MAJOR_VERSION <= 5
   vtkTypeMacro(vtkImageEMGeneral,vtkObject);
+#else
+  vtkTypeMacro(vtkImageEMGeneral,vtkImageAlgorithm);
+#endif
   void PrintSelf(ostream& os, vtkIndent indent) { Superclass::PrintSelf(os, indent); };
 //Kilian
 //BTX
-  void SetInputIndex(int index, vtkImageData *image) {this->SetInput(index,image);}
+  virtual void SetInputIndex(int index, vtkImageData *image);
 
   void PrintMatrix(double **mat, int yMax,int xMax); 
   void PrintMatrix3D(double ***mat, int zMax,int yMax,int xMax); 

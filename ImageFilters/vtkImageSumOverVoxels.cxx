@@ -35,17 +35,22 @@ PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 
 =========================================================================auto=*/
+
+// EMSegment includes
 #include "vtkImageSumOverVoxels.h"
-#include "vtkObjectFactory.h"
-#include "vtkImageData.h"
+
+// VTK includes
+#include <vtkObjectFactory.h>
+#include <vtkImageData.h>
+#if VTK_MAJOR_VERSION > 5
+#include <vtkInformation.h>
+#include <vtkInformationVector.h>
+#include <vtkStreamingDemandDrivenPipeline.h>
+#endif
+
+// STD includes
 #include <cassert>
 
-//----------------------------------------------------------------------------
-void vtkImageSumOverVoxels::ComputeInputUpdateExtent(int inExt[6], int vtkNotUsed(outExt)[6])
-{
-  this->GetInput()->GetWholeExtent(inExt);
-}
- 
 //------------------------------------------------------------------------------
 vtkImageSumOverVoxels* vtkImageSumOverVoxels::New()
 {
@@ -56,6 +61,12 @@ vtkImageSumOverVoxels* vtkImageSumOverVoxels::New()
   return new vtkImageSumOverVoxels;
 }
 
+//----------------------------------------------------------------------------
+vtkImageSumOverVoxels::vtkImageSumOverVoxels()
+{
+  VoxelSum = -1;
+  Centroid[0] = Centroid[1] =  Centroid[2] = -1; ComputeCentroid = 0;
+}
 
 //----------------------------------------------------------------------------
 void vtkImageSumOverVoxels::PrintSelf(ostream& vtkNotUsed(os), vtkIndent vtkNotUsed(indent))
@@ -72,8 +83,16 @@ void VolumeFlipXAxis(T *invec, T *outvec, int XSize, int YSize, int ZSize, int X
      } 
 
 }
+
+#if VTK_MAJOR_VERSION <= 5
 //----------------------------------------------------------------------------
-void vtkImageSumOverVoxels::ExecuteInformation(vtkImageData *inData, vtkImageData *outData) 
+void vtkImageSumOverVoxels::ComputeInputUpdateExtent(int inExt[6], int vtkNotUsed(outExt)[6])
+{
+  this->GetInput()->GetWholeExtent(inExt);
+}
+
+//----------------------------------------------------------------------------
+void vtkImageSumOverVoxels::ExecuteInformation(vtkImageData *inData, vtkImageData *outData)
 {
   // Currently filter is setup so input and output have the same dimension 
   // The code itself does not require it - they can have different dimension 
@@ -83,11 +102,12 @@ void vtkImageSumOverVoxels::ExecuteInformation(vtkImageData *inData, vtkImageDat
   outData->SetWholeExtent(inData->GetWholeExtent());
   outData->SetSpacing(inData->GetSpacing());
   outData->SetScalarType(inData->GetScalarType());
+
 }
+#endif
 
-
-
-template <class T>  
+//----------------------------------------------------------------------------
+template <class T>
 void AddVoxels(T* Ptr, vtkIdType inInc[3], int Dim[3], int CentroidFlag, double & result, double *centroid) {
   result = 0.0;
   centroid[0] =   centroid[1] =   centroid[2] = 0.0;
@@ -126,7 +146,15 @@ void AddVoxels(T* Ptr, vtkIdType inInc[3], int Dim[3], int CentroidFlag, double 
 // --------------------------------------------------------------------------------------------------------------------------
 // Currently does nothing here 
 // this is baisically the VTK version of resamplerMain.c
-void vtkImageSumOverVoxels::ExecuteData(vtkDataObject *) {
+#if VTK_MAJOR_VERSION <= 5
+void vtkImageSumOverVoxels::ExecuteData(vtkDataObject *)
+#else
+int vtkImageSumOverVoxels::RequestData(
+  vtkInformation* vtkNotUsed( request ),
+  vtkInformationVector** inputVector,
+  vtkInformationVector* outputVector)
+#endif
+{
   void *inPtr;
 
   int inExt[6];
@@ -134,6 +162,7 @@ void vtkImageSumOverVoxels::ExecuteData(vtkDataObject *) {
   int outExt[6];
   vtkIdType outInc[3];
 
+#if VTK_MAJOR_VERSION <= 5
   this->ComputeInputUpdateExtent(inExt,outExt);
  // vtk4
   vtkImageData *inData  = this->GetInput();
@@ -145,7 +174,7 @@ void vtkImageSumOverVoxels::ExecuteData(vtkDataObject *) {
 
   // vtk4
   vtkDebugMacro(<< "Execute: inData = " << inData << ", outData = " << outData);
- 
+
   if (inData == NULL) {
     vtkErrorMacro("Input " << 0 << " must be specified.");
     return;
@@ -154,18 +183,40 @@ void vtkImageSumOverVoxels::ExecuteData(vtkDataObject *) {
      vtkErrorMacro("Number Of Scalar Componentsfor Input has to be 1.");
      return;
   }
+
+#else
+  vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
+  vtkImageData *inData = vtkImageData::SafeDownCast(
+    inInfo->Get(vtkDataObject::DATA_OBJECT()));
+
+  vtkInformation *outInfo = outputVector->GetInformationObject(0);
+  vtkImageData *outData = vtkImageData::SafeDownCast(
+    outInfo->Get(vtkDataObject::DATA_OBJECT()));
+
+  inInfo->Get(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT(), outExt);
+  outInfo->Get(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT(), outExt);
+#endif
+
   inData->GetContinuousIncrements(inExt, inInc[0], inInc[1], inInc[2]);
 
   outData->GetContinuousIncrements(outExt, outInc[0], outInc[1], outInc[2]);
   if ( inInc[0] || inInc[1] || inInc[2] || outInc[0] || outInc[1] || outInc[2] ) {
      vtkErrorMacro("Increments for input and output have to be 0!");
+#if VTK_MAJOR_VERSION <= 5
      return;
+#else
+     return 0;
+#endif
   }
 
   int Dim[3] = {inExt[1] - inExt[0] + 1, inExt[3] - inExt[2] + 1, inExt[5] - inExt[4] + 1};
   if (!(Dim[0]*Dim[1]*Dim[2])) {
     vtkErrorMacro("Execute: No voxels in the volumes !");
-    return ;
+#if VTK_MAJOR_VERSION <= 5
+     return;
+#else
+     return 0;
+#endif
   }
 
   inPtr = inData->GetScalarPointerForExtent(inExt);
@@ -174,10 +225,19 @@ void vtkImageSumOverVoxels::ExecuteData(vtkDataObject *) {
   // cout << inInc[0] << " " << inInc[1] << " " << inInc[2] << endl; 
   switch (inData->GetScalarType()) {
     vtkTemplateMacro(AddVoxels((VTK_TT*) inPtr, inInc, Dim, this->ComputeCentroid,this->VoxelSum, this->Centroid));
-  default: 
-      vtkErrorMacro("Execute: Unknown ScalarType");
-      return;
+  default:
+    vtkErrorMacro("Execute: Unknown ScalarType");
+#if VTK_MAJOR_VERSION <= 5
+    return;
+#else
+    return 0;
+#endif
   }
+#if VTK_MAJOR_VERSION <= 5
+  return;
+#else
+  return 1;
+#endif
 }
 
 

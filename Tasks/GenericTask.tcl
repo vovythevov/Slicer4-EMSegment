@@ -611,12 +611,17 @@ namespace eval EMSegmenterPreProcessingTcl {
 
     # Create Voronoi diagram with correct scalar type from aligned subparcellation
     proc GeneratedVoronoi { input } {
+        variable LOGIC
 
         set output [vtkImageData New]
         $output DeepCopy $input
 
         set voronoi [vtkImageLabelPropagation New]
-        $voronoi SetInput $output
+        if {[$LOGIC GetVTKVersion] <= 5  } {
+            $voronoi SetInput $output
+        } else {
+            $voronoi SetInputData $output
+        }
         $voronoi Update
 
         set voronoiCast [vtkImageCast New]
@@ -1756,8 +1761,12 @@ namespace eval EMSegmenterPreProcessingTcl {
                 return ""
             }
 
-            set inputVolume [$inputNode GetImageData]
-            if { $inputVolume == "" } {
+            if {[$LOGIC GetVTKVersion] <= 5  } {
+                set input [$inputNode GetImageData]
+            } else {
+                set input [$inputNode GetImageDataConnection]
+            }
+            if { $input == "" } {
                 PrintError "RemoveNegativeValues: the ${i}th target node has no input data defined!"
                 foreach NODE $result { DeleteNode $NODE }
                 return ""
@@ -1770,7 +1779,11 @@ namespace eval EMSegmenterPreProcessingTcl {
 
             # Thresholding
             set thresh [vtkImageThreshold New]
-            $thresh SetInput $inputVolume
+            if {[$LOGIC GetVTKVersion] <= 5  } {
+                $thresh SetInput $input
+            } else {
+                $thresh SetInputConnection $input
+            }
 
             # replace negative values
             $thresh ThresholdByLower 0
@@ -1782,8 +1795,13 @@ namespace eval EMSegmenterPreProcessingTcl {
             $thresh SetReplaceOut 0
 
             $thresh Update
-            set outputVolume [$outputNode GetImageData]
-            $outputVolume DeepCopy [$thresh GetOutput]
+            if {[$LOGIC GetVTKVersion] <= 5  } {
+                set outputVolume [$outputNode GetImageData]
+                $outputVolume DeepCopy [$thresh GetOutput]
+            } else {
+                set outputConnection [$thresh GetOutputPort]
+                $outputNode SetImageDataConnection $outputConnection
+            }
             $thresh Delete
 
             $LOGIC PrintText "TCL: Start thresholding target image - stop"

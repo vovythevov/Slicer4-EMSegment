@@ -54,15 +54,31 @@
 #ifndef _vtkImageFastSignedChamfer_h
 #define _vtkImageFastSignedChamfer_h
 
+// EMSegment includes
 #include "vtkEMSegment.h"
-#include "vtkImageToImageFilter.h"
-#include "vtkFloatArray.h"
 
-class VTK_EMSEGMENT_EXPORT vtkImageFastSignedChamfer : public vtkImageToImageFilter
+// VTK includes
+#if VTK_MAJOR_VERSION <= 5
+#include "vtkImageToImageFilter.h"
+#else
+#include <vtkImageAlgorithm.h>
+#endif
+class vtkFloatArray;
+
+class VTK_EMSEGMENT_EXPORT vtkImageFastSignedChamfer
+#if VTK_MAJOR_VERSION <= 5
+  : public vtkImageToImageFilter
+#else
+  : public vtkImageAlgorithm
+#endif
 {
 public:
   static vtkImageFastSignedChamfer *New();
+#if VTK_MAJOR_VERSION <= 5
   vtkTypeMacro(vtkImageFastSignedChamfer,vtkImageToImageFilter);
+#else
+  vtkTypeMacro(vtkImageFastSignedChamfer,vtkImageAlgorithm);
+#endif
   void PrintSelf(ostream& os, vtkIndent indent);
   
   // Description

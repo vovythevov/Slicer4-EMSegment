@@ -45,8 +45,12 @@ class  VTK_EMSEGMENT_EXPORT vtkSimonParameterReaderWriter : public vtkObject
 {
 public:
   static vtkSimonParameterReaderWriter *New();
+#if VTK_MAJOR_VERSION <= 5
   vtkTypeRevisionMacro(vtkSimonParameterReaderWriter,vtkObject);
- 
+#else
+  vtkTypeMacro(vtkSimonParameterReaderWriter, vtkObject);
+#endif
+
   // Need vtkImageSimonResample
   // *inA, *inB, and *out can all be the same 
   static void matmult_3x3(float *inA, float *inB, float *out);

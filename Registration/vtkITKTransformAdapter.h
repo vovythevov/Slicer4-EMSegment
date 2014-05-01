@@ -19,8 +19,11 @@ public:
   typedef itk::Transform<double, 3, 3> TransformType;
   
   static vtkITKTransformAdapter *New();
-  vtkTypeRevisionMacro(vtkITKTransformAdapter,
-                       vtkWarpTransform);
+#if VTK_MAJOR_VERSION <= 5
+  vtkTypeRevisionMacro(vtkITKTransformAdapter, vtkWarpTransform);
+#else
+  vtkTypeMacro(vtkITKTransformAdapter, vtkWarpTransform);
+#endif
   virtual void PrintSelf(ostream& os, vtkIndent indent);
   
   void SetITKTransform(TransformType* transform)

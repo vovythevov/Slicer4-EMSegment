@@ -54,10 +54,16 @@
 #ifndef __vtkLevelSets_h
 #define __vtkLevelSets_h
 
+// EMSegment includes
 #include "vtkEMSegment.h"
-#include "vtkImageData.h"
-#include "vtkImageToImageFilter.h"
 
+// VTK includes
+#if VTK_MAJOR_VERSION <= 5
+#include "vtkImageToImageFilter.h"
+#else
+#include <vtkImageAlgorithm.h>
+#endif
+#include "vtkImageData.h"
 #include "vtkLevelSetFastMarching.h"
 #include "vtkImageIsoContourDist.h"
 #include "vtkImageFastSignedChamfer.h"
@@ -72,17 +78,26 @@
 
 #define DISTMAP_CURVES       0
 #define DISTMAP_FASTMARCHING 1
-#define DISTMAP_CHAMFER      2 
+#define DISTMAP_CHAMFER      2
 #define DISTMAP_SHAPE        3
 
 #define WHITE_STRUCTURE 0
 #define BLACK_STRUCTURE 1
 
-class VTK_EMSEGMENT_EXPORT vtkLevelSets : public vtkImageToImageFilter
+class VTK_EMSEGMENT_EXPORT vtkLevelSets
+#if VTK_MAJOR_VERSION <= 5
+  : public vtkImageToImageFilter
+#else
+  : public vtkImageAlgorithm
+#endif
 {
 public:
   static vtkLevelSets *New();
+#if VTK_MAJOR_VERSION <= 5
   vtkTypeMacro(vtkLevelSets,vtkImageToImageFilter);
+#else
+  vtkTypeMacro(vtkLevelSets,vtkImageAlgorithm);
+#endif
   void PrintSelf(ostream& os, vtkIndent indent);
   
   vtkSetMacro(isotropic_voxels,int);

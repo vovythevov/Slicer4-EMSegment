@@ -25,9 +25,13 @@ namespace eval EMSegmenterAutoSampleTcl {
     #-------------------------------------------------------------------------------
 
 
-    proc EMSegmentCutOutRegion {ThreshInstance MathInstance ResultVolume ProbVolume CutOffProb flag} {
+    proc EMSegmentCutOutRegion {LOGIC ThreshInstance MathInstance ResultVolume ProbVolume CutOffProb flag} {
         # 1. Define cut out area
-        $ThreshInstance SetInput $ProbVolume
+        if {[$LOGIC GetVTKVersion] <= 5  } {
+            $ThreshInstance SetInput $ProbVolume
+        } else {
+            $ThreshInstance SetInputData $ProbVolume
+        }
         if {$flag} {$ThreshInstance ThresholdByUpper $CutOffProb
         } else {$ThreshInstance ThresholdBetween $CutOffProb $CutOffProb}
         $ThreshInstance SetInValue 1.0
@@ -36,8 +40,13 @@ namespace eval EMSegmenterAutoSampleTcl {
         $ThreshInstance Update
         # 2. Cut out region from normal image
         $MathInstance SetOperationToMultiply
-        $MathInstance SetInput 1 $ResultVolume
-        $MathInstance SetInput 0 [$ThreshInstance GetOutput]
+        if {[$LOGIC GetVTKVersion] <= 5  } {
+            $MathInstance SetInput 1 $ResultVolume
+            $MathInstance SetInput 0 [$ThreshInstance GetOutput]
+        } else {
+            $MathInstance SetInputData 1 $ResultVolume
+            $MathInstance SetInputConnection 0 [$ThreshInstance GetOutputPort]
+        }
         $MathInstance Update
     }
 
@@ -148,7 +157,11 @@ namespace eval EMSegmenterAutoSampleTcl {
             Histogram Delete
         }
         vtkImageAccumulate Histogram
-        Histogram SetInput $ProbVolume
+        if {[$LOGIC GetVTKVersion] <= 5  } {
+            Histogram SetInput $ProbVolume
+        } else {
+            Histogram SetInputData $ProbVolume
+        }
         Histogram Update
         EMSegmentPrint $LOGIC "Minimum: [ lindex [Histogram GetMin] 0 ] " 0 
         set Min [expr int([lindex [Histogram GetMin] 0])]
@@ -217,7 +230,7 @@ namespace eval EMSegmenterAutoSampleTcl {
         vtkImageMathematics MathMulti
         # Calculate the mean for each image
         for { set channelID 0 } {$channelID < $NumInputChannel} { incr channelID } {
-            EMSegmentCutOutRegion gaussCurveCalcThreshold MathMulti [lindex $MRIVolumeList $channelID] $ProbVolume $EMSegment(GaussCurveCalc,CutOffAbsolut) 1
+            EMSegmentCutOutRegion $LOGIC gaussCurveCalcThreshold MathMulti [lindex $MRIVolumeList $channelID] $ProbVolume $EMSegment(GaussCurveCalc,CutOffAbsolut) 1
             # Now value To it so we can differnetiate between real 0 and not
             if { [info command MathAdd($channelID)] != ""} {
                 MathAdd($channelID) Delete
@@ -231,15 +244,24 @@ namespace eval EMSegmenterAutoSampleTcl {
             # ----------------------------------------------------------------------
             vtkImageMathematics MathAdd($channelID)
             MathAdd($channelID) SetOperationToAdd
-            MathAdd($channelID) SetInput 1 [MathMulti GetOutput]
-            MathAdd($channelID) SetInput 0 [gaussCurveCalcThreshold GetOutput]
+            if {[$LOGIC GetVTKVersion] <= 5  } {
+                MathAdd($channelID) SetInput 1 [MathMulti GetOutput]
+                MathAdd($channelID) SetInput 0 [gaussCurveCalcThreshold GetOutput]
+            } else {
+                MathAdd($channelID) SetInputConnection 1 [MathMulti GetOutputPort]
+                MathAdd($channelID) SetInputConnection 0 [gaussCurveCalcThreshold GetOutputPort]
+            }
             MathAdd($channelID) Update
 
             # $LOGIC  WriteImage  [lindex $MRIVolumeList $channelID]  "/tmp/blub_${SAVEINDEX}_Input" 
             # puts "===> New: $SAVEINDEX  $channelID $EMSegment(GaussCurveCalc,CutOffAbsolut)"
             # incr SAVEINDEX
             # 3. Generate Histogram in 1D
-            Histogram SetInput [MathAdd($channelID) GetOutput]
+            if {[$LOGIC GetVTKVersion] <= 5  } {
+                Histogram SetInput [MathAdd($channelID) GetOutput]
+            } else {
+                Histogram SetInputConnection [MathAdd($channelID) GetOutputPort]
+            }
             Histogram Update
             set min($channelID)    [expr int([lindex [Histogram GetMin] 0])]
             set max($channelID)    [expr int([lindex [Histogram GetMax] 0])]
@@ -335,12 +357,21 @@ namespace eval EMSegmenterAutoSampleTcl {
                 for {set j [expr $i +1] } {$j < $NumInputChannel} {incr j} {
                     # MathAdd are the intensity images of the ROIs + 1
                     vtkImageAppendComponents twoDImage
-                    twoDImage AddInput [MathAdd($i) GetOutput]
-                    twoDImage AddInput [MathAdd($j) GetOutput]
+                    if {[$LOGIC GetVTKVersion] <= 5  } {
+                        twoDImage AddInput [MathAdd($i) GetOutput]
+                        twoDImage AddInput [MathAdd($j) GetOutput]
+                    } else {
+                        twoDImage AddInputConnection [MathAdd($i) GetOutputPort]
+                        twoDImage AddInputConnection [MathAdd($j) GetOutputPort]
+                    }
                     twoDImage Update
 
                     # Define 2D Histogram for covariance matrix !
-                    Histogram SetInput [twoDImage GetOutput]
+                    if {[$LOGIC GetVTKVersion] <= 5  } {
+                        Histogram SetInput [twoDImage GetOutput]
+                    } else {
+                        Histogram SetInputConnection [twoDImage GetOutputPort]
+                    }
                     Histogram SetComponentExtent 0 $Index($i) 0 $Index($j) 0 0
                     Histogram SetComponentOrigin $MinBorder($i) $MinBorder($j) 0.0
                     Histogram Update

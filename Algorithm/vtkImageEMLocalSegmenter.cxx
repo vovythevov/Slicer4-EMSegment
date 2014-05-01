@@ -14,12 +14,18 @@
 // Since 22-Apr-02 vtkImageEMLocal3DSegmenter is called vtkImageEMLocalSegmenter - Kilian
 // EMLocal =  using EM Algorithm with Local Tissue Class Probability
 #include "vtkImageEMLocalSegmenter.h"
-#include "vtkObjectFactory.h"
 #include "EMLocalAlgorithm.h"
 #include "vtkImageEMLocalSuperClass.h"
 #include "vtkDataDef.h"
 
-#include "assert.h"
+// VTK includes
+#include <vtkInformation.h>
+#include <vtkInformationVector.h>
+#include <vtkObjectFactory.h>
+#include <vtkStreamingDemandDrivenPipeline.h>
+
+// STD includes
+#include <cassert>
 //------------------------------------------------------------------------------
 // General vtkImageEMLocalSegmenter functions
 //------------------------------------------------------------------------------
@@ -175,6 +181,15 @@ int vtkImageEMLocalSegmenter::GetDimensionZ() {
   return (this->HeadClass->GetSegmentationBoundaryMax()[2] - this->HeadClass->GetSegmentationBoundaryMin()[2] +1);
 }
 
+//------------------------------------------------------------------------------
+void vtkImageEMLocalSegmenter::SetImageInput(int index, vtkImageData *image)
+{
+#if VTK_MAJOR_VERSION <= 5
+  this->SetInput(index,image);
+#else
+  this->SetInputData(index,image);
+#endif
+}
 
 //------------------------------------------------------------------------------
 void vtkImageEMLocalSegmenter::SetNumInputImages(int number) {
@@ -185,6 +200,9 @@ void vtkImageEMLocalSegmenter::SetNumInputImages(int number) {
     return;
   }
   this->NumInputImages = number;
+#if VTK_MAJOR_VERSION > 5
+  this->SetNumberOfInputPorts(number);
+#endif
 }
 
 //----------------------------------------------------------------------------
@@ -344,8 +362,18 @@ static void vtkImageEMLocalSegmenter_TransfereDataToOutputExtension(vtkImageEMLo
 }
 
 //------------------------------------------------------------------------------
-int vtkImageEMLocalSegmenter::CheckInputImage(vtkImageData * inData,int DataTypeOrig, vtkFloatingPointType DataSpacingOrig[3], int num) {
+int vtkImageEMLocalSegmenter::CheckInputImage(vtkImageData * inData,int DataTypeOrig,
+#if VTK_MAJOR_VERSION <= 5
+                                              vtkFloatingPointType DataSpacingOrig[3],
+                                              int num)
+{
   vtkFloatingPointType DataSpacingNew[3];
+#else
+                                              double DataSpacingOrig[3],
+                                              int num)
+{
+  double DataSpacingNew[3];
+#endif
 
   int inExt[6];
   if (inData == NULL) {
@@ -366,7 +394,11 @@ int vtkImageEMLocalSegmenter::CheckInputImage(vtkImageData * inData,int DataType
 
   // Check for dimenstion of InData
   // Could be easily fixed if needed 
+#if VTK_MAJOR_VERSION <= 5
   inData->GetWholeExtent(inExt);
+#else
+  inData->GetExtent(inExt);
+#endif
   if ((inExt[1] != this->Extent[1]) || (inExt[0] != this->Extent[0]) || (inExt[3] != this->Extent[3]) || (inExt[2] != this->Extent[2]) || (inExt[5] != this->Extent[5]) || (inExt[4] != this->Extent[4])) 
     vtkEMAddErrorMessage("CheckInputImage: Extension of Input Image " << num << ", " << inExt[0] << "," << inExt[1] << "," << inExt[2] << "," << inExt[3] << "," << inExt[4] << "," << inExt[5] 
                          << "is not alligned with output image "  << this->Extent[0] << "," << this->Extent[1] << "," << this->Extent[2] << "," << this->Extent[3] << "," << this->Extent[4] << " " << this->Extent[5]);
@@ -669,14 +701,34 @@ static void vtkImageEMLocalSegmenterExecute(vtkImageEMLocalSegmenter *self,float
   std::cerr << "End vtkImageEMLocalSegmenterExecute "<< endl;
 }
 
-
+#if VTK_MAJOR_VERSION > 5
+//----------------------------------------------------------------------------
+int vtkImageEMLocalSegmenter::RequestInformation(
+  vtkInformation* request,
+  vtkInformationVector** inInfoVec,
+  vtkInformationVector* outInfoVec)
+{
+  int res = this->Superclass::RequestInformation(request, inInfoVec, outInfoVec);
+  vtkInformation* inInfo = inInfoVec[0]->GetInformationObject(0);
+  vtkInformation* outInfo = outInfoVec->GetInformationObject(0);
+  outInfo->Set(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT(),
+               inInfo->Get(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT()), 6);
+  return res;
+}
+#endif
 
 //----------------------------------------------------------------------------
 // This method is passed a input and output datas, and executes the filter
 // algorithm to fill the output from the inputs.
 // It just executes a switch statement to call the correct function for
 // the datas data types.
+#if VTK_MAJOR_VERSION <= 5
 void vtkImageEMLocalSegmenter::ExecuteData(vtkDataObject *)
+#else
+int vtkImageEMLocalSegmenter::RequestData(vtkInformation* vtkNotUsed(request),
+                                          vtkInformationVector** inInfoVec,
+                                          vtkInformationVector* outInfoVec)
+#endif
 {
   //std::cerr << "###vtkImageEMLocalSegmenter::ExecuteData" << std::endl;
   //this->PrintSelf(std::cerr, 0);
@@ -686,14 +738,26 @@ void vtkImageEMLocalSegmenter::ExecuteData(vtkDataObject *)
   int idx1, i;
   vtkNotUsed(int NumProbMap = 0;);
   vtkNotUsed(int FirstProbMapDef = -1;);
-  // vtk4 - to find out more about the next couple of lines look at vtkImageEMGenericClass.cxx   
+  // vtk4 - to find out more about the next couple of lines look at vtkImageEMGenericClass.cxx
+#if VTK_MAJOR_VERSION <= 5
   vtkImageData **inData  = (vtkImageData **) this->GetInputs();
   vtkImageData *outData = this->GetOutput();
   // Magically the extent corresponds with the input extent !
   outData->GetWholeExtent(this->Extent);
+  outData->SetExtent(this->Extent);
+  outData->AllocateScalars();
+#else
+  vtkImageData *inData =  vtkImageData::GetData(inInfoVec[0]);
+  inData->GetExtent(this->Extent);
 
-  outData->SetExtent(this->Extent); 
-  outData->AllocateScalars(); 
+  vtkInformation *outInfo = outInfoVec->GetInformationObject(0);
+  vtkImageData *outData = vtkImageData::GetData(outInfoVec);
+  outData->SetExtent(
+    outInfo->Get(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT()));
+  outData->AllocateScalars(outInfo);
+
+  outData->GetExtent(this->Extent);
+#endif
   // vtk4
   // -----------------------------------------------------
   // Define and Check General Parameters
@@ -704,50 +768,98 @@ void vtkImageEMLocalSegmenter::ExecuteData(vtkDataObject *)
   this->ResetWarningMessage();
 
   // this->NumberOfInputs = Actual number of inputs defined
+#if VTK_MAJOR_VERSION <= 5
   if (this->NumInputImages > this->NumberOfInputs) {
-    vtkEMAddErrorMessage( "NumOfInputs ("<< this->NumberOfInputs << ") is greater than the number of Input images defined ("<<this->NumberOfInputs<<")!");
+    vtkEMAddErrorMessage( "NumOfInputs (" << this->NumberOfInputs
+                          << ") is greater than the number of Input images defined ("
+                          << this->NumberOfInputs << ")!");
     return;
-  } 
+#else
+  if (this->NumInputImages > this->GetNumberOfInputPorts())
+    {
+    vtkEMAddErrorMessage( "NumOfInputs ("<< this->GetNumberOfInputPorts()
+                          << ") is greater than the number of Input images defined ("
+                          << this->GetNumberOfInputPorts() << ")!");
+    return 0;
+#endif
+  }
 
   if (this->NumberOfTrainingSamples < 1) {
     vtkEMAddErrorMessage( "Number of Training Samples taken for the probability map has to be defined first!");
+#if VTK_MAJOR_VERSION <= 5
     return;
+#else
+    return 0;
+#endif
   }
 
   if (outData == NULL) {
     vtkEMAddErrorMessage( "Output must be specified.");
+#if VTK_MAJOR_VERSION <= 5
     return;
+#else
+    return 0;
+#endif
   }
 
   // Did we define a superclass
   if (!this->HeadClass) {
     vtkEMAddErrorMessage( "No Head Class is defined !");
+#if VTK_MAJOR_VERSION <= 5
     return;
-  } 
+#else
+    return 0;
+#endif
+  }
 
   this->HeadClass->Update();
   if (this->HeadClass->GetErrorFlag()) {
     vtkEMAddErrorMessage( "The following Error's occured during the class definition:" << endl << this->HeadClass->GetErrorMessages());
+#if VTK_MAJOR_VERSION <= 5
     return;
+#else
+    return 0;
+#endif
   }
 
   if (this->HeadClass->GetWarningFlag()) 
     vtkEMAddWarningMessage( "The following Warning's occured during the class definition:" << endl << this->HeadClass->GetWarningMessages());
   
   // Check if everything corresponds to each other
+#if VTK_MAJOR_VERSION <=5
   if (!inData[0]) {
+#else
+  if (!inData) {
+#endif
     vtkEMAddErrorMessage( "First image input is not defined !");
+#if VTK_MAJOR_VERSION <= 5
     return;
+#else
+    return 0;
+#endif
   }
-  if ((this->HeadClass->GetProbDataScalarType() > -1) && (this->HeadClass->GetProbDataScalarType() !=  inData[0]->GetScalarType())) {
+  if ((this->HeadClass->GetProbDataScalarType() > -1) &&
+#if VTK_MAJOR_VERSION <= 5
+      (this->HeadClass->GetProbDataScalarType() !=  inData[0]->GetScalarType())) {
+#else
+      (this->HeadClass->GetProbDataScalarType() !=  inData->GetScalarType())) {
+#endif
     vtkEMAddErrorMessage( "Scalar Type of Probability maps defined in classes does not correspond to scalar type of input image1");
+#if VTK_MAJOR_VERSION <= 5
     return;
+#else
+    return 0;
+#endif
   }
   if (this->HeadClass->GetNumInputImages() != this->NumInputImages) {
     vtkEMAddErrorMessage("Number of Input images of classes differes from number of images defined for this filter!");
+#if VTK_MAJOR_VERSION <= 5
     return;
+#else
+    return 0;
+#endif
   }
- 
+
   // -----------------------------------------------------
   // Define Image Parameters
   // -----------------------------------------------------
@@ -762,16 +874,32 @@ void vtkImageEMLocalSegmenter::ExecuteData(vtkDataObject *)
     int* BoundaryMin = this->GetSegmentationBoundaryMin();
     int* BoundaryMax = this->GetSegmentationBoundaryMax();
     for (i=0; i < 3; i++) {
-      int Dimension = this->Extent[i*2+1] - this->Extent[i*2] + 1;  
-      if ((BoundaryMin[i] > Dimension) || (BoundaryMin[i] < 1)) {
-        vtkEMAddErrorMessage( "SegmentationBoundaryMin[" <<i<<"]=" << BoundaryMin[i] << " is not defined correctly ! Should not be smaller than "<<  Dimension << " and larger 0 !");
+      int Dimension = this->Extent[i*2+1] - this->Extent[i*2] + 1;
+      if ((BoundaryMin[i] > Dimension) || (BoundaryMin[i] < 1))
+        {
+        vtkEMAddErrorMessage( "SegmentationBoundaryMin[" << i << "]=" << BoundaryMin[i]
+                              << " is not defined correctly ! "
+                              << "Should not be smaller than "<<  Dimension
+                              << " and larger 0 !");
+#if VTK_MAJOR_VERSION <= 5
         return;
-      }
-      if ((BoundaryMax[i] > Dimension) || (BoundaryMax[i] < BoundaryMin[i]) ) {
-        vtkEMAddErrorMessage( "SegmentationBoundaryMax[" <<i<<"]=" << BoundaryMax[i] << " is not defined correctly ! Should not be larger than "<<  Dimension 
-                              << " and not smaller than SegmentationBoundaryMin (" << BoundaryMin[i] << ") !");
+#else
+        return 0;
+#endif
+        }
+      if ((BoundaryMax[i] > Dimension) || (BoundaryMax[i] < BoundaryMin[i]) )
+        {
+        vtkEMAddErrorMessage( "SegmentationBoundaryMax[" << i <<"]=" << BoundaryMax[i]
+                              << " is not defined correctly !"
+                              << " Should not be larger than " << Dimension
+                              << " and not smaller than SegmentationBoundaryMin ("
+                              << BoundaryMin[i] << ") !");
+#if VTK_MAJOR_VERSION <= 5
         return;
-      }
+#else
+        return 0;
+#endif
+        }
     }
   }
   // -----------------------------------------------------
@@ -785,27 +913,66 @@ void vtkImageEMLocalSegmenter::ExecuteData(vtkDataObject *)
       InputVector[idx1] = new float[this->NumInputImages];
     }
   std::cerr << "Done" << std::endl;
- 
-  for (idx1 = 0; idx1 < this->NumInputImages ; idx1++){  
-    if (this->CheckInputImage(inData[idx1],this->GetInput(0)->GetScalarType(), this->GetInput(0)->GetSpacing(), idx1+1)) return;
-    switch (this->GetInput(idx1)->GetScalarType()) {
-      vtkTemplateMacro(vtkImageEMLocalSegmenterReadInputChannel(this, inData[idx1], (VTK_TT *)(inData[idx1]->GetScalarPointerForExtent(this->Extent)),this->Extent,InputVector,idx1));
+
+  for (idx1 = 0; idx1 < this->NumInputImages ; idx1++){
+#if VTK_MAJOR_VERSION <= 5
+    vtkImageData* inputImage = inData[idx1];
+#else
+    vtkImageData* inputImage = this->GetImageDataInput(idx1);
+#endif
+    if (this->CheckInputImage(inputImage,
+#if VTK_MAJOR_VERSION <= 5
+                              inData[0]->GetScalarType(),
+                              inData[0]->GetSpacing(),
+#else
+                              inData->GetScalarType(),
+                              inData->GetSpacing(),
+#endif
+                              idx1+1))
+#if VTK_MAJOR_VERSION <= 5
+      return;
+#else
+      return 0;
+#endif
+    switch (inputImage->GetScalarType()) {
+      vtkTemplateMacro(vtkImageEMLocalSegmenterReadInputChannel(
+                         this, inputImage,
+                         (VTK_TT *)(inputImage->GetScalarPointerForExtent(this->Extent)),
+                         this->Extent,InputVector,idx1));
     default:
       vtkEMAddErrorMessage( "Execute: Unknown ScalarType");
+#if VTK_MAJOR_VERSION <= 5
       return;
-    } 
+#else
+      return 0;
+#endif
+    }
   }
 
   // -----------------------------------------------------
   // Read in Debugging Data 
   // -----------------------------------------------------
   // For Debugging:
+#if VTK_MAJOR_VERSION <= 5
   if (EM_DEBUG && (idx1 < this->NumberOfInputs)) {
     this->DebugImage = new short*[this->NumberOfInputs - idx1];
     i = 0;
     while (idx1 < this->NumberOfInputs) {
-      std::cerr << "Loading EMDEBUG Volume ("<< idx1 << ") into EMAlgorithm .....................";
-      this->DebugImage[i] = (short*) inData[idx1]->GetScalarPointerForExtent(this->Extent);
+#else
+  if (EM_DEBUG && (idx1 < this->GetNumberOfInputPorts())) {
+    this->DebugImage = new short*[this->GetNumberOfInputPorts() - idx1];
+    i = 0;
+    while (idx1 < this->GetNumberOfInputPorts()) {
+#endif
+      std::cerr << "Loading EMDEBUG Volume ("<< idx1
+                << ") into EMAlgorithm .....................";
+#if VTK_MAJOR_VERSION <=5
+      vtkImageData* inputImage = inData[idx1];
+#else
+      vtkImageData* inputImage = this->GetImageDataInput(idx1);
+#endif
+      this->DebugImage[i] = reinterpret_cast<short*>(
+        inputImage->GetScalarPointerForExtent(this->Extent));
       idx1 ++;
       i++;
       std::cerr << "Finished" << endl;
@@ -827,11 +994,23 @@ void vtkImageEMLocalSegmenter::ExecuteData(vtkDataObject *)
   // -----------------------------------------------------
   outPtr = outData->GetScalarPointerForExtent(outData->GetExtent());
   switch (this->GetOutput()->GetScalarType()) {
-    vtkTemplateMacro(vtkImageEMLocalSegmenterExecute(this, InputVector, outData, (VTK_TT*)outPtr,this->Extent));
+    vtkTemplateMacro(vtkImageEMLocalSegmenterExecute(
+                       this, InputVector,
+                       outData, (VTK_TT*)outPtr, this->Extent));
   default:
     vtkEMAddErrorMessage("Execute: Unknown ScalarType");
+#if VTK_MAJOR_VERSION <= 5
     return;
+#else
+    return 0;
+#endif
   }
   for(idx1 = 0; idx1 <this->ImageProd; idx1++) delete[] InputVector[idx1];
   delete[] InputVector;
+
+#if VTK_MAJOR_VERSION <= 5
+  return;
+#else
+  return 1;
+#endif
 }

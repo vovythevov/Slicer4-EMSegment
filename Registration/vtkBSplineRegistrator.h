@@ -9,12 +9,16 @@
 #include "vtkTransform.h"
 #include "vtkEMSegment.h"
 
-class VTK_EMSEGMENT_EXPORT vtkBSplineRegistrator : 
-  public vtkObject
+class VTK_EMSEGMENT_EXPORT vtkBSplineRegistrator
+  : public vtkObject
 {
 public:
   static vtkBSplineRegistrator *New();
+#if VTK_MAJOR_VERSION <= 5
   vtkTypeRevisionMacro(vtkBSplineRegistrator, vtkObject);
+#else
+  vtkTypeMacro(vtkBSplineRegistrator, vtkObject);
+#endif
   void PrintSelf(ostream& os, vtkIndent indent);
 
   //BTX

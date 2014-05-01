@@ -434,24 +434,34 @@ int vtkImageEMLocalSuperClass::GetPCAParameters(float **ShapeParametersList, int
 }
 
 //------------------------------------------------------------------------------
-int vtkImageEMLocalSuperClass::GetProbDataPtrList(void **PointerList, int index, int BoundaryType) {
-  int i;
+int vtkImageEMLocalSuperClass::GetProbDataPtrList(void **PointerList, int index, int BoundaryType)
+{
   // if the super class has prob data defined than we just use that 
-  if (this->ProbImageData) {
+  if (this->ProbImageData)
+    {
     int Num = this->GetTotalNumberOfClasses(0);
     void *Pointer = this->GetProbDataPtr(BoundaryType);
-    for (i = 0; i < Num; i++) {
+    for (int i = 0; i < Num; i++)
+      {
       PointerList[index] = Pointer;
       index ++;
+      }
     }
-  } else {
-    for (i = 0; i <this->NumClasses; i++) {
-      if (this->ClassListType[i] == CLASS) {
-    PointerList[index] = ((vtkImageEMLocalClass*) this->ClassList[i])->GetProbDataPtr(BoundaryType);
-    index ++;
-      } else index = ((vtkImageEMLocalSuperClass*) this->ClassList[i])->GetProbDataPtrList(PointerList,index,BoundaryType); 
+  else
+    {
+    for (int i = 0; i <this->NumClasses; i++)
+      {
+      if (this->ClassListType[i] == CLASS)
+        {
+        PointerList[index] = ((vtkImageEMLocalClass*) this->ClassList[i])->GetProbDataPtr(BoundaryType);
+        index ++;
+        }
+      else
+        {
+        index = ((vtkImageEMLocalSuperClass*) this->ClassList[i])->GetProbDataPtrList(PointerList,index,BoundaryType);
+        }
+      }
     }
-  }
   return index;
 } 
 
@@ -626,7 +636,13 @@ void vtkImageEMLocalSuperClass::PrintSelf(ostream& os,vtkIndent indent) {
 // algorithm to fill the output from the inputs.
 // It just executes a switch statement to call the correct function for
 // the datas data types.
+#if VTK_MAJOR_VERSION <= 5
 void vtkImageEMLocalSuperClass::ExecuteData(vtkDataObject *)
+#else
+int vtkImageEMLocalSuperClass::RequestData(vtkInformation* request,
+                                           vtkInformationVector** inputVector,
+                                           vtkInformationVector* outputVector)
+#endif
 {
   // std::cerr << "start vtkImageEMLocalSuperClass::ExecuteData" << endl; 
    vtkDebugMacro(<<"ExecuteData()"); 
@@ -637,14 +653,29 @@ void vtkImageEMLocalSuperClass::ExecuteData(vtkDataObject *)
      vtkEMAddWarningMessage("The error flag for this module was set with the following messages (the error messages will be reset now:\n"<<this->GetErrorMessages());
 
    this->ResetErrorMessage();
+#if VTK_MAJOR_VERSION <= 5
    this->vtkImageEMLocalGenericClass::ExecuteData(NULL);
+#else
+   this->Superclass::RequestData(request, inputVector, outputVector);
+#endif
    // Error Occured
    // Kilian change this 
-   if (this->GetErrorFlag()) return;
+   if (this->GetErrorFlag())
+     {
+#if VTK_MAJOR_VERSION <= 5
+     return;
+#else
+     return 0;
+#endif
+     }
 
    if (!this->NumClasses) {
      vtkEMAddErrorMessage("No sub classes defined!");
+#if VTK_MAJOR_VERSION <= 5
      return;
+#else
+     return 0;
+#endif
    }
 
    
@@ -655,15 +686,23 @@ void vtkImageEMLocalSuperClass::ExecuteData(vtkDataObject *)
      for (int i = 0; i <this->NumClasses; i++) {
        if (!this->ClassList[i]) {
          vtkEMAddErrorMessage("Class with index "<< i <<" is not defined!");
+#if VTK_MAJOR_VERSION <= 5
          return;
+#else
+         return 0;
+#endif
        }
 
        if (this->ClassListType[i] == CLASS) {
          ((vtkImageEMLocalClass*) this->ClassList[i])->Update();
          // Add Messages to own errror messages 
          if (((vtkImageEMLocalClass*) this->ClassList[i])->GetErrorFlag()) {
-       vtkEMJustAddErrorMessage(((vtkImageEMLocalClass*) this->ClassList[i])->GetErrorMessages());
-       return;
+           vtkEMJustAddErrorMessage(((vtkImageEMLocalClass*) this->ClassList[i])->GetErrorMessages());
+#if VTK_MAJOR_VERSION <= 5
+           return;
+#else
+           return 0;
+#endif
          }
      if ((ProbDataPtrIndex < 0) && ((vtkImageEMLocalClass*) this->ClassList[i])->GetProbDataPtr(0))  ProbDataPtrIndex = i;
      if ((PCAPtrIndex < 0)      && ((vtkImageEMLocalClass*) this->ClassList[i])->GetPCAMeanShapePtr(0)) PCAPtrIndex  = i;
@@ -672,8 +711,12 @@ void vtkImageEMLocalSuperClass::ExecuteData(vtkDataObject *)
          ((vtkImageEMLocalSuperClass*) this->ClassList[i])->Update();
          // Add Messages to own errror messages 
          if (((vtkImageEMLocalSuperClass*) this->ClassList[i])->GetErrorFlag()) {
-       vtkEMJustAddErrorMessage(((vtkImageEMLocalSuperClass*) this->ClassList[i])->GetErrorMessages());
-       return;
+           vtkEMJustAddErrorMessage(((vtkImageEMLocalSuperClass*) this->ClassList[i])->GetErrorMessages());
+#if VTK_MAJOR_VERSION <= 5
+           return;
+#else
+           return 0;
+#endif
          }
      if ((ProbDataPtrIndex < 0) &&  ((vtkImageEMLocalSuperClass*) this->ClassList[i])->GetProbDataPtrFlag()) ProbDataPtrIndex = i;
      if ((PCAPtrIndex  < 0)     &&  ((vtkImageEMLocalSuperClass*) this->ClassList[i])->GetPCAPtrFlag())  PCAPtrIndex  = i;
@@ -728,7 +771,11 @@ void vtkImageEMLocalSuperClass::ExecuteData(vtkDataObject *)
       for (int k = 0; k < 6; k++) {
     if ((this->MrfParams[k][j][i] < 0) || (this->MrfParams[k][j][i] > 1)) {
       vtkEMAddErrorMessage("MrfParams[" << k <<"] [" << j<<"] [" << i <<"] = " << this->MrfParams[k][j][i] << " is not between 0 and 1 !");
+#if VTK_MAJOR_VERSION <= 5
       return;
+#else
+      return 0;
+#endif
     }
       }
     }
@@ -744,7 +791,11 @@ void vtkImageEMLocalSuperClass::ExecuteData(vtkDataObject *)
      if ((((vtkImageEMLocalClass*) this->ClassList[i])->GetProbDataScalarType() > -1) && (this->ProbDataScalarType != ((vtkImageEMLocalClass*) this->ClassList[i])->GetProbDataScalarType())) {
        vtkEMAddErrorMessage( "ProbDataScalarType of  class "<< i << " is of type "<< ((vtkImageEMLocalClass*) this->ClassList[i])->GetProbDataScalarType() 
                << ", which is inconsistent with this super class' scalar type "<< this->ProbDataScalarType << "! Note: VTK_FLOAT="<< VTK_FLOAT <<", VTK_SHORT=" << VTK_SHORT);
+#if VTK_MAJOR_VERSION <= 5
        return;
+#else
+       return 0;
+#endif
      }
 
      int* max = ((vtkImageEMLocalClass*) this->ClassList[i])->GetSegmentationBoundaryMax();
@@ -752,7 +803,11 @@ void vtkImageEMLocalSuperClass::ExecuteData(vtkDataObject *)
        vtkEMAddErrorMessage( "SegmentationBoundaryMax of  class "<< i << "( "<< max[0] << "," << max[1] << "," << max[2] 
                  << ") is inconsistent with this super class' ones ("<< this->SegmentationBoundaryMax[0] <<","<<this->SegmentationBoundaryMax[1] 
                  << "," << this->SegmentationBoundaryMax[2] <<")");
-       return; 
+#if VTK_MAJOR_VERSION <= 5
+       return;
+#else
+       return 0;
+#endif
      }
 
      int* min = ((vtkImageEMLocalClass*) this->ClassList[i])->GetSegmentationBoundaryMin();
@@ -760,20 +815,32 @@ void vtkImageEMLocalSuperClass::ExecuteData(vtkDataObject *)
        vtkEMAddErrorMessage( "SegmentationBoundaryMin of  class "<< i << "( "<< min[0] << "," << min[1] << "," << min[2] 
                  << ") is inconsistent with this super class' ones ("<< this->SegmentationBoundaryMin[0] <<","<<this->SegmentationBoundaryMin[1] 
                  << "," << this->SegmentationBoundaryMin[2] <<")");
-       return; 
+#if VTK_MAJOR_VERSION <= 5
+       return;
+#else
+       return 0;
+#endif
      }
 
      int* dim = ((vtkImageEMLocalClass*) this->ClassList[i])->GetDataDim();
      if (memcmp(this->DataDim,dim,sizeof(int)*3)) {
        vtkEMAddErrorMessage("DataDim of class "<< i << "( "<< dim[0] << "," << dim[1] << "," << dim[2] 
                 << ") is inconsistent with this super class' ones ("<< this->DataDim[0] <<","<<this->DataDim[1] << "," << this->DataDim[2] <<")");
-       return; 
+#if VTK_MAJOR_VERSION <= 5
+       return;
+#else
+       return 0;
+#endif
      }
      float* spacing = ((vtkImageEMLocalClass*) this->ClassList[i])->GetDataSpacing();
      if (memcmp(this->DataSpacing,spacing,sizeof(float)*3)) {
        vtkEMAddErrorMessage("DataSpacing of class "<< i << " ("<< spacing[0] << "," << spacing[1] << "," << spacing[2] 
                 << ") is inconsistent with this super class' ones ("<< this->DataSpacing[0] <<","<<this->DataSpacing[1] << "," << this->DataSpacing[2] <<")");
-       return; 
+#if VTK_MAJOR_VERSION <= 5
+       return;
+#else
+       return 0;
+#endif
      }
        } 
      } else {
@@ -786,7 +853,11 @@ void vtkImageEMLocalSuperClass::ExecuteData(vtkDataObject *)
        vtkEMAddErrorMessage( "ProbDataScalarType of class "<< i << " is of type "<< ((vtkImageEMLocalSuperClass*) this->ClassList[i])->GetProbDataScalarType() 
                  << ", which is inconsistent with this super class' scalar type "<< this->ProbDataScalarType 
                                  << "! Note: VTK_FLOAT="<< VTK_FLOAT <<", VTK_SHORT=" << VTK_SHORT);
+#if VTK_MAJOR_VERSION <= 5
        return;
+#else
+       return 0;
+#endif
      }
 
 
@@ -795,7 +866,11 @@ void vtkImageEMLocalSuperClass::ExecuteData(vtkDataObject *)
        vtkEMAddErrorMessage( "SegmentationBoundaryMax of class "<< i << "( "<< max[0] << "," << max[1] << "," << max[2] 
                        << ") is inconsistent with this super class' ones ("<< this->SegmentationBoundaryMax[0] <<","
                        << this->SegmentationBoundaryMax[1] << "," << this->SegmentationBoundaryMax[2] <<")");
-       return; 
+#if VTK_MAJOR_VERSION <= 5
+       return;
+#else
+       return 0;
+#endif
      }
 
      int* min = ((vtkImageEMLocalSuperClass*) this->ClassList[i])->GetSegmentationBoundaryMin();
@@ -803,29 +878,47 @@ void vtkImageEMLocalSuperClass::ExecuteData(vtkDataObject *)
        vtkEMAddErrorMessage( "SegmentationBoundaryMin of  class "<< i << "( "<< min[0] << "," << min[1] << "," << min[2] 
                  << ") is inconsistent with this super class' ones ("<< this->SegmentationBoundaryMin[0] <<","
                  << this->SegmentationBoundaryMin[1] << "," << this->SegmentationBoundaryMin[2] <<")");
-       return; 
+#if VTK_MAJOR_VERSION <= 5
+       return;
+#else
+       return 0;
+#endif
      }
 
      int* dim = ((vtkImageEMLocalSuperClass*) this->ClassList[i])->GetDataDim();
      if (memcmp(this->DataDim,dim,sizeof(int)*3)) {
        vtkEMAddErrorMessage( "DataDim of class "<< i << "( "<< dim[0] << "," << dim[1] << "," << dim[2] 
                        << ") is inconsistent with this super class' ones ("<< this->DataDim[0] <<","<<this->DataDim[1] << "," << this->DataDim[2] <<")");
-       return; 
+#if VTK_MAJOR_VERSION <= 5
+       return;
+#else
+       return 0;
+#endif
      }
 
      float* spacing = ((vtkImageEMLocalSuperClass*) this->ClassList[i])->GetDataSpacing();
      if (memcmp(this->DataSpacing,spacing,sizeof(float)*3)) {
        vtkEMAddErrorMessage( "DataSpacing of class "<< i << " ("<< spacing[0] << "," << spacing[1] << "," << spacing[2] 
                        << ") is inconsistent with this super class' ones ("<< this->DataSpacing[0] <<","<<this->DataSpacing[1] << "," << this->DataSpacing[2] <<")");
-       return; 
+#if VTK_MAJOR_VERSION <= 5
+       return;
+#else
+       return 0;
+#endif
      }
 
        } 
      }
    }
    // std::cerr << "End vtkImageEMLocalSuperClass::ExecuteData" << endl; 
+#if VTK_MAJOR_VERSION <= 5
+  return;
+#else
+  return 1;
+#endif
 }
 
+//----------------------------------------------------------------------------
 void vtkImageEMLocalSuperClass::SetInhomogeneityInitialData(vtkImageData *img , int index) { 
     assert(index < this->NumInputImages && index >= 0);
     if (!this->InhomogeneityInitialData) {
@@ -836,10 +929,12 @@ void vtkImageEMLocalSuperClass::SetInhomogeneityInitialData(vtkImageData *img , 
     
   }
 
+//----------------------------------------------------------------------------
 float* vtkImageEMLocalSuperClass::GetInhomogeneityInitialDataPtr(int index) {
      assert(index < this->NumInputImages && index >= 0);
      if ((this->InhomogeneityInitialData == NULL) || (this->InhomogeneityInitialData[index] == NULL)) return NULL;
      assert(this->InhomogeneityInitialData[index]->GetScalarType() == VTK_FLOAT);
+#if VTK_MAJOR_VERSION <= 5
      int DataExtent[6];
      this->InhomogeneityInitialData[index]->GetWholeExtent(DataExtent);
      for (int i = 0; i < 3; i ++ ) assert((DataExtent[2*i+1] - DataExtent[2*i] +1)  == this->DataDim[i]);
@@ -847,4 +942,8 @@ float* vtkImageEMLocalSuperClass::GetInhomogeneityInitialDataPtr(int index) {
      this->InhomogeneityInitialData[index]->GetContinuousIncrements(DataExtent, Inc[0], Inc[1], Inc[2]);
      assert((Inc[1] == 0) && (Inc[2] == 0));
      return (float*)this->InhomogeneityInitialData[index]->GetScalarPointerForExtent(DataExtent);
+#else
+     return reinterpret_cast<float*>(
+       this->InhomogeneityInitialData[index]->GetScalarPointer());
+#endif
   }

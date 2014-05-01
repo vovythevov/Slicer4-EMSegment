@@ -11,9 +11,13 @@
   Version:   $Revision: 1.1 $
 
 =========================================================================auto=*/
+
+// EMSegment includes
 #include "vtkImageEMGenericClass.h"
-#include "vtkObjectFactory.h"
-#include "vtkImageData.h"
+
+// VTK includes
+#include <vtkObjectFactory.h>
+#include <vtkImageData.h>
 
 //------------------------------------------------------------------------------
 // Define Procedures for ProtocolMessage
@@ -82,13 +86,17 @@ vtkImageEMGenericClass::vtkImageEMGenericClass()
     // Do not remove output otherwise the filter does not call the updat function  
     // this->vtkSource::RemoveOutput(this->Outputs[0]);
 
+    this->PrintWeights        = 0;
+#if VTK_MAJOR_VERSION <= 5
     // This is Just Created so the Update pipeline works properly 
     vtkImageData* UpdateBlubber = vtkImageData::New();
     UpdateBlubber->SetExtent(0,0,0,0,0,0);
     UpdateBlubber->AllocateScalars();
     this->SetInput(0,UpdateBlubber);
     UpdateBlubber->Delete();
-    this->PrintWeights        = 0;
+#else
+    this->SetNumberOfInputPorts(0);
+#endif
  }
 
 //----------------------------------------------------------------------------
@@ -143,16 +151,26 @@ void vtkImageEMGenericClass::SetNumInputImages(int number) {
        for (int z= 0; z < number; z++) this->InputChannelWeights[z] = 1.0;
     }
     this->NumInputImages = number;  
+#if VTK_MAJOR_VERSION > 5
+#endif
 }
 
 //----------------------------------------------------------------------------
-void  vtkImageEMGenericClass::ExecuteData(vtkDataObject*) {
+#if VTK_MAJOR_VERSION <= 5
+void  vtkImageEMGenericClass::ExecuteData(vtkDataObject*)
+#else
+int vtkImageEMGenericClass::RequestData(vtkInformation* vtkNotUsed(request),
+                                        vtkInformationVector** vtkNotUsed(inputVector),
+                                        vtkInformationVector* vtkNotUsed(outputVector))
+#endif
+{
     // Check All Values that are defined here 
     // std::cerr << "vtkImageEMGenericClass::ExecuteData" << endl;
 
     // This must be performed in the subclasses  
     // this->ResetErrorMessage();
 
+#if VTK_MAJOR_VERSION <= 5
     // This is needed otherwise the Time Stamp function is not properly updated and an Update will always eexecute the following command !
     { 
         int outExt[6];
@@ -165,24 +183,42 @@ void  vtkImageEMGenericClass::ExecuteData(vtkDataObject*) {
         // Allocate memory 
     outData->AllocateScalars(); 
     }
+#endif
     if (this->TissueProbability < 0) {
     vtkEMAddErrorMessage("TissueProbability for class "<< this->Label <<" is not defined ");
+#if VTK_MAJOR_VERSION <= 5
     return;
+#else
+    return 0;
+#endif
     } 
     
     for (int i = 0; i < this->NumInputImages; i++) {
       if (this->InputChannelWeights[i] < 0 || this->InputChannelWeights[i] > 1) {
     vtkEMAddErrorMessage("InputChannelWeights for class "<< this->Label <<" and input "<<i <<" (" << this->InputChannelWeights[i] << ") is not defined correctly");
-    return;
+#if VTK_MAJOR_VERSION <= 5
+     return;
+#else
+     return 0;
+#endif
       }
     }
 
     if (this->ProbDataWeight < 0 || this->ProbDataWeight > 1) {
       vtkEMAddErrorMessage("ProbDataWeight for class "<< this->Label <<" (" << this->ProbDataWeight <<") is not defined correctly");
+#if VTK_MAJOR_VERSION <= 5
       return;
+#else
+      return 0;
+#endif
     }
     // Do not check labels bc super classes have labeles automatically assigned to them 
- }
+#if VTK_MAJOR_VERSION <= 5
+  return;
+#else
+  return 1;
+#endif
+}
 
 char* vtkImageEMGenericClass::GetErrorMessages() {
   return this->ErrorMessage.GetMessages(); 

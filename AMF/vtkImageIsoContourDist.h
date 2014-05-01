@@ -54,15 +54,31 @@
 #ifndef _vtkImageIsoContourDist_h
 #define _vtkImageIsoContourDist_h
 
+// EMSegment includes
 #include "vtkEMSegment.h"
-#include "vtkImageToImageFilter.h"
-#include "vtkFloatArray.h"
 
-class VTK_EMSEGMENT_EXPORT vtkImageIsoContourDist : public vtkImageToImageFilter
+// VTK includes
+#if VTK_MAJOR_VERSION <= 5
+#include "vtkImageToImageFilter.h"
+#else
+#include <vtkImageAlgorithm.h>
+#endif
+class vtkFloatArray;
+
+class VTK_EMSEGMENT_EXPORT vtkImageIsoContourDist
+#if VTK_MAJOR_VERSION <= 5
+  : public vtkImageToImageFilter
+#else
+  : public vtkImageAlgorithm
+#endif
 {
 public:
   static vtkImageIsoContourDist *New();
-  vtkTypeMacro(vtkImageIsoContourDist,vtkImageToImageFilter);
+#if VTK_MAJOR_VERSION <= 5
+  vtkTypeMacro(vtkImageIsoContourDist, vtkImageToImageFilter);
+#else
+  vtkTypeMacro(vtkImageIsoContourDist, vtkImageAlgorithm);
+#endif
   void PrintSelf(ostream& os, vtkIndent indent);
   
   // Description

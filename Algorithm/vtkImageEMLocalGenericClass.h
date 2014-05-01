@@ -36,10 +36,14 @@ class VTK_EMSEGMENT_EXPORT vtkImageEMLocalGenericClass : public vtkImageEMGeneri
 {
   public:
   // -----------------------------------------------------
-  // Genral Functions for the filter
+  // General Functions for the filter
   // -----------------------------------------------------
   static vtkImageEMLocalGenericClass *New();
+#if VTK_MAJOR_VERSION <= 5
   vtkTypeMacro(vtkImageEMLocalGenericClass,vtkObject);
+#else
+  vtkTypeMacro(vtkImageEMLocalGenericClass,vtkImageEMGenericClass);
+#endif
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // ----------------------------------------- 
@@ -58,7 +62,11 @@ class VTK_EMSEGMENT_EXPORT vtkImageEMLocalGenericClass : public vtkImageEMGeneri
 
   // Description:
   // Probability Data defining the spatial conditional label distribution
-  void SetProbDataPtr(vtkImageData *image) {this->SetInput(1,image);}
+#if VTK_MAJOR_VERSION <= 5
+  void SetProbDataPtr(vtkImageData *image);
+#else
+  void SetProbConnection(vtkAlgorithmOutput* probConnection);
+#endif
   //BTX
   // Description:
   // SegmentationBoundary condition are taken into account (Type == 1) or not (Type == 0);
@@ -140,12 +148,25 @@ protected:
 
   vtkImageEMLocalGenericClass(const vtkImageEMLocalGenericClass&);
   void operator=(const vtkImageEMLocalGenericClass&);
- 
-  void  ExecuteData(vtkDataObject *) ;
+
+#if VTK_MAJOR_VERSION <= 5
+  virtual void ExecuteData(vtkDataObject *);
+#else
+  virtual int RequestData(vtkInformation* request,
+                          vtkInformationVector** inputVector,
+                          vtkInformationVector* outputVector);
+#endif
 
   int Extent[6];                 // Extent of input 
   vtkImageData *ProbImageData;   // Pointer to the vtkImageData defining ProbData 
-
+  enum{
+#if VTK_MAJOR_VERSION <= 5
+    ProbInputPort = vtkImageEMGenericClass::NumberOfInputPorts,
+#else
+    ProbInputPort = Superclass::NumberOfInputPorts,
+#endif
+    NumberOfInputPorts
+  };
 
   // Thes are the parameters describing the transition from 
   // (Very First SuperClass - Head) From Atlas to Global Coordinate system 

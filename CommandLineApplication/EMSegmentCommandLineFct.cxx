@@ -154,8 +154,13 @@ bool ImageDiff(vtkImageData* resultData, std::string standardFilename)
   // compare image voxels
   vtkImageMathematics* imageDifference = vtkImageMathematics::New();
   imageDifference->SetOperationToSubtract();
+#if VTK_MAJOR_VERSION <= 5
   imageDifference->SetInput1(resultData);
   imageDifference->SetInput2(standardReader->GetOutput());
+#else
+  imageDifference->SetInputData(0, resultData);
+  imageDifference->SetInputConnection(1, standardReader->GetOutputPort());
+#endif
 
   vtkImageAccumulate* differenceAccumulator = vtkImageAccumulate::New();
   differenceAccumulator->SetInputConnection(imageDifference->GetOutputPort());

@@ -6,12 +6,16 @@
 #include "vtkTransform.h"
 #include "vtkEMSegment.h"
 
-class VTK_EMSEGMENT_EXPORT vtkRigidRegistrator : 
-  public vtkObject
+class VTK_EMSEGMENT_EXPORT vtkRigidRegistrator
+  : public vtkObject
 {
 public:
   static vtkRigidRegistrator *New();
+#if VTK_MAJOR_VERSION <= 5
   vtkTypeRevisionMacro(vtkRigidRegistrator, vtkObject);
+#else
+  vtkTypeMacro(vtkRigidRegistrator, vtkObject);
+#endif
   void PrintSelf(ostream& os, vtkIndent indent);
 
   vtkSetObjectMacro(FixedImage, vtkImageData);

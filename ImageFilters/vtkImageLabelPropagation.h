@@ -72,20 +72,25 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkImageLabelPropagation_h
 #define __vtkImageLabelPropagation_h
 
+// EMSegment includes
 #include "vtkEMSegment.h"
 #include "vtkImageDecomposeFilter.h"
 
 #define VTK_EMKILIAN_EDT_SAITO_CACHED 0
-#define VTK_EMKILIAN_EDT_SAITO 1 
+#define VTK_EMKILIAN_EDT_SAITO 1
 
 #define VTK_EMKILIAN_EDT_EUCLIDEAN  0
 #define VTK_EMKILIAN_EDT_SQUARE_ROOT 1
-                                  
+
 class  VTK_EMSEGMENT_EXPORT vtkImageLabelPropagation : public vtkImageDecomposeFilter
 {
 public:
   static vtkImageLabelPropagation *New();
+#if VTK_MAJOR_VERSION <= 5
   vtkTypeRevisionMacro(vtkImageLabelPropagation,vtkImageDecomposeFilter);
+#else
+  vtkTypeMacro(vtkImageLabelPropagation,vtkImageDecomposeFilter);
+#endif
   void PrintSelf(ostream& os, vtkIndent indent);
 
   vtkGetMacro(Initialize, int);

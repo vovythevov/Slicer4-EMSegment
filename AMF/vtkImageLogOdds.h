@@ -25,9 +25,18 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // The filter computers the transform between log odds and probabilities 
 #ifndef __vtkImageLogOdds_h
 #define __vtkImageLogOdds_h 
-  
-#include <vtkEMSegment.h> 
+
+// EMSegment includes
+#include <vtkEMSegment.h>
+
+// VTK includes
+#if VTK_MAJOR_VERSION <= 5
 #include "vtkImageMultipleInputFilter.h"
+#else
+#include <vtkImageAlgorithm.h>
+#endif
+
+// STD includes
 #include <vector> 
 
 // Modes of operating this filter
@@ -50,14 +59,23 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
  
 typedef std::vector<int> labelListType;
 
-class VTK_EMSEGMENT_EXPORT vtkImageLogOdds : public vtkImageMultipleInputFilter
+class VTK_EMSEGMENT_EXPORT vtkImageLogOdds
+#if VTK_MAJOR_VERSION <= 5
+  : public vtkImageMultipleInputFilter
+#else
+  : public vtkImageAlgorithm
+#endif
 {
   public:
   // -----------------------------------------------------
   // Genral Functions for the filter
   // -----------------------------------------------------
   static vtkImageLogOdds *New();
+#if VTK_MAJOR_VERSION <= 5
   vtkTypeMacro(vtkImageLogOdds,vtkObject);
+#else
+  vtkTypeMacro(vtkImageLogOdds,vtkImageAlgorithm);
+#endif
   void PrintSelf(ostream& vtkNotUsed(os), vtkIndent vtkNotUsed(indent)) { };
 
   // Set the Dimension of the Probability Space
