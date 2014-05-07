@@ -27,6 +27,10 @@ SET(module_logic_target_libraries
   vtkSlicerVolumesModuleLogic
   )
 
+if(${VTK_VERSION_MAJOR} GREATER 5)
+  list(APPEND VTK_WRAP_INCLUDE_DIRS ${EMSegment_SOURCE_DIR})
+endif()
+
 SlicerMacroBuildModuleLogic(
   NAME ${module_logic_name}
   EXPORT_DIRECTIVE ${module_logic_export_directive}
