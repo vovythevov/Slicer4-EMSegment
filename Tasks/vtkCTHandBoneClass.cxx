@@ -340,8 +340,6 @@ int vtkCTHandBoneClass::blur(
                              const char* gaussianVariance,
                              const char* maxKernelWidth)
 {
-  typedef  signed short PixelType;
-
   typedef itk::Image<signed short,3>  InputImageType;
   typedef itk::Image<unsigned char,3> OutputImageType;
 

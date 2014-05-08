@@ -569,6 +569,8 @@ void vtkImageLabelPropagation::AllocateOutputScalars(vtkImageData *outData)
 #if VTK_MAJOR_VERSION <= 5
   outData->SetExtent(outData->GetWholeExtent());
   outData->AllocateScalars();
+#else 
+  (void)outData;
 #endif
 }
 //----------------------------------------------------------------------------
