@@ -234,7 +234,6 @@
 
         # Remove Transformation from image
         $movingVolumeNode SetAndObserveTransformNodeID ""
-        $SCENE Edited
 
         # return ID or ""
         return [$SCENE GetNodeByID $transID]

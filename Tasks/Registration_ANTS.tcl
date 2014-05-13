@@ -132,7 +132,6 @@ proc ANTSRegistration { fixedVolumeNode movingVolumeNode outVolumeNode backgroun
 
     # Remove Transformation from image
     $movingVolumeNode SetAndObserveTransformNodeID ""
-    $SCENE Edited
 
     # return transformation directory name or ""
     puts "outTransformFileName: $outTransformFileName"

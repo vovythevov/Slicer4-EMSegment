@@ -115,7 +115,6 @@ proc DEMONSRegistration { fixedVolumeNode movingVolumeNode outVolumeNode backgro
 
     # Remove Transformation from image
     $movingVolumeNode SetAndObserveTransformNodeID ""
-    $SCENE Edited
 
     # return transformation directory name or ""
     puts "outTransformFileName: $outTransformFileName"
