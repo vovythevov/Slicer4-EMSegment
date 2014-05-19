@@ -23,31 +23,25 @@ set outputNode  [$em_manager CreateVolumeScalarNode $inputNode "blubber"]
 set outputVolume [$outputNode GetImageData]
 
 # ------------------------------------------------------
-$emLogic PrintText "Test 1 : DeepCopy Ellipsoid" 
+$emLogic PrintText "Test 1 : DeepCopy Input" 
+$outputVolume DeepCopy [$inputNode GetImageData] 
+
+# ------------------------------------------------------
+$emLogic PrintText "Test 2 : Threshold Input and DeepCopy" 
+set thresh [vtkImageThreshold New]
+$thresh SetInput [$inputNode GetImageData] 
+$thresh Update
+$outputVolume DeepCopy [$thresh GetOutput] 
+
+# ------------------------------------------------------
+$emLogic PrintText "Test 3 : DeepCopy Ellipsoid" 
 set ellips [vtkImageEllipsoidSource New]
 $outputVolume DeepCopy [$ellips GetOutput] 
 
 # ------------------------------------------------------
-$emLogic PrintText "Test 2 : Threshold Input" 
-set thresh [vtkImageThreshold New]
-$thresh SetInput [$inputNode GetImageData] 
-$thresh Update
-
-# ------------------------------------------------------
-$emLogic PrintText "Test 3 : DeepCopy Input" 
-$outputVolume DeepCopy [$inputNode GetImageData] 
-
-
-# ------------------------------------------------------
-$emLogic PrintText "Test 4 : DeepCopy Threshold" 
+$emLogic PrintText "Test 4 : DeepCopy Threshold again" 
 $outputVolume DeepCopy [$thresh GetOutput] 
-
-# ------------------------------------------------------
-$emLogic PrintText "Test 5 : First DeepCopy Ellipse and then Threshold" 
-$outputVolume DeepCopy [$ellips GetOutput] 
-$emLogic PrintText "Ellipse done"
-$outputVolume DeepCopy [$thresh GetOutput] 
-$emLogic PrintText "Thresh done"
+$emLogic PrintText "Testing done done"
 
 # Did not catch the error message from vtk
 # catch { $outputVolume DeepCopy [$thresh GetOutput] } errMSG
