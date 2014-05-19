@@ -17,6 +17,7 @@ set(TEST_INCLUDE_DIRS
   ${EMSegment_BINARY_DIR}
   ${EMSegment_SOURCE_DIR}/MRML
   ${EMSegment_SOURCE_DIR}/Algorithm
+  ${EMSegment_SOURCE_DIR}/CommandLineApplication
   ${VTK_INCLUDE_DIR}
   )
 
@@ -56,8 +57,8 @@ set(MIDAS_KEY_DIR "${EMSegment_SOURCE_DIR}/Testing/TestData/MIDAS_Keys")
 # amount of memory!!!
 
 
-set(EMSEG_RUN_OLD_TESTS OFF CACHE BOOL "Enable old EMSegment tests." FORCE)
-mark_as_advanced(EMSEG_RUN_OLD_TESTS)
+#set(EMSEG_RUN_OLD_TESTS OFF CACHE BOOL "Enable old EMSegment tests." FORCE)
+#mark_as_advanced(EMSEG_RUN_OLD_TESTS)
 
 set(EMSEG_RUN_COMPARE_TESTS OFF CACHE BOOL "Enable EMSegment tests to compare segmentation results." FORCE)
 mark_as_advanced(EMSEG_RUN_COMPARE_TESTS)
@@ -244,7 +245,14 @@ if(NOT DISABLE_CXX_TESTING)
     ${EMSegment_TUTORIAL_DIR}/StandardData/StandardSegmentationResult_small.mhd
     )
     
-  ADD_EMSEGMENT_TEST(EMSeg_SlicerCommonInterfaceTest1 vtkSlicerCommonInterfaceTest1)
+  ADD_EMSEGMENT_TEST(EMSeg_SlicerCommonInterfaceTest1 vtkSlicerCommonInterfaceTest1 ${EMSegment_SOURCE_DIR}/Testing/SlicerCommonInterFaceTest1.tcl ${EMSegment_TUTORIAL_DIR}/VolumeData/targetT1Normed_small.mhd)
+  set_tests_properties(
+    EMSeg_SlicerCommonInterfaceTest1  
+    PROPERTIES
+    FAIL_REGULAR_EXPRESSION
+    "ERROR;Error in executing Tcl script"
+   )
+
 
   # Build parameters from scratch and run the segmentation
   #ADD_EMSEGMENT_TEST(vtkEMSegmentBuildAndRunNewSegmentationParameters001 vtkEMSegmentBuildAndRunNewSegmentationParameters001
