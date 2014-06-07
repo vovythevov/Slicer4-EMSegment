@@ -58,7 +58,7 @@ protected:
   qSlicerEMSegmentGraphWidget* const q_ptr;
 public:
   qSlicerEMSegmentGraphWidgetPrivate(qSlicerEMSegmentGraphWidget& object);
-  virtual void setupUi(qSlicerEMSegmentWidget* widget);
+  void setupUi(qSlicerEMSegmentWidget* widget);
   QList<vtkIdType> classNodeIDs(vtkIdType nodeID)const;
   void addClass(vtkIdType nodeID);
   void updateClass(vtkIdType nodeID, int input);
