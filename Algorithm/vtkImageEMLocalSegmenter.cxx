@@ -692,7 +692,12 @@ static void vtkImageEMLocalSegmenterExecute(vtkImageEMLocalSegmenter *self,float
   // -----------------------------------------------------
   vtkIdType outIncX, outIncY, outIncZ;
   outData->GetContinuousIncrements(outExt, outIncX, outIncY, outIncZ);
-  int outInc[3] = {outIncX, outIncY, outIncZ};
+  int outInc[3] =
+    {
+    static_cast<int>(outIncX),
+    static_cast<int>(outIncY),
+    static_cast<int>(outIncZ)
+    };
   vtkImageEMLocalSegmenter_TransfereDataToOutputExtension(self,OutputVector,outPtr,outInc,0);
 
   delete[] OutputVector;

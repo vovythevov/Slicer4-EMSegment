@@ -224,7 +224,12 @@ static void  EMLocalAlgorithm_StoreDataToOutputExtension(EMLocalAlgorithm<T> *se
       OriginalExtension_DataPtr += OutIncZ;
     }
   } else {
-    int outInc[3] = {OutIncX, OutIncY, OutIncZ};
+    int outInc[3] =
+      {
+      static_cast<int>(OutIncX),
+      static_cast<int>(OutIncY),
+      static_cast<int>(OutIncZ)
+      };
     EMLocalAlgorithm_TransfereDataToOutputExtension(selfPtr,inputExtension_Vector,OriginalExtension_DataPtr ,outInc,SliceNum);
   } 
 }
@@ -363,7 +368,12 @@ template <class T> void EMLocalAlgorithm<T>::Print_E_StepResultsToFile(int iter)
     short* OriginalExtension_DataPtr = (short*) EMLocalAlgorithm_GetPointerToVtkImageData(OriginalExtension_Data,VTK_SHORT,ChangedExtent);
     vtkIdType outIncX, outIncY, outIncZ;
     OriginalExtension_Data->GetContinuousIncrements(ChangedExtent, outIncX, outIncY, outIncZ);
-    int outInc[3] = {outIncX, outIncY, outIncZ};
+    int outInc[3] =
+      {
+      static_cast<int>(outIncX),
+      static_cast<int>(outIncY),
+      static_cast<int>(outIncZ)
+      };
     EMLocalAlgorithm_TransfereDataToOutputExtension(this,LabelMap_WorkingExtension_Ptr,OriginalExtension_DataPtr ,outInc,0);
 
     // Save Files 
@@ -386,7 +396,12 @@ template <class T> void EMLocalAlgorithm<T>::Print_E_StepResultsToFile(int iter)
     short *OriginalExtension_DataPtr = (short*) EMLocalAlgorithm_GetPointerToVtkImageData(OriginalExtension_Data,VTK_SHORT,this->Extent);
     vtkIdType outIncX, outIncY, outIncZ;
     OriginalExtension_Data->GetContinuousIncrements(this->Extent, outIncX, outIncY, outIncZ);
-    int outInc[3] = {outIncX, outIncY, outIncZ};
+    int outInc[3] =
+      {
+      static_cast<int>(outIncX),
+      static_cast<int>(outIncY),
+      static_cast<int>(outIncZ)
+      };
     EMLocalAlgorithm_TransfereDataToOutputExtension(this,LabelMap_WorkingExtension_Ptr,OriginalExtension_DataPtr ,outInc,0);
 
     // -------------------------------------------------
@@ -451,7 +466,12 @@ template <class T> void EMLocalAlgorithm<T>::Print_E_StepResultsToFile(int iter)
     output_OriginalExtension_Data->GetContinuousIncrements(this->Extent, outIncX, outIncY, outIncZ);
 
 
-    int outInc[3] = {outIncX, outIncY, outIncZ};
+    int outInc[3] =
+      {
+      static_cast<int>(outIncX),
+      static_cast<int>(outIncY),
+      static_cast<int>(outIncZ)
+      };
     EMLocalAlgorithm_TransfereDataToOutputExtension(this,Blub,output_OriginalExtension_DataPtr ,outInc,0);
 
     char FileName[1000];
