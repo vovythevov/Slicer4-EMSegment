@@ -41,15 +41,20 @@ $outputVolume DeepCopy [$ellips GetOutput]
 # ------------------------------------------------------
 $emLogic PrintText "Test 4 : DeepCopy Threshold again" 
 $outputVolume DeepCopy [$thresh GetOutput] 
-$emLogic PrintText "Testing done done"
 
 # Did not catch the error message from vtk
 # catch { $outputVolume DeepCopy [$thresh GetOutput] } errMSG
 # $emLogic PrintText "--- $errMSG -- "
 
-
 $thresh Delete
 $ellips Delete
+
+# ------------------------------------------------------
+$emLogic PrintText "Test 5 : PreprocessingBiasFieldCorrection" 
+$em_manager CreateAndObserveNewParameterSet 
+$emLogic PreprocessingBiasFieldCorrection $inputNode 1
+$emLogic RemoveTempFilesAndDirs
+
 
 # -----------------------------------
 # Notes 

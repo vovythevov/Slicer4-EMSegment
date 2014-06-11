@@ -9,6 +9,10 @@
 #include "vtkMRMLEMSGlobalParametersNode.h"
 #include "vtkMRMLLabelMapVolumeDisplayNode.h"
 #include "vtkMRMLEMSTemplateNode.h"
+#include "itkOtsuThresholdImageFilter.h"
+#include "vtkImageExport.h"
+#include "vtkITKUtility.h"
+#include <itkVTKImageImport.h>
 
 // EMSegment/Algorithm includes
 #include <vtkImageEMLocalSegmenter.h>
@@ -245,9 +249,10 @@ char* vtkEMSegmentLogic::mktemp_file(const char* postfix)
 }
 
 //----------------------------------------------------------------------------
-char* vtkEMSegmentLogic::mktemp_dir(const char *postfix)
+// creates up to two directories - one without postfix and one with - returns the name without postfix  
+const char* vtkEMSegmentLogic::mktemp_dir(const char *postfix)
 {
-  char *ptr;
+  const char *dirNameWithoutPostfix;
   {
     char filename[256];
     std::ostringstream dirTemplate;
@@ -256,12 +261,12 @@ char* vtkEMSegmentLogic::mktemp_dir(const char *postfix)
 #if _WIN32
     //todo, on windows _mkdtemp is not available
     strcpy_s( filename, sizeof(filename), dirTemplate.str().c_str() );
-    ptr = _mktemp(filename);
+    this->tempDirList.push_back(std::string(_mktemp(filename)));
 #else
     strcpy(filename, dirTemplate.str().c_str());
-    ptr = mkdtemp(filename);
+    this->tempDirList.push_back(std::string(mkdtemp(filename)));
 #endif
-    this->tempDirList.push_back(std::string(ptr));
+    dirNameWithoutPostfix = this->tempDirList.back().c_str();
   }
 
   // have to do it seperately bc otherwise mkdtemp does not work
@@ -269,12 +274,12 @@ char* vtkEMSegmentLogic::mktemp_dir(const char *postfix)
   if ( postfix ) 
     {
       std::ostringstream tmpdir;
-      tmpdir <<  ptr << postfix ;
+      tmpdir <<  dirNameWithoutPostfix << postfix ;
       vtksys::SystemTools::MakeDirectory( tmpdir.str().c_str());
       this->tempDirList.push_back(tmpdir.str());
     }
   // return without extension
-  return ptr;
+  return dirNameWithoutPostfix;
 }
 
 //----------------------------------------------------------------------------
@@ -294,10 +299,10 @@ void vtkEMSegmentLogic::RemoveTempFilesAndDirs()
   while (!this->tempDirList.empty())
     {
       std::string tempDir(this->tempDirList.back());
-      if (vtkDirectory::DeleteDirectory(tempDir.c_str())) 
+      if (!vtkDirectory::DeleteDirectory(tempDir.c_str())) 
       {
-           std::cout << "Cannot delete dorectory " << tempDir.c_str() << std::endl;
-      }    
+           std::cout << "Cannot delete directory " << tempDir.c_str() << std::endl;
+      } 
       this->tempDirList.pop_back();
     }
   cout << "vtkEMSegmentLogic::RemoveTempFilesAndDirs() End" << endl;
@@ -3757,3 +3762,315 @@ void vtkEMSegmentLogic::RemoveTaskAndTempFiles()
   cout << "vtkEMSegmentLogic::RemoveTaskAndTempFiles end " << endl;
 }
 
+//-----------------------------------------------------------------------------
+std::vector<double> vtkEMSegmentLogic::IntensityRangeWithinMask(vtkImageData* image, vtkImageData* mask)
+{   
+  std::vector<double> output(2);
+  if (!image || !mask)
+    {
+       vtkErrorMacro("input is null");
+       output[0]=output[1]=0;
+       return output;
+    }
+  VTK_CREATE(vtkImageCast,castMask);
+#if VTK_MAJOR_VERSION <= 5
+    castMask->SetInput(mask);
+#else
+    castMask->SetInputConnection(mask);
+#endif
+  castMask->SetOutputScalarType(image->GetScalarType());
+  castMask->Update(); 
+
+  VTK_CREATE(vtkImageMathematics,imageMask);
+#if VTK_MAJOR_VERSION <= 5
+  imageMask->SetInput1(image);
+  imageMask->SetInput2(castMask->GetOutput());
+#else
+  imageMask->SetInputConnection(0, image);
+  imageMask->SetInputConnection(1, castMask->GetOutputPort());
+#endif
+  imageMask->SetOperationToMultiply();
+  imageMask->Update();
+
+#if VTK_MAJOR_VERSION <= 5
+  imageMask->GetOutput()->GetScalarRange(output.data());
+#else
+  imageMask->GetOutputPort()->GetScalarRange(output.data());
+#endif
+
+  return output;
+}
+
+vtkMRMLScalarVolumeNode* vtkEMSegmentLogic::PreprocessingBiasFieldCorrection(vtkMRMLScalarVolumeNode *inputNode, int testFlag)
+{
+  // --------------------------
+  // Check input
+   if (inputNode == NULL)
+    {
+       vtkErrorMacro("No input node");
+       return NULL;
+    }
+
+   vtkImageData* inputImage=inputNode->GetImageData();
+   if (inputImage == NULL)
+    {
+       vtkErrorMacro("No input image defined" );
+       return NULL;
+    }
+
+   // ----------------------------------
+   // Write input to file 
+   
+   const char* tmpDir=this->mktemp_dir(NULL);
+
+   std::string inputFileName=std::string(tmpDir) + std::string("/input.nrrd");
+   {
+      VTK_CREATE(vtkMRMLVolumeArchetypeStorageNode,imageWriter);
+      imageWriter->SetScene(this->GetMRMLScene());
+      imageWriter->SetFileName(inputFileName.c_str());
+      if (!imageWriter->WriteData(inputNode)) {
+        vtkErrorMacro("Could not write to " << inputFileName.c_str());
+        return NULL;
+      }
+   }
+
+   // ----------------------------------
+   // Create Otsu Mask 
+   cout << "==== Creating Mask ====" << endl;
+   std::string maskFileName=std::string(tmpDir) + std::string("/mask.nrrd");
+   std::string maskName=std::string(inputNode->GetName()) + std::string("_mask");
+   vtkMRMLScalarVolumeNode* maskNode=this->GetMRMLManager()->CreateVolumeScalarNode(inputNode,maskName.c_str()); 
+   { 
+     std::ostringstream CMD;
+     CMD << "\"" << this->GetPluginsDirectory() <<"OtsuThresholdImageFilter\" --numberOfBins 200 --outsideValue 1 --insideValue 0 \"" << inputFileName << "\"   \"" << maskFileName <<  "\"";  
+     std::cout << "Executing " << CMD.str().c_str() << endl;
+     std::ostringstream tclCMD;
+     tclCMD << "catch { exec "   << CMD.str() << " } errmsg; return $errmsg"; 
+     std::string result(this->GetSlicerCommonInterface()->EvaluateTcl(tclCMD.str().c_str()));
+
+     VTK_CREATE(vtkMRMLVolumeArchetypeStorageNode,maskReader);
+     maskReader->SetScene(this->GetMRMLScene());
+     maskReader->SetFileName(maskFileName.c_str());
+     if (!maskReader->ReadData(maskNode))
+     {
+       // Only print out if we could not read mask to get error message 
+       cout <<  result.c_str() << endl;
+       vtkErrorMacro("Could not read mask from " << maskFileName.c_str());
+        return NULL;
+     }
+   }
+
+   vtkImageData* mask = maskNode->GetImageData();
+
+   //
+   // Execute BiasFieldCorrection
+   //
+   cout << "==== Performing Biasfield Correction ====" << endl;
+   std::string outputFileName=std::string(tmpDir) + std::string("/output.nrrd");
+   std::string outputName=std::string(inputNode->GetName()) + std::string("_N4corrected");
+   vtkMRMLScalarVolumeNode* outputNode=this->GetMRMLManager()->CreateVolumeScalarNode(inputNode,outputName.c_str()); 
+   
+   { 
+     // To debug set --iterations 1
+     std::ostringstream CMD;
+     CMD << "\"" << this->GetPluginsDirectory() <<"N4ITKBiasFieldCorrection\" ";
+     if (testFlag) 
+       {
+         CMD << "--iterations 1 " ;
+       } 
+     CMD<< "--maskimage \"" << maskFileName << "\" \"" <<  inputFileName << "\" \"" << outputFileName << "\"";
+     std::cout << "Executing " << CMD.str().c_str() << endl;
+
+     std::ostringstream tclCMD;
+     tclCMD << "catch { exec "   << CMD.str() << " } errmsg; return $errmsg"; 
+     std::string result(this->GetSlicerCommonInterface()->EvaluateTcl(tclCMD.str().c_str()));
+
+     // ----------------------------
+     // Read in output
+     VTK_CREATE(vtkMRMLVolumeArchetypeStorageNode,outputReader);
+     outputReader->SetScene(this->GetMRMLScene());
+     outputReader->SetFileName(outputFileName.c_str());
+     if (!outputReader->ReadData(outputNode))
+     {
+        // Only print out if we could not read mask to get error message 
+        cout <<  result.c_str() << endl;
+        vtkErrorMacro("Could not read in results from " << outputFileName.c_str());
+        return NULL;
+     }
+   }
+
+   VTK_CREATE(vtkImageData, outputImage);
+   outputImage->DeepCopy(outputNode->GetImageData());
+
+      
+   // ----------------------------
+   // Read in output
+
+   cout << "==== Restoring Original Image Range and Scalartype ====" << endl;
+
+   std::vector<double> origImageMaskedRange = this->IntensityRangeWithinMask(inputImage,mask);
+   std::vector<double> biasImageMaskedRange = this->IntensityRangeWithinMask(outputImage,mask);
+   cout << "Original Range: " <<  origImageMaskedRange[0] << " "  << origImageMaskedRange[1] << endl;
+   cout << "After Correction: " <<  biasImageMaskedRange[0] << " "  << biasImageMaskedRange[1] << endl;
+
+   VTK_CREATE(vtkImageCast,maskCast);
+#if VTK_MAJOR_VERSION <= 5
+   maskCast->SetInput(mask);
+#else
+   maskCast->SetInputConnection(mask);
+#endif
+   maskCast->SetOutputScalarType(outputImage->GetScalarType());
+   maskCast->Update(); 
+
+   // Define Muliplier for output so that range matches the original image again
+   VTK_CREATE(vtkImageMathematics,maskMultiplier);
+#if VTK_MAJOR_VERSION <= 5
+   maskMultiplier->SetInput1(maskCast->GetOutput());
+#else
+   maskMultiplier->SetInputConnection(1,maskCast->GetOutputPort());
+#endif
+   maskMultiplier->SetOperationToMultiplyByK();
+
+   if (biasImageMaskedRange[1]) 
+     {
+       float factor=origImageMaskedRange[1]/biasImageMaskedRange[1];
+       cout << "Correction Factor: " << factor << endl;
+       maskMultiplier->SetConstantK(factor);
+     }
+   else 
+     {
+      maskMultiplier->SetConstantK(1.0);
+     }
+
+   maskMultiplier->Update();
+  
+   VTK_CREATE(vtkImageThreshold,maskCompleteMultiplier);
+#if VTK_MAJOR_VERSION <= 5
+   maskCompleteMultiplier->SetInput(maskMultiplier->GetOutput());
+#else
+   maskCompleteMultiplier->SetInputConnection(maskMultiplier->GetOutputPort());
+#endif
+   maskCompleteMultiplier->ThresholdBetween(0,0);
+   maskCompleteMultiplier->ReplaceOutOff();
+   maskCompleteMultiplier->SetInValue(1.0);
+   maskCompleteMultiplier->Update();
+
+   VTK_CREATE(vtkImageMathematics, outputAdjustedRange);
+#if VTK_MAJOR_VERSION <= 5
+   outputAdjustedRange->SetInput1(outputImage);
+   outputAdjustedRange->SetInput2(maskCompleteMultiplier->GetOutput());
+#else
+   outputAdjustedRange->SetInputConnection(0,outputImage);
+   outputAdjustedRange->SetInputConnection(1,maskCompleteMultiplier->GetOutputPort());
+#endif
+   outputAdjustedRange->SetOperationToMultiply();
+   outputAdjustedRange->Update();
+
+   VTK_CREATE(vtkImageCast, outputCast);
+   #if VTK_MAJOR_VERSION <= 5
+   outputCast->SetInput(outputAdjustedRange->GetOutput());
+#else
+   outputCast->SetInputData(outputAdjustedRange->GetOutputData());
+#endif
+   outputCast->SetOutputScalarType(inputImage->GetScalarType());
+   outputCast->Update(); 
+
+#if VTK_MAJOR_VERSION <= 5
+   outputNode->GetImageData()->DeepCopy(outputCast->GetOutput());
+#else
+   outputNode->GetImageData()->DeepCopy(outputCast->GetOutputPort());
+#endif 
+
+   // for debugging
+   //outputFileName=std::string(tmpDir) + std::string("/output_withsamerange.nrrd");
+   //VTK_CREATE(vtkMRMLVolumeArchetypeStorageNode,outputWriter);
+   //  outputWriter->SetScene(this->GetMRMLScene());
+   //  outputWriter->SetFileName(outputFileName.c_str());
+   //  if (!outputWriter->WriteData(outputNode))
+   //  {
+   //    vtkErrorMacro("Could not read in results from " << outputFileName.c_str());
+   //    return NULL;
+   //  }
+   std::vector<double> finalImageMaskedRange = this->IntensityRangeWithinMask(outputNode->GetImageData(),mask);
+   cout << "Final: " <<  finalImageMaskedRange[0] << " "  << finalImageMaskedRange[1] << endl;
+   // cout << "Entire Image: " <<  outputNode->GetImageData()->GetScalarRange()[0] << " "  << outputNode->GetImageData()->GetScalarRange()[1] << endl;
+
+   // Return results
+   return outputNode; 
+}
+
+// did not work for some reason 
+//    // Change input to type float 
+//    int originalInputCast = inputImage->GetScalarType();
+// 
+//    VTK_CREATE(vtkImageCast,inputCast); 
+// #if VTK_MAJOR_VERSION <= 5
+//    inputCast->SetInput(inputImage);
+// #else
+//    inputCast->SetInputConnection(inputImage);
+// #endif
+//    inputCast->SetOutputScalarType(VTK_FLOAT);
+//    inputCast->Update(); 
+// 
+//    // Create Mask 
+//    std::cout << "Creating Otsu mask ...." << std::endl;
+//    typedef float RealType;
+//    const int ImageDimension = 3;
+//    typedef itk::Image<RealType, ImageDimension> ImageType;
+//    typedef itk::Image<unsigned char, ImageDimension> MaskImageType;
+//    typedef itk::OtsuThresholdImageFilter<ImageType, MaskImageType>  ThresholderType;
+//    ThresholderType::Pointer otsu = ThresholderType::New();
+// 
+//    typedef typename itk::VTKImageImport<ImageType> ImageImportType;
+//    typename ImageImportType::Pointer itkImporter = ImageImportType::New();
+// 
+//    vtkImageExport* vtkExporter = vtkImageExport::New();
+// #if (VTK_MAJOR_VERSION <= 5)
+//    vtkExporter->SetInput(inputCast->GetOutput());
+// #else
+//    vtkExporter->SetInputData(inputCast->GetOutputData());
+// #endif
+//    ConnectPipelines(vtkExporter,itkImporter);
+// 
+//    otsu->SetInput(itkImporter->GetOutput());
+// 
+//    otsu->SetNumberOfHistogramBins( 200 );
+//    otsu->SetInsideValue( 0 );
+//    otsu->SetOutsideValue( 1 );
+//    cout << "sfafd ----" << endl;
+//    otsu->Update();
+// 
+//    VTK_CREATE(vtkImageData,mask);
+//    cout << "sfafd" << endl;
+//    // Poor men's solution to make sure that mask is of the correct size 
+// #if VTK_MAJOR_VERSION <= 5
+//    mask->DeepCopy(inputCast->GetOutput());
+// #else
+//    mask->DeepCopy(inputCast->GetOutputData());
+// #endif 
+// 
+//    int inExt[6];
+// #if VTK_MAJOR_VERSION <= 5
+//    mask->GetWholeExtent(inExt);
+// #else
+//   mask ->GetExtent(inExt);
+// #endif
+// 
+//    memcpy(mask->GetScalarPointerForExtent(inExt), otsu->GetOutput()->GetBufferPointer(), otsu->GetOutput()->GetBufferedRegion().GetNumberOfPixels()*sizeof(float) );
+// 
+//    otsu->Delete();
+//    itkImporter->Delete(); 
+//    vtkExporter->Delete();
+//   {
+//    vtkMRMLScalarVolumeNode* maskNode=this->GetMRMLManager()->CreateVolumeScalarNode(inputNode,"EM_TMP_Mask"); 
+//    maskNode->GetImageData()->DeepCopy(mask);  
+//
+//    imageReadWriter->SetFileName(maskFileName.c_str());
+//    int writeFlag=imageReadWriter->WriteData(maskNode);
+//    this->GetMRMLManager()->GetMRMLScene()->RemoveNode(maskNode);
+//    if (!writeFlag)
+//    {
+//      vtkErrorMacro("Could not write to " << maskFileName.c_str());
+//      return NULL;
+//    }
+   

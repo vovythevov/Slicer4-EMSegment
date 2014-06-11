@@ -1818,109 +1818,23 @@ namespace eval EMSegmenterPreProcessingTcl {
     # otherwise returns nothing
     #     ./Slicer3 --launch N4ITKBiasFieldCorrection --inputimage ../Slicer3/Testing/Data/Input/MRMeningioma0.nrrd --maskimage /projects/birn/fedorov/Meningioma_anonymized/Cases/Case02/Case02_Scan1ICC.nrrd corrected_image.nrrd recovered_bias_field.nrrd
     # -------------------------------------
+    # targetICCMaskNode is currently ignored 
     proc PerformIntensityCorrection { inputNode targetICCMaskNode } {
         variable LOGIC
         $LOGIC PrintText "TCL: =========================================="
         $LOGIC PrintText "TCL: == Intensity Correction "
         $LOGIC PrintText "TCL: =========================================="
-
-        return [N4ITKBiasFieldCorrectionCLI $inputNode $targetICCMaskNode]
-    }
-
-    # inputICCMaskNode will be ignored
-    proc N4ITKBiasFieldCorrectionCLI { inputNode inputICCMaskNode } {
-        variable SCENE
-        variable LOGIC
-        variable mrmlManager
-
-        $LOGIC PrintText "TCL: =========================================="
-        $LOGIC PrintText "TCL: ==     N4ITKBiasFieldCorrectionCLI      =="
-        $LOGIC PrintText "TCL: =========================================="
-
-        set PLUGINS_DIR "[$LOGIC GetPluginsDirectory]"
+ 
         # initialize
         set correctedVolumeNodeList ""
-
         # Run the algorithm on each volume
         for { set i 0 } { $i < [$inputNode GetNumberOfVolumes] } { incr i } {
-
-           set CMD "\"${PLUGINS_DIR}/N4ITKBiasFieldCorrection\""
-
-            set inputVolumeNode [$inputNode GetNthVolumeNode $i]
-            set inputVolumeData [$inputVolumeNode GetImageData]
-            if { $inputVolumeData == "" } {
-                PrintError "N4ITKBiasFieldCorrectionCLI: the ${i}th volume node has not input data defined!"
-                foreach VolumeNode $correctedVolumeNodeList {
-                    DeleteNode $VolumeNode
-                }
-                return ""
-            }
-
-            set tmpFileName [WriteDataToTemporaryDir $inputVolumeNode Volume]
-            set RemoveFiles "\"$tmpFileName\""
-            if { $tmpFileName == "" } {
-                return 1
-            }
- 
-            if {[$LOGIC GetSlicerVersion] == 3  } {
-                set CMD "$CMD --inputimage"
-            }
-
-            set CMD "$CMD \"$tmpFileName\""
-
-            # set tmpFileName [WriteDataToTemporaryDir $inputICCMaskNode Volume ]
-            # set RemoveFiles "$RemoveFiles \"$tmpFileName\""
-            # if { $tmpFileName == "" } { return 1 }
-            # set CMD "$CMD --maskimag \"$tmpFileName\""
-
-            # create a new node for our output-list
-            set outputVolumeNode [$mrmlManager CreateVolumeScalarNode $inputVolumeNode "[$inputVolumeNode GetName]_N4corrected"]
-
-            set outputVolumeFileName [ CreateTemporaryFileNameForNode $outputVolumeNode ]
-            $LOGIC PrintText "$outputVolumeFileName"
-            if { $outputVolumeFileName == "" } {
-                return 1
-            }
-
-            if {[$LOGIC GetSlicerVersion] == 3  } {
-                set CMD "$CMD --outputimage"
-            }
-
-            set CMD "$CMD \"$outputVolumeFileName\""
-
-            set RemoveFiles "$RemoveFiles \"$outputVolumeFileName\""
-
-            # for test purposes(reduces execution time)
-            # set CMD "$CMD --iterations \"3,2,1\""
-
-            # set outbiasVolumeFileName [ CreateTemporaryFileNameForNode $outbiasVolumeFileName ]
-            # if { $outbiasVolumeFileName == "" } { return 1 }
-            # set CMD "$CMD --outputbiasfield \"$outbiasVolumeFileName\""
-
-            # execute algorithm
-            $LOGIC PrintText "TCL: Executing $CMD"
-            catch { eval exec $CMD } errmsg
-            $LOGIC PrintText "TCL: $errmsg"
-
-            # Read results back, we have to read 2 results
-
-            ReadDataFromDisk $outputVolumeNode $outputVolumeFileName Volume
-
-
-            # file delete -force $outputVolumeFileName
-
-            # ReadDataFromDisk $outbiasVolumeNode $outbiasVolumeFileName Volume
-            # file delete -force $outbiasVolumeFileName
-
-            # still in for loop, create a list of Volumes
-            set correctedVolumeNodeList "${correctedVolumeNodeList}$outputVolumeNode "
-            $LOGIC PrintText "TCL: List of volume nodes: $correctedVolumeNodeList"
+           set outputVolumeNode [$LOGIC PreprocessingBiasFieldCorrection [$inputNode GetNthVolumeNode $i] 0 ]
+           set correctedVolumeNodeList "${correctedVolumeNodeList}$outputVolumeNode "
         }
+
         return "$correctedVolumeNodeList"
     }
-
-
-
 
     # -------------------------------------
     # Compute intensity distribution through auto sampling
