@@ -2965,9 +2965,9 @@ const char* vtkEMSegmentLogic::GetTemporaryDirectory()
 }
 
 //----------------------------------------------------------------------------
-const char* vtkEMSegmentLogic::GetPluginsDirectory()
+const char* vtkEMSegmentLogic::GetPluginWithFullPath(const char* pluginName)
 {
-  return this->GetSlicerCommonInterface()->GetPluginsDirectory();
+  return this->GetSlicerCommonInterface()->GetPluginWithFullPath(pluginName);
 }
 
 //----------------------------------------------------------------------------
@@ -3842,7 +3842,7 @@ vtkMRMLScalarVolumeNode* vtkEMSegmentLogic::PreprocessingBiasFieldCorrection(vtk
    vtkMRMLScalarVolumeNode* maskNode=this->GetMRMLManager()->CreateVolumeScalarNode(inputNode,maskName.c_str()); 
    { 
      std::ostringstream CMD;
-     CMD << "\"" << this->GetPluginsDirectory() <<"OtsuThresholdImageFilter\" --numberOfBins 200 --outsideValue 1 --insideValue 0 \"" << inputFileName << "\"   \"" << maskFileName <<  "\"";  
+     CMD << "\"" << this->GetPluginWithFullPath("OtsuThresholdImageFilter") <<"\" --numberOfBins 200 --outsideValue 1 --insideValue 0 \"" << inputFileName << "\"   \"" << maskFileName <<  "\"";  
      std::cout << "Executing " << CMD.str().c_str() << endl;
      std::ostringstream tclCMD;
      tclCMD << "catch { exec "   << CMD.str() << " } errmsg; return $errmsg"; 
@@ -3873,7 +3873,7 @@ vtkMRMLScalarVolumeNode* vtkEMSegmentLogic::PreprocessingBiasFieldCorrection(vtk
    { 
      // To debug set --iterations 1
      std::ostringstream CMD;
-     CMD << "\"" << this->GetPluginsDirectory() <<"N4ITKBiasFieldCorrection\" ";
+     CMD << "\"" << this->GetPluginWithFullPath("N4ITKBiasFieldCorrection") <<"\" ";
      if (testFlag) 
        {
          CMD << "--iterations 1 " ;

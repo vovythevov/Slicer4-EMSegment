@@ -89,7 +89,11 @@ public:
   void EvaluatePython(const char* command);
 
   const char* GetBinDirectory();
+#ifdef Slicer3_USE_KWWIDGETS
   const char* GetPluginsDirectory();
+#else
+  const char* GetPluginWithFullPath(const char* pluginName);
+#endif 
   const char* GetRepositoryRevision();
   void SetApplicationBinDir(const char*);
   vtkHTTPHandler* GetHTTPHandler(vtkMRMLScene* mrmlScene);
@@ -154,7 +158,8 @@ private:
 //BTX
   vtkMRMLRemoteIOLogic *remoteIOLogic;
   void resetReturnChar(); 
-  char* returnChar;  
+  char* returnChar;
+  std::string returnString;  
 //ETX
 #endif
 };

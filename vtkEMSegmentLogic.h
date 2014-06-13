@@ -175,7 +175,7 @@ public:
   vtkSlicerCommonInterface* GetSlicerCommonInterface();
   virtual int SourceTclFile(const char *tclFile);
 
-  const char* GetPluginsDirectory();
+  const char* GetPluginWithFullPath(const char* pluginName);
 
   //
   // SLICER COMMON INTERFACE ENDS HERE

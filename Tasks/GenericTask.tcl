@@ -736,14 +736,6 @@ namespace eval EMSegmenterPreProcessingTcl {
         $LOGIC PrintText "TCL: == InitPreprocessing"
         $LOGIC PrintText "TCL: =========================================="
 
-        # TODO: Check for
-        # - environment variables  and
-        # - command line executables
-        #set PLUGINS_DIR "[$::slicer3::Application GetPluginsDir]"
-        #if { $PLUGINS_DIR == "" }
-        #    PrintError "InitPreProcessing: Environmet variable not set corretly"
-        #    return 1
-
         # -----------------------------------------------------------
         # Check and set valid variables
         if { [$mrmlManager GetGlobalParametersNode] == 0 } {
@@ -842,8 +834,7 @@ namespace eval EMSegmenterPreProcessingTcl {
 
         set deformationFieldFilename [ CreateTemporaryFileNameForNode $DFNode ]
 
-        set PLUGINS_DIR "[$LOGIC GetPluginsDirectory]"
-        set CMDdeform "\"${PLUGINS_DIR}/BSplineToDeformationField\""
+        set CMDdeform "\"[$LOGIC GetPluginWithFullPath BSplineToDeformationField]\""
         set CMDdeform "$CMDdeform --refImage \"$tmpReferenceVolumeFileName\""
         set CMDdeform "$CMDdeform --tfm \"$tmpTransformFileName\""
         set CMDdeform "$CMDdeform --defImage \"$deformationFieldFilename\""
@@ -884,9 +875,6 @@ namespace eval EMSegmenterPreProcessingTcl {
         $LOGIC PrintText "TCL: Type: $selectedRegistrationPackage"
 
         
-        #set PLUGINS_DIR "[$::slicer3::Application GetPluginsDir]"
-        set PLUGINS_DIR "[$LOGIC GetPluginsDirectory]"
-
         # initialize
         set alignedInputNode_SkullStripped ""
 
@@ -989,8 +977,7 @@ namespace eval EMSegmenterPreProcessingTcl {
                     PrintError "it is empty"
                 }
 
-
-                set CMD "\"${PLUGINS_DIR}/BRAINSFit\""
+                set CMD "\"[$LOGIC GetPluginWithFullPath BRAINSFit]\""
                 set CMD "$CMD --fixedVolume $fixedVolumeFileName"
                 set CMD "$CMD --movingVolume $movingVolumeFileName"
                 set CMD "$CMD --outputVolume $linearOutputVolumeFileName"
@@ -1044,7 +1031,7 @@ namespace eval EMSegmenterPreProcessingTcl {
                 }
 
 
-                set CMD "\"${PLUGINS_DIR}/BRAINSDemonWarp\""
+                set CMD "\"[$LOGIC GetPluginWithFullPath BRAINSDemonWarp]\""
                 set CMD "$CMD -f $fixedVolumeFileName"
                 set CMD "$CMD -m $movingVolumeFileName"
                 set CMD "$CMD --initializeWithTransform $linearTransformFileName"
@@ -1065,7 +1052,7 @@ namespace eval EMSegmenterPreProcessingTcl {
                 # WARP(=Resample) our mask
 
                 set backgroundLevel 0
-                set CMD "\"${PLUGINS_DIR}/BRAINSResample\""
+                set CMD "\"[$LOGIC GetPluginWithFullPath BRAINSResample]\""
                 set CMD "$CMD --inputVolume $atlas_mask_FileName"
                 set CMD "$CMD --referenceVolume $fixedVolumeFileName"
                 set CMD "$CMD --deformationVolume $deformationfield"
@@ -1113,9 +1100,9 @@ namespace eval EMSegmenterPreProcessingTcl {
             }
 
           if {[$LOGIC GetSlicerVersion] == 3  } {
-             set CMD "\"${PLUGINS_DIR}/Mask\""
+              set CMD "\"[$LOGIC GetPluginWithFullPath Mask]\""
           } else {
-             set CMD "\"${PLUGINS_DIR}/MaskScalarVolume\""
+              set CMD "\"[$LOGIC GetPluginWithFullPath MaskScalarVolume]\""
           }
             set CMD "$CMD --label 1 --replace 0 $inputVolumeFileName $deformed_atlas_mask_FileName $outputVolumeFileName"
 
@@ -1729,12 +1716,11 @@ namespace eval EMSegmenterPreProcessingTcl {
         $LOGIC PrintText "TCL: =========================================="
         $LOGIC PrintText "TCL: == Generate ICC MASK (not yet implemented)"
         $LOGIC PrintText "TCL: =========================================="
-        set PLUGINS_DIR "[$LOGIC GetPluginsDirectory]"
         
 
-        # set CMD "$PLUGINS_DIR/DemonsRegistration --fixed_image $Scan2Image --moving_image $Scan1Image --output_image $Scan1ToScan2Image --output_field $Scan1ToScan2Deformation --num_levels 3 --num_iterations 20,20,20 --def_field_sigma 1 --use_histogram_matching --verbose"
+        # set CMD "DemonsRegistration --fixed_image $Scan2Image --moving_image $Scan1Image --output_image $Scan1ToScan2Image --output_field $Scan1ToScan2Deformation --num_levels 3 --num_iterations 20,20,20 --def_field_sigma 1 --use_histogram_matching --verbose"
 
-        set CMD "\"$PLUGINS_DIR/DemonsRegistration\" --fixed_image $Scan2Image --moving_image $Scan1Image --output_image $Scan1ToScan2Image --output_field $Scan1ToScan2Deformation --num_levels 3 --num_iterations 20,20,20 --def_field_sigma 1 --use_histogram_matching --verbose"
+        set CMD "\"[$LOGIC GetPluginWithFullPath DemonsRegistration]\" --fixed_image $Scan2Image --moving_image $Scan1Image --output_image $Scan1ToScan2Image --output_field $Scan1ToScan2Deformation --num_levels 3 --num_iterations 20,20,20 --def_field_sigma 1 --use_histogram_matching --verbose"
 
         return 1
     }

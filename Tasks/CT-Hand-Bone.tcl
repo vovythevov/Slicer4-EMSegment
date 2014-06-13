@@ -221,8 +221,7 @@ namespace eval EMSegmenterPreProcessingTcl {
 
         #  set transformfile RegisterAtlasToSubject { $outputAtlasFileName $outputFileName }
 
-        set PLUGINS_DIR "[$LOGIC GetPluginsDirectory]"
-        set CMD "\"${PLUGINS_DIR}/BRAINSFit\""
+        set CMD "\"[$LOGIC GetPluginWithFullPath BRAINSFit]\""
 
         set fixedVolumeFileName $blurredInputTargetVolumeFileName
         set CMD "$CMD --fixedVolume $fixedVolumeFileName"
@@ -252,7 +251,7 @@ namespace eval EMSegmenterPreProcessingTcl {
 
         ### Call BRAINSDemonWarp ###
 
-        set CMD "\"${PLUGINS_DIR}/BRAINSDemonWarp\""
+        set CMD "\"[$LOGIC GetPluginWithFullPath BRAINSDemonWarp]\""
         set CMD "$CMD -m $movingVolumeFileName -f $fixedVolumeFileName"
         set CMD "$CMD --initializeWithTransform $linearTransform"
         set oArgument [CreateFileName "Volume"]
@@ -292,7 +291,7 @@ namespace eval EMSegmenterPreProcessingTcl {
             set inputAtlasVolumeFileName [WriteImageDataToTemporaryDir $inputAtlasVolumeNode]
             set outputAtlasVolumeFileName [WriteImageDataToTemporaryDir $outputAtlasVolumeNode]
 
-            set CMD "\"${PLUGINS_DIR}/BRAINSResample\""
+            set CMD "\"[$LOGIC GetPluginWithFullPath BRAINSResample]\""
             set CMD "$CMD --inputVolume $inputAtlasVolumeFileName  --referenceVolume $fixedTargetVolumeFileName"
             set CMD "$CMD --outputVolume $outputAtlasVolumeFileName --deformationVolume $deformationfield"
 

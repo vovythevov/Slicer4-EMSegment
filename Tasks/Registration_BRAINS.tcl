@@ -10,8 +10,7 @@
         $LOGIC PrintText "TCL: == Resample Image CLI"
         $LOGIC PrintText "TCL: =========================================="
 
-        set PLUGINS_DIR "[$LOGIC GetPluginsDirectory]"
-        set CMD "\"${PLUGINS_DIR}/BRAINSResample\""
+        set CMD "\"[$LOGIC GetPluginWithFullPath BRAINSResample]\""
 
         set tmpInputVolumeFileName [WriteImageDataToTemporaryDir $inputVolumeNode ]
         if { $tmpInputVolumeFileName == "" } { return 1 }
@@ -110,11 +109,8 @@
 
 
 
-        set PLUGINS_DIR "[$LOGIC GetPluginsDirectory]"
-
         # First BRAINSFit call
-
-        set CMD "\"${PLUGINS_DIR}/BRAINSFit\""
+        set CMD "\"[$LOGIC GetPluginWithFullPath BRAINSFit]\""
 
         # Filter options - just set it here to make sure that if default values are changed this still works as it supposed to
         set CMD "$CMD --backgroundFillValue $backgroundLevel"

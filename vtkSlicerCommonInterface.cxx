@@ -13,6 +13,8 @@
 
 #else
 
+#include <vtksys/SystemTools.hxx>
+
 // Qt includes
 #include <QDebug>
 
@@ -579,55 +581,21 @@ const char* vtkSlicerCommonInterface::GetBinDirectory()
   return 0;
 
 }
-
+#ifdef Slicer3_USE_KWWIDGETS
 //-----------------------------------------------------------------------------
 const char* vtkSlicerCommonInterface::GetPluginsDirectory()
 {
-#ifdef Slicer3_USE_KWWIDGETS
-
   // Slicer3
   return vtkSlicerApplication::GetInstance()->GetPluginsDir();
-
-#else
-
-  // Slicer4
-  // Note: Since some CLIs can be build as extension, the path to a CLI
-  //       shouldn't be hardcoded using Slicer home. Instead, the
-  //       associated location should be retrieved by invoking Slicer
-  //       with for example a "--module-path <ModuleName>" parameter.
-    {
-      QString dir = qSlicerApplication::application()->slicerHome();
-      if (!qSlicerApplication::application()->isInstalled())
-       {
-            dir += "/" Slicer_CLIMODULES_LIB_DIR "/";
-       }
-       else
-       {
-#ifndef Q_OS_MAC
-           dir += "/" Slicer_CLIMODULES_LIB_DIR "/";
-#else
-           // HACK - On Mac OSX, since all libraries are fixed using the same "install_name" (specifying the
-           //        location of the dependent libraries relatively to the location of Slicer executable), it
-           //        is required for CLI executable to be located at same depth as Slicer executable.
-           //        See also Slicer/Utilities/LastConfigureStep/SlicerCompleteBundles.cmake.in
-           dir  += "/" Slicer_CLIMODULES_SUBDIR "/";
-#endif
-       }
-
-#if defined (WIN32)
-      dir  += qSlicerApplication::application()->intDir();
-#endif
-       this->resetReturnChar() ;
-       this->returnChar = qstrdup( dir.toLatin1() );
-
-     }
-
-  return this->returnChar;
-
-#endif
-
-  return 0;
 }
+
+#else
+const char* vtkSlicerCommonInterface::GetPluginWithFullPath(const char* pluginName)
+{
+  this->returnString = std::string(vtksys::SystemTools::FindProgram(pluginName));
+  return this->returnString.c_str();
+}
+#endif
 
 //-----------------------------------------------------------------------------
 const char* vtkSlicerCommonInterface::GetRepositoryRevision()
