@@ -83,11 +83,11 @@ int main(int argc, char** argv)
   //
   // ==== Run Tcl Script  ===============
   // 
-  cout << " ==================== Start =================" << endl;
+  cout << "==================== Start =================" << endl;
   cout << "Sourcing " << tclFile.c_str() << endl;
   tclCommand =  std::string("source ") + tclFile;
   slicerCommon->EvaluateTcl(tclCommand.c_str());
-  cout << " ==================== END =================" << endl;
+  cout << "==================== END =================" << endl;
 
   //
   // ==== Clean Up  ===============

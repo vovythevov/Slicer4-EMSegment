@@ -52,8 +52,17 @@ $ellips Delete
 # ------------------------------------------------------
 $emLogic PrintText "Test 5 : PreprocessingBiasFieldCorrection" 
 $em_manager CreateAndObserveNewParameterSet 
-$emLogic PreprocessingBiasFieldCorrection $inputNode 1
+set outputNode [$emLogic PreprocessingBiasFieldCorrection $inputNode 1]
 $emLogic RemoveTempFilesAndDirs
+
+set inputScalarRange [[$inputNode GetImageData] GetScalarRange]
+set outputScalarRange [[$outputNode GetImageData] GetScalarRange]
+
+if { ( [lindex $inputScalarRange 0] != [lindex $outputScalarRange 0] ) || ( [lindex $inputScalarRange 1] != [lindex $outputScalarRange 1] ) } {
+  $emLogic PrintText "TCL: ERROR: Scalar range of input and output do not match" 
+  $emLogic PrintText "TCL: ERROR: Input: $inputScalarRange;  Output: $outputScalarRange" 
+}
+ 
 
 
 # -----------------------------------

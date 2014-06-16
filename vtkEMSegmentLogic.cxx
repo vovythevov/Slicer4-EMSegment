@@ -285,7 +285,7 @@ const char* vtkEMSegmentLogic::mktemp_dir(const char *postfix)
 //----------------------------------------------------------------------------
 void vtkEMSegmentLogic::RemoveTempFilesAndDirs()
 {
-  cout << "vtkEMSegmentLogic::RemoveTempFilesAndDirs() Start" << endl;
+  // cout << "vtkEMSegmentLogic::RemoveTempFilesAndDirs() Start" << endl;
   while (!this->tempFileList.empty())
     {
       std::string tempFile(this->tempFileList.back());
@@ -305,7 +305,7 @@ void vtkEMSegmentLogic::RemoveTempFilesAndDirs()
       } 
       this->tempDirList.pop_back();
     }
-  cout << "vtkEMSegmentLogic::RemoveTempFilesAndDirs() End" << endl;
+  // cout << "vtkEMSegmentLogic::RemoveTempFilesAndDirs() End" << endl;
 }
 
 //----------------------------------------------------------------------------
@@ -3792,11 +3792,15 @@ std::vector<double> vtkEMSegmentLogic::IntensityRangeWithinMask(vtkImageData* im
   imageMask->SetOperationToMultiply();
   imageMask->Update();
 
+  double range[2];
 #if VTK_MAJOR_VERSION <= 5
-  imageMask->GetOutput()->GetScalarRange(output.data());
+  imageMask->GetOutput()->GetScalarRange(range);
 #else
-  imageMask->GetOutputPort()->GetScalarRange(output.data());
+  imageMask->GetOutputPort()->GetScalarRange(range);
 #endif
+  // Note: windows compiler does not provide output.data() 
+  output[0]=range[0];
+  output[1]=range[1];
 
   return output;
 }
@@ -3899,17 +3903,26 @@ vtkMRMLScalarVolumeNode* vtkEMSegmentLogic::PreprocessingBiasFieldCorrection(vtk
      }
    }
 
-   VTK_CREATE(vtkImageData, outputImage);
-   outputImage->DeepCopy(outputNode->GetImageData());
+   VTK_CREATE(vtkImageCast,unscaledOutput);
+#if VTK_MAJOR_VERSION <= 5
+   unscaledOutput->SetInput(outputNode->GetImageData());
+#else
+   unscaledOutput->SetInputConnection(outputNode->GetImageData());
+#endif
+   unscaledOutput->SetOutputScalarTypeToFloat();
+   unscaledOutput->Update(); 
 
-      
    // ----------------------------
    // Read in output
 
    cout << "==== Restoring Original Image Range and Scalartype ====" << endl;
 
    std::vector<double> origImageMaskedRange = this->IntensityRangeWithinMask(inputImage,mask);
-   std::vector<double> biasImageMaskedRange = this->IntensityRangeWithinMask(outputImage,mask);
+#if VTK_MAJOR_VERSION <= 5
+   std::vector<double> biasImageMaskedRange = this->IntensityRangeWithinMask(unscaledOutput->GetOutput(),mask);
+#else
+   std::vector<double> biasImageMaskedRange = this->IntensityRangeWithinMask(unscaledOutput->GetOutputPort(),mask);
+#endif
    cout << "Original Range: " <<  origImageMaskedRange[0] << " "  << origImageMaskedRange[1] << endl;
    cout << "After Correction: " <<  biasImageMaskedRange[0] << " "  << biasImageMaskedRange[1] << endl;
 
@@ -3919,7 +3932,7 @@ vtkMRMLScalarVolumeNode* vtkEMSegmentLogic::PreprocessingBiasFieldCorrection(vtk
 #else
    maskCast->SetInputConnection(mask);
 #endif
-   maskCast->SetOutputScalarType(outputImage->GetScalarType());
+   maskCast->SetOutputScalarTypeToFloat();
    maskCast->Update(); 
 
    // Define Muliplier for output so that range matches the original image again
@@ -3955,12 +3968,13 @@ vtkMRMLScalarVolumeNode* vtkEMSegmentLogic::PreprocessingBiasFieldCorrection(vtk
    maskCompleteMultiplier->SetInValue(1.0);
    maskCompleteMultiplier->Update();
 
+
    VTK_CREATE(vtkImageMathematics, outputAdjustedRange);
 #if VTK_MAJOR_VERSION <= 5
-   outputAdjustedRange->SetInput1(outputImage);
+   outputAdjustedRange->SetInput1(unscaledOutput->GetOutput());
    outputAdjustedRange->SetInput2(maskCompleteMultiplier->GetOutput());
 #else
-   outputAdjustedRange->SetInputConnection(0,outputImage);
+   outputAdjustedRange->SetInputConnection(0,unscaledOutput->GetOutputPort());
    outputAdjustedRange->SetInputConnection(1,maskCompleteMultiplier->GetOutputPort());
 #endif
    outputAdjustedRange->SetOperationToMultiply();
@@ -3991,9 +4005,9 @@ vtkMRMLScalarVolumeNode* vtkEMSegmentLogic::PreprocessingBiasFieldCorrection(vtk
    //    vtkErrorMacro("Could not read in results from " << outputFileName.c_str());
    //    return NULL;
    //  }
+
    std::vector<double> finalImageMaskedRange = this->IntensityRangeWithinMask(outputNode->GetImageData(),mask);
    cout << "Final: " <<  finalImageMaskedRange[0] << " "  << finalImageMaskedRange[1] << endl;
-   // cout << "Entire Image: " <<  outputNode->GetImageData()->GetScalarRange()[0] << " "  << outputNode->GetImageData()->GetScalarRange()[1] << endl;
 
    // Return results
    return outputNode; 
