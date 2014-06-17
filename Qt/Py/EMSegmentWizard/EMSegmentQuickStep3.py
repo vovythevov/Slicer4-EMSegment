@@ -35,9 +35,17 @@ class EMSegmentQuickStep3( EMSegmentStep ) :
 
     self.__noSamples = True
 
-    slicer.sliceWidgetRed_interactorStyle.AddObserver( vtk.vtkCommand.LeftButtonReleaseEvent, self.onClickInRedSliceView )
-    slicer.sliceWidgetYellow_interactorStyle.AddObserver( vtk.vtkCommand.LeftButtonReleaseEvent, self.onClickInYellowSliceView )
-    slicer.sliceWidgetGreen_interactorStyle.AddObserver( vtk.vtkCommand.LeftButtonReleaseEvent, self.onClickInGreenSliceView )
+    lm = slicer.app.layoutManager()
+    # slicer.sliceWidgetRed_interactorStyle.AddObserver( vtk.vtkCommand.LeftButtonReleaseEvent, self.onClickInRedSliceView )
+    lm.sliceWidget('Red').sliceView().interactorStyle().AddObserver( vtk.vtkCommand.LeftButtonReleaseEvent, self.onClickInRedSliceView )
+    # slicer.sliceWidgetYellow_interactorStyle.AddObserver( vtk.vtkCommand.LeftButtonReleaseEvent, self.onClickInYellowSliceView )
+    lm.sliceWidget('Yellow').sliceView().interactorStyle().AddObserver( vtk.vtkCommand.LeftButtonReleaseEvent, self.onClickInYellowSliceView )
+    # slicer.sliceWidgetGreen_interactorStyle.AddObserver( vtk.vtkCommand.LeftButtonReleaseEvent, self.onClickInGreenSliceView )
+    lm.sliceWidget('Green').sliceView().interactorStyle().AddObserver( vtk.vtkCommand.LeftButtonReleaseEvent, self.onClickInGreenSliceView )
+
+    # slicer.sliceWidgetRed_interactorStyle.AddObserver( vtk.vtkCommand.LeftButtonReleaseEvent, self.onClickInRedSliceView )
+    # slicer.sliceWidgetYellow_interactorStyle.AddObserver( vtk.vtkCommand.LeftButtonReleaseEvent, self.onClickInYellowSliceView )
+    # slicer.sliceWidgetGreen_interactorStyle.AddObserver( vtk.vtkCommand.LeftButtonReleaseEvent, self.onClickInGreenSliceView )
 
   def createUserInterface( self ):
     '''
@@ -386,7 +394,10 @@ class EMSegmentQuickStep3( EMSegmentStep ) :
     if not self.__manualSampling:
       return
 
-    rasPos = Helper.onClickInSliceView( slicer.sliceWidgetRed_interactorStyle, slicer.sliceWidgetRed_sliceLogic )
+    # rasPos = Helper.onClickInSliceView( slicer.sliceWidgetRed_interactorStyle, slicer.sliceWidgetRed_sliceLogic )
+    sWR = slicer.app.layoutManager().sliceWidget('Red')
+    rasPos = Helper.onClickInSliceView( sWR.sliceView().interactorStyle(), sWR.sliceLogic )
+
     mrmlNode = self.__anatomicalTree.currentNode()
     self.mrmlManager().AddTreeNodeDistributionSamplePoint( self.__vtkId, rasPos );
 
@@ -401,7 +412,10 @@ class EMSegmentQuickStep3( EMSegmentStep ) :
     if not self.__manualSampling:
       return
 
-    rasPos = Helper.onClickInSliceView( slicer.sliceWidgetYellow_interactorStyle, slicer.sliceWidgetYellow_sliceLogic )
+    #rasPos = Helper.onClickInSliceView( slicer.sliceWidgetYellow_interactorStyle, slicer.sliceWidgetYellow_sliceLogic )
+    sWY = slicer.app.layoutManager().sliceWidget('Yellow')
+    rasPos = Helper.onClickInSliceView( sWY.sliceView().interactorStyle, sWY.sliceLogic )
+
     mrmlNode = self.__anatomicalTree.currentNode()
     self.mrmlManager().AddTreeNodeDistributionSamplePoint( self.__vtkId, rasPos );
 
@@ -416,7 +430,10 @@ class EMSegmentQuickStep3( EMSegmentStep ) :
     if not self.__manualSampling:
       return
 
-    rasPos = Helper.onClickInSliceView( slicer.sliceWidgetGreen_interactorStyle, slicer.sliceWidgetGreen_sliceLogic )
+    # rasPos = Helper.onClickInSliceView( slicer.sliceWidgetGreen_interactorStyle, slicer.sliceWidgetGreen_sliceLogic )
+    sWG = slicer.app.layoutManager().sliceWidget('Green')
+    rasPos = Helper.onClickInSliceView( sWG.sliceView().interactorStyle, sWG.sliceLogic )
+
     mrmlNode = self.__anatomicalTree.currentNode()
     self.mrmlManager().AddTreeNodeDistributionSamplePoint( self.__vtkId, rasPos );
 
