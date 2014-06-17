@@ -1,4 +1,4 @@
-<MRML >
+<MRML  version="Slicer4.4.0" >
 <EMSTemplate
   id="vtkMRMLEMSTemplateNode1"  name="EMSTemplate"  hideFromEditors="false"  selectable="true"  selected="false"  TreeNodeID="vtkMRMLEMSTreeNode1"  GlobalParametersNodeID="vtkMRMLEMSGlobalParametersNode1"  SpatialAtlasNodeID="vtkMRMLEMSAtlasNode1"  SubParcellationNodeID="vtkMRMLEMSVolumeCollectionNode1"  EMSWorkingDataNodeID="vtkMRMLEMSWorkingDataNode1" ></EMSTemplate>
  <EMSGlobalParameters
