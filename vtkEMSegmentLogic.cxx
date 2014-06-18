@@ -52,6 +52,7 @@
 #include <vtkObjectFactory.h>
 #include <vtkTransform.h>
 #include <vtkTransformToGrid.h>
+#include <vtkVersion.h>
 
 // VTKSYS includes
 #include <vtksys/SystemTools.hxx>
@@ -3776,7 +3777,7 @@ std::vector<double> vtkEMSegmentLogic::IntensityRangeWithinMask(vtkImageData* im
 #if VTK_MAJOR_VERSION <= 5
     castMask->SetInput(mask);
 #else
-    castMask->SetInputConnection(mask);
+    castMask->SetInputData(mask);
 #endif
   castMask->SetOutputScalarType(image->GetScalarType());
   castMask->Update(); 
@@ -3786,18 +3787,14 @@ std::vector<double> vtkEMSegmentLogic::IntensityRangeWithinMask(vtkImageData* im
   imageMask->SetInput1(image);
   imageMask->SetInput2(castMask->GetOutput());
 #else
-  imageMask->SetInputConnection(0, image);
+  imageMask->SetInputData(0, image);
   imageMask->SetInputConnection(1, castMask->GetOutputPort());
 #endif
   imageMask->SetOperationToMultiply();
   imageMask->Update();
 
   double range[2];
-#if VTK_MAJOR_VERSION <= 5
   imageMask->GetOutput()->GetScalarRange(range);
-#else
-  imageMask->GetOutputPort()->GetScalarRange(range);
-#endif
   // Note: windows compiler does not provide output.data() 
   output[0]=range[0];
   output[1]=range[1];
@@ -3805,6 +3802,7 @@ std::vector<double> vtkEMSegmentLogic::IntensityRangeWithinMask(vtkImageData* im
   return output;
 }
 
+//-----------------------------------------------------------------------------
 vtkMRMLScalarVolumeNode* vtkEMSegmentLogic::PreprocessingBiasFieldCorrection(vtkMRMLScalarVolumeNode *inputNode, int testFlag)
 {
   // --------------------------
@@ -3907,10 +3905,10 @@ vtkMRMLScalarVolumeNode* vtkEMSegmentLogic::PreprocessingBiasFieldCorrection(vtk
 #if VTK_MAJOR_VERSION <= 5
    unscaledOutput->SetInput(outputNode->GetImageData());
 #else
-   unscaledOutput->SetInputConnection(outputNode->GetImageData());
+   unscaledOutput->SetInputData(outputNode->GetImageData());
 #endif
    unscaledOutput->SetOutputScalarTypeToFloat();
-   unscaledOutput->Update(); 
+   unscaledOutput->Update();
 
    // ----------------------------
    // Read in output
@@ -3918,10 +3916,12 @@ vtkMRMLScalarVolumeNode* vtkEMSegmentLogic::PreprocessingBiasFieldCorrection(vtk
    cout << "==== Restoring Original Image Range and Scalartype ====" << endl;
 
    std::vector<double> origImageMaskedRange = this->IntensityRangeWithinMask(inputImage,mask);
+
 #if VTK_MAJOR_VERSION <= 5
-   std::vector<double> biasImageMaskedRange = this->IntensityRangeWithinMask(unscaledOutput->GetOutput(),mask);
+   std::vector<double> biasImageMaskedRange = this->IntensityRangeWithinMask(unscaledOutput->GetOutput(), mask);
 #else
-   std::vector<double> biasImageMaskedRange = this->IntensityRangeWithinMask(unscaledOutput->GetOutputPort(),mask);
+   std::vector<double> biasImageMaskedRange = this->IntensityRangeWithinMask(
+       vtkImageData::SafeDownCast(unscaledOutput->GetOutputDataObject(0)), mask);
 #endif
    cout << "Original Range: " <<  origImageMaskedRange[0] << " "  << origImageMaskedRange[1] << endl;
    cout << "After Correction: " <<  biasImageMaskedRange[0] << " "  << biasImageMaskedRange[1] << endl;
@@ -3930,7 +3930,7 @@ vtkMRMLScalarVolumeNode* vtkEMSegmentLogic::PreprocessingBiasFieldCorrection(vtk
 #if VTK_MAJOR_VERSION <= 5
    maskCast->SetInput(mask);
 #else
-   maskCast->SetInputConnection(mask);
+   maskCast->SetInputData(mask);
 #endif
    maskCast->SetOutputScalarTypeToFloat();
    maskCast->Update(); 
@@ -3981,10 +3981,10 @@ vtkMRMLScalarVolumeNode* vtkEMSegmentLogic::PreprocessingBiasFieldCorrection(vtk
    outputAdjustedRange->Update();
 
    VTK_CREATE(vtkImageCast, outputCast);
-   #if VTK_MAJOR_VERSION <= 5
+#if VTK_MAJOR_VERSION <= 5
    outputCast->SetInput(outputAdjustedRange->GetOutput());
 #else
-   outputCast->SetInputData(outputAdjustedRange->GetOutputData());
+   outputCast->SetInputData(vtkImageData::SafeDownCast(outputAdjustedRange->GetOutputDataObject(0)));
 #endif
    outputCast->SetOutputScalarType(inputImage->GetScalarType());
    outputCast->Update(); 
@@ -3992,7 +3992,7 @@ vtkMRMLScalarVolumeNode* vtkEMSegmentLogic::PreprocessingBiasFieldCorrection(vtk
 #if VTK_MAJOR_VERSION <= 5
    outputNode->GetImageData()->DeepCopy(outputCast->GetOutput());
 #else
-   outputNode->GetImageData()->DeepCopy(outputCast->GetOutputPort());
+   outputNode->GetImageData()->DeepCopy(vtkImageData::SafeDownCast(outputCast->GetOutputDataObject(0)));
 #endif 
 
    // for debugging
