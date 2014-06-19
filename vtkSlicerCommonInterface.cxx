@@ -593,6 +593,11 @@ const char* vtkSlicerCommonInterface::GetPluginsDirectory()
 const char* vtkSlicerCommonInterface::GetPluginWithFullPath(const char* pluginName)
 {
   this->returnString = std::string(vtksys::SystemTools::FindProgram(pluginName));
+
+  if (this->returnString.empty()) {
+    vtkErrorMacro("Could not find path to " <<  pluginName); 
+  }
+  
   return this->returnString.c_str();
 }
 #endif
