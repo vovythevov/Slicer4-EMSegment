@@ -612,6 +612,7 @@ namespace eval EMSegmenterPreProcessingTcl {
     # Create Voronoi diagram with correct scalar type from aligned subparcellation
     proc GeneratedVoronoi { input } {
         variable LOGIC
+        $LOGIC PrintText "=== GeneratedVoronoi Start == " 
 
         set output [vtkImageData New]
         $output DeepCopy $input
@@ -623,16 +624,17 @@ namespace eval EMSegmenterPreProcessingTcl {
             $voronoi SetInputData $output
         }
         $voronoi Update
-
         set voronoiCast [vtkImageCast New]
         $voronoiCast SetInput [$voronoi GetPropagatedMap]
         $voronoiCast SetOutputScalarType  [$output GetScalarType]
         $voronoiCast Update
-
+  
         $input DeepCopy [$voronoiCast GetOutput]
         $voronoiCast Delete
         $voronoi Delete
         $output Delete
+
+        $LOGIC PrintText "=== GeneratedVoronoi End == " 
     }
 
     #------------------------------------------------------
@@ -2109,7 +2111,7 @@ namespace eval EMSegmenterPreProcessingTcl {
             }
 
             # Create Voronoi diagram with correct scalar type from aligned subparcellation
-            $LOGIC PrintText "TCL:  ============= DEBUG [$movingVolumeNode GetName]"
+            $LOGIC PrintText "TCL:  ============= [$movingVolumeNode GetName]"
             set tmpFileName [WriteImageDataToTemporaryDir $outputVolumeNode]
             $LOGIC PrintText "TCL:  Aligned Segmentation before voronoi $tmpFileName"
             # file rename $tmpFileName  ${tmpFileName}_before

@@ -3940,7 +3940,7 @@ vtkMRMLScalarVolumeNode* vtkEMSegmentLogic::PreprocessingBiasFieldCorrection(vtk
 #if VTK_MAJOR_VERSION <= 5
    maskMultiplier->SetInput1(maskCast->GetOutput());
 #else
-   maskMultiplier->SetInputConnection(1,maskCast->GetOutputPort());
+   maskMultiplier->SetInputConnection(0,maskCast->GetOutputPort());
 #endif
    maskMultiplier->SetOperationToMultiplyByK();
 
@@ -3956,7 +3956,7 @@ vtkMRMLScalarVolumeNode* vtkEMSegmentLogic::PreprocessingBiasFieldCorrection(vtk
      }
 
    maskMultiplier->Update();
-  
+
    VTK_CREATE(vtkImageThreshold,maskCompleteMultiplier);
 #if VTK_MAJOR_VERSION <= 5
    maskCompleteMultiplier->SetInput(maskMultiplier->GetOutput());
@@ -3967,7 +3967,6 @@ vtkMRMLScalarVolumeNode* vtkEMSegmentLogic::PreprocessingBiasFieldCorrection(vtk
    maskCompleteMultiplier->ReplaceOutOff();
    maskCompleteMultiplier->SetInValue(1.0);
    maskCompleteMultiplier->Update();
-
 
    VTK_CREATE(vtkImageMathematics, outputAdjustedRange);
 #if VTK_MAJOR_VERSION <= 5

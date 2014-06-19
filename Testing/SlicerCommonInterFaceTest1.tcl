@@ -29,7 +29,12 @@ $outputVolume DeepCopy [$inputNode GetImageData]
 # ------------------------------------------------------
 $emLogic PrintText "Test 2 : Threshold Input and DeepCopy" 
 set thresh [vtkImageThreshold New]
-$thresh SetInput [$inputNode GetImageData] 
+if {[$emLogic GetVTKVersion] <= 5  } {
+    $thresh SetInput [$inputNode GetImageData]  
+} else {
+    $thresh SetInputData [$inputNode GetImageData]
+}
+
 $thresh Update
 $outputVolume DeepCopy [$thresh GetOutput] 
 
@@ -50,7 +55,23 @@ $thresh Delete
 $ellips Delete
 
 # ------------------------------------------------------
-$emLogic PrintText "Test 5 : PreprocessingBiasFieldCorrection" 
+$emLogic PrintText "Test 5 : LabelPropagation" 
+
+set voronoi [vtkImageLabelPropagation New]
+if {[$emLogic GetVTKVersion] <= 5  } {
+  $voronoi SetInput [$inputNode GetImageData] 
+} else {
+  $voronoi SetInputData [$inputNode GetImageData] 
+}
+$emLogic PrintText "BBN" 
+$voronoi Update
+$emLogic PrintText "AAA" 
+
+$voronoi Delete
+
+
+# ------------------------------------------------------
+$emLogic PrintText "Test 6 : PreprocessingBiasFieldCorrection" 
 $em_manager CreateAndObserveNewParameterSet 
 set outputNode [$emLogic PreprocessingBiasFieldCorrection $inputNode 1]
 $emLogic RemoveTempFilesAndDirs
@@ -62,7 +83,6 @@ if { ( [lindex $inputScalarRange 0] != [lindex $outputScalarRange 0] ) || ( [lin
   $emLogic PrintText "TCL: ERROR: Scalar range of input and output do not match" 
   $emLogic PrintText "TCL: ERROR: Input: $inputScalarRange;  Output: $outputScalarRange" 
 }
- 
 
 
 # -----------------------------------
