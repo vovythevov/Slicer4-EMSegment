@@ -625,11 +625,16 @@ namespace eval EMSegmenterPreProcessingTcl {
         }
         $voronoi Update
         set voronoiCast [vtkImageCast New]
-        $voronoiCast SetInput [$voronoi GetPropagatedMap]
+        if {[$LOGIC GetVTKVersion] <= 5  } {
+           $voronoiCast SetInput [$voronoi GetPropagatedMap]
+        } else {
+           $voronoiCast SetInputData [$voronoi GetPropagatedMap]
+        }
         $voronoiCast SetOutputScalarType  [$output GetScalarType]
         $voronoiCast Update
-  
+
         $input DeepCopy [$voronoiCast GetOutput]
+
         $voronoiCast Delete
         $voronoi Delete
         $output Delete
