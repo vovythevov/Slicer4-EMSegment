@@ -63,15 +63,26 @@ if {[$emLogic GetVTKVersion] <= 5  } {
 } else {
   $voronoi SetInputData [$inputNode GetImageData] 
 }
-$emLogic PrintText "BBN" 
 $voronoi Update
-$emLogic PrintText "AAA" 
-
 $voronoi Delete
 
-
 # ------------------------------------------------------
-$emLogic PrintText "Test 6 : PreprocessingBiasFieldCorrection" 
+$emLogic PrintText "Test 6 : Island Filter" 
+
+set islandFilter [vtkImageIslandFilter New] 
+if {[$emLogic GetVTKVersion] <= 5  } {
+    $islandFilter SetInput [$inputNode GetImageData] 
+} else { 
+    $islandFilter SetInputData [$inputNode GetImageData] 
+}
+$islandFilter SetIslandMinSize 2
+$islandFilter SetNeighborhoodDim2D
+$islandFilter SetPrintInformation 1
+$islandFilter Update
+
+$islandFilter Delete
+# ------------------------------------------------------
+$emLogic PrintText "Test 7 : PreprocessingBiasFieldCorrection" 
 $em_manager CreateAndObserveNewParameterSet 
 set outputNode [$emLogic PreprocessingBiasFieldCorrection $inputNode 1]
 $emLogic RemoveTempFilesAndDirs
