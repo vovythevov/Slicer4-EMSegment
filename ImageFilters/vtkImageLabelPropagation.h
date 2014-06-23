@@ -99,7 +99,6 @@ public:
   vtkImageData* GetDistanceMap() {return this->GetOutput();}
 
   vtkImageData* GetPropagatedMap() { return this->PropagatedMap; } 
-
   virtual int IterativeRequestData(vtkInformation*,
                                    vtkInformationVector**,
                                    vtkInformationVector*);
@@ -112,9 +111,11 @@ protected:
   int ConsiderAnisotropy;
   vtkImageData *PropagatedMap;
 
+#if VTK_MAJOR_VERSION <= 5
   // Replaces "EnlargeOutputUpdateExtent"
   virtual void AllocateOutputScalars(vtkImageData *outData);
-  
+#endif
+
 // void ExecuteInformation(vtkImageData *input, vtkImageData *output);
   // Kilian: old vtk style 
   // void ExecuteInformation() {this->vtkImageIterateFilter::ExecuteInformation();}
