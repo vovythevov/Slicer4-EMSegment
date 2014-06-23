@@ -1189,7 +1189,7 @@ void vtkEMSegmentLogic::DefineValidSegmentationBoundary()
         << std::endl << "Axis 2 -  Image Min: 1 <= RoiMin(" << boundMin[2]
         << ") <= ROIMax(" << boundMax[2] << ") <=  Image Max:"
         << targetImageDimensions[2] << std::endl
-        << "NOTE: The above warning about ROI should not lead to poor segmentation results;  the entire image should be segmented.  It only indicates an error if you intended to segment a subregion of the image."
+        << "NOTE: The above warning about ROI should not lead to poor segmentation results;  the entire image should be segmented.  It only indicates a problem if you intended to segment a subregion of the image."
         << std::endl << "Define Boundary as: ";
     for (unsigned int i = 0; i < 3; ++i)
       {
@@ -2322,12 +2322,14 @@ int vtkEMSegmentLogic::StartSegmentationWithoutPreprocessingAndSaving()
     std::cout << "=== Island removal === " << std::endl;
     VTK_CREATE(vtkImageData, input);
     input->DeepCopy(postProcessing);
+
     VTK_CREATE(vtkImageIslandFilter, islandFilter);
 #if VTK_MAJOR_VERSION <= 5
     islandFilter->SetInput(input);
 #else
     islandFilter->SetInputData(input);
 #endif
+
     islandFilter->SetIslandMinSize(
         this->GetMRMLManager()->GetMinimumIslandSize());
     if (this->GetMRMLManager()->GetIsland2DFlag())
