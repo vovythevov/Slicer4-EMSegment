@@ -563,16 +563,16 @@ void vtkImageLabelPropagationDefineSignedDistanceMap(
   }
 }
 
+#if VTK_MAJOR_VERSION <= 5
 //----------------------------------------------------------------------------
 void vtkImageLabelPropagation::AllocateOutputScalars(vtkImageData *outData)
 {
-#if VTK_MAJOR_VERSION <= 5
   outData->SetExtent(outData->GetWholeExtent());
   outData->AllocateScalars();
-#else 
-  (void)outData;
-#endif
 }
+#endif
+
+
 //----------------------------------------------------------------------------
 // This method is passed input and output Datas, and executes the DistanceTransform
 // algorithm to fill the output from the input.
@@ -588,7 +588,11 @@ int vtkImageLabelPropagation::IterativeRequestData( vtkInformation* vtkNotUsed( 
   vtkImageData *outData = vtkImageData::SafeDownCast(
     outInfo->Get(vtkDataObject::DATA_OBJECT()));
 
+#if VTK_MAJOR_VERSION <= 5
   this->AllocateOutputScalars(outData);
+#else
+  this->AllocateOutputData(outData, outInfo);
+#endif
 
   void *inPtr;
   void *outPtr;
@@ -673,7 +677,7 @@ int vtkImageLabelPropagation::IterativeRequestData( vtkInformation* vtkNotUsed( 
 
  
   // Runs through it three times - when it goes through the last time just go through here
-  if ( this->GetIteration() == 2.0 ) {
+  if ( this->GetIteration() == 2 ) {
 
     // if (this->GetSignedDistanceMap()) {
     if (1) {
@@ -683,8 +687,7 @@ int vtkImageLabelPropagation::IterativeRequestData( vtkInformation* vtkNotUsed( 
       vtkImageData *OriginalInData = this->IterationData[0];
       OriginalInData->GetUpdateExtent(inExt);
 #else
-      vtkImageData *OriginalInData = vtkImageData::SafeDownCast(
-        this->IterationData[0]->GetInputDataObject(0,0));
+      vtkImageData *OriginalInData = this->GetImageDataInput(0);
 #endif
 
       switch (OriginalInData->GetScalarType())
