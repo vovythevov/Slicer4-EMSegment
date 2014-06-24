@@ -1090,6 +1090,8 @@ int vtkImageIslandFilter::RequestData(
   vtkImageData *outData = vtkImageData::SafeDownCast(
     outInfo->Get(vtkDataObject::DATA_OBJECT()));
 
+  this->AllocateOutputData(outData, outInfo);
+
   int inExt[6];
   inInfo->Get(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT(), inExt);
   int outExt[6];
