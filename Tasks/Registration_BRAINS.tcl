@@ -188,7 +188,7 @@
         set CMD "$CMD --fixedVolumeTimeIndex 0"
         set CMD "$CMD --movingVolumeTimeIndex 0"
         # for Slicer 3 needs to be --debugNumberOfThreads
-        set CMD "$CMD --debugNumberOfThreads -1"
+        set CMD "$CMD --numberOfThreads -1"
         set CMD "$CMD --debugLevel 0"
         set CMD "$CMD --failureExitCode -1"
 
