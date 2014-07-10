@@ -18,19 +18,20 @@ int main(int argc, char** argv)
   //
   // ==== Parse CommandLine ================
   //
-
-  if (argc < 2)
+  if (argc < 4)
   {
     std::cerr 
       << "Usage: vtkSlicerCommonInterfaceTest1"      << std::endl
-      <<         "<Tcl File"          << std::endl
+      <<         "<EMSegment Source Dir>"          << std::endl
+      <<         "<Tcl File>"          << std::endl
       <<         "<Volume File>"         << std::endl
       << std::endl;
     return EXIT_FAILURE;
   }
 
-  std::string tclFile                  = argv[1];
-  std::string inputVolumeFile          = argv[2];
+  std::string emSourceDir                = argv[1];
+  std::string tclFile                  = argv[2];
+  std::string input          = argv[3];
 
   //
   // ==== Initialize Tcl Interface ================
@@ -76,20 +77,22 @@ int main(int argc, char** argv)
   std::string tclCommand = "set emLogic " + std::string(EMSLogicTcl);
   slicerCommon->EvaluateTcl(tclCommand.c_str());
 
-  tclCommand = std::string("set inputVolumeFileName ") + inputVolumeFile ;
+  tclCommand = std::string("set emSourceDir ") + emSourceDir ;
   slicerCommon->EvaluateTcl(tclCommand.c_str());
 
+  tclCommand = std::string("set input ") + input ;
+  slicerCommon->EvaluateTcl(tclCommand.c_str());
 
   //
   // ==== Run Tcl Script  ===============
   // 
   cout << "==================== Start =================" << endl;
   cout << "Sourcing " << tclFile.c_str() << endl;
-  tclCommand =  std::string("source ") + tclFile;
+  tclCommand =  std::string("source [file join ") + emSourceDir + std::string(" " ) + tclFile + std::string("]");
   slicerCommon->EvaluateTcl(tclCommand.c_str());
   cout << "==================== END =================" << endl;
 
-  //
+  //emSourceDir
   // ==== Clean Up  ===============
   // 
   emLogic->SetAndObserveMRMLScene(NULL);

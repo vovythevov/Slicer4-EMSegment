@@ -247,26 +247,32 @@ namespace eval EMSegmenterPreProcessingTcl {
         set DIR [[$LOGIC GetSlicerCommonInterface] GetExtensionsDirectory]
        
         # Slicer Extension         
-        set dirs [lsort -decreasing [glob -nocomplain -directory [[$LOGIC GetSlicerCommonInterface] GetExtensionsDirectory] -type d * ] ]
+        set dirs [lsort -decreasing [glob -nocomplain -directory $DIR -type d * ] ]
 
         # allows user to define specific path independent from Slicer if you do not want to use extension system for pipeline but your own build
         # In Slicer 4 this directory will be ~/.config/EMSegmentCustom
         # now if you want to run a custom CMTK version just copy  the bin directory of CMTK (or create link)  to ~/.config/EMSegmentCustom/CMTK4Slicer
-        set dirs "[file normalize [file join  $DIR ../EMSegmentCustom]] $dirs"
+        set dirs "[file normalize [file join  $DIR ../EMSegmentCustom]] [file normalize [file join  $DIR ../../EMSegmentCustom]] $dirs"
 
         # search for directories , sorted with the highest svn first
+
+        set folderFile [file join $myfolder $myfile ] 
+
         foreach dir $dirs {
-            set filename $dir\/$myfolder\/$myfile
+            set filename [file join $dir $folderFile ] 
             if { [file exists $filename] } {
-                set REGISTRATION_PACKAGE_FOLDER  $dir\/$myfolder
-                $LOGIC PrintText "TCL: Found $dir\/$myfolder"
+                set REGISTRATION_PACKAGE_FOLDER  [file join $dir $myfolder ] 
+                $LOGIC PrintText "TCL: Found $filename"
                 break
             }
         }
-        
+
+        if { "$REGISTRATION_PACKAGE_FOLDER" == "" } {
+           $LOGIC PrintText "TCL: Warning: Could not find $folderFile in $dirs"
+        }      
+  
         return $REGISTRATION_PACKAGE_FOLDER
     }
-
 
     #
     # Preprocessing Functions

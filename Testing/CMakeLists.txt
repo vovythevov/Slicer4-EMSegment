@@ -121,11 +121,11 @@ if(NOT DISABLE_CXX_TESTING)
   # add test executables
   ############################################################################
   add_executable(
-    vtkSlicerCommonInterfaceTest1
-    vtkSlicerCommonInterfaceTest1.cxx
+    vtkSlicerCommonInterfaceTest
+    vtkSlicerCommonInterfaceTest.cxx
     )
   target_link_libraries(
-    vtkSlicerCommonInterfaceTest1
+    vtkSlicerCommonInterfaceTest
     ${TEST_LINK_LIBRARIES}
     )
   
@@ -245,9 +245,9 @@ if(NOT DISABLE_CXX_TESTING)
     ${EMSegment_TUTORIAL_DIR}/StandardData/StandardSegmentationResult_small.mhd
     )
     
-  ADD_EMSEGMENT_TEST(EMSeg_SlicerCommonInterfaceTest1 vtkSlicerCommonInterfaceTest1 ${EMSegment_SOURCE_DIR}/Testing/SlicerCommonInterFaceTest1.tcl ${EMSegment_TUTORIAL_DIR}/VolumeData/targetT1Normed_small.mhd)
+  ADD_EMSEGMENT_TEST(EMSeg_SlicerCommonInterfaceTestGeneral vtkSlicerCommonInterfaceTest ${EMSegment_SOURCE_DIR} Testing/SlicerCommonInterFaceTestGeneral.tcl ${EMSegment_TUTORIAL_DIR}/VolumeData/targetT1Normed_small.mhd)
   set_tests_properties(
-    EMSeg_SlicerCommonInterfaceTest1  
+    EMSeg_SlicerCommonInterfaceTestGeneral
     PROPERTIES
     FAIL_REGULAR_EXPRESSION
     "ERROR;Error in executing Tcl script"
@@ -614,6 +614,15 @@ if(NOT DISABLE_CXX_TESTING)
   if(EMSEG_RUN_CMTK_TESTS)
     set(registrationpackages CMTK) 
     set(scalartypes short float)
+# note the test below is necessary as if it is on and CMTK is not installed then the all CMTK still pass as EMSegmenter just switches back to Brain 
+    ADD_EMSEGMENT_TEST(EMSeg_FindCMTKExtension vtkSlicerCommonInterfaceTest ${EMSegment_SOURCE_DIR} Testing/SlicerCommonInterFaceTestExtension.tcl CMTK4Slicer/registration)
+  set_tests_properties(
+    EMSeg_FindCMTKExtension 
+    PROPERTIES
+    FAIL_REGULAR_EXPRESSION
+    "ERROR;Error in executing Tcl script"
+   )
+
   endif()
 
 

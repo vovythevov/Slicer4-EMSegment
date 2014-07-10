@@ -16,35 +16,11 @@ set em_manager [$emLogic GetMRMLManager]
 set mrmlScene  [$em_manager GetMRMLScene]
 set appLogic   [ slicer_app applicationLogic.__call__ ]
 
-$emLogic PrintText "Loading Input: $inputVolumeFileName"
-set inputNode [$emLogic AddArchetypeScalarVolume "$inputVolumeFileName" "input" $appLogic $mrmlScene  0]
+$emLogic PrintText "Loading Input: $input"
+set inputNode [$emLogic AddArchetypeScalarVolume "$input" "input" $appLogic $mrmlScene  0]
 
 set outputNode  [$em_manager CreateVolumeScalarNode $inputNode "blubber"]
 set outputVolume [$outputNode GetImageData]
-
-
-set DIR [[$emLogic GetSlicerCommonInterface] GetExtensionsDirectory]
-$emLogic PrintText "DIR $DIR"
-
-        # Slicer Extension         
-set dirs [lsort -decreasing [glob -nocomplain -directory $DIR -type d * ] ]
-set dirs "[file normalize [file join  $DIR ../EMSegmentCustom]] $dirs"
-
-$emLogic PrintText "dirs $dirs"
-set myfolder CMTK4Slicer 
-set myfile registration
-
-# search for directories , sorted with the highest svn first
-foreach dir $dirs {
-            set filename $dir\/$myfolder\/$myfile
-    if { [file exists $filename] } {
-                set REGISTRATION_PACKAGE_FOLDER  $dir\/$myfolder
-                $emLogic PrintText "TCL: Found $dir\/$myfolder"
-                break
-    }
-}
-return 
-
 
 # ------------------------------------------------------
 $emLogic PrintText "Test 1 : DeepCopy Input" 
