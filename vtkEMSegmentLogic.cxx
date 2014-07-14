@@ -2995,20 +2995,27 @@ std::string vtkEMSegmentLogic::GetTclTaskDirectory()
     // Later do automatically
     std::string orig_task_dir = std::string(
         this->GetModuleShareDirectory()) + std::string("/Tasks");
+      
+    int timeStampComparison = 0;
+    // to correctly do it we would have to compare each file in this directory but I do not think that is necessary as everytime you compile EMSegmenter the timestamp gets updated of the orig_task_dir  
+    if ((!vtksys::SystemTools::FileTimeCompare(orig_task_dir.c_str(),copied_task_dir.c_str(), &timeStampComparison)) || (timeStampComparison > 0)) 
+     {   
+       std::cout << "GetTclTaskDirectory::Updating task files ...\n"
+                 << "\tfrom: " << orig_task_dir << "\n"
+                << "\tto: " << copied_task_dir << std::endl;
 
-    std::cout << "GetTclTaskDirectory::Copying task files ...\n"
-              << "\tfrom: " << orig_task_dir << "\n"
-              << "\tto: " << copied_task_dir << std::endl;
-
-    if (!vtksys::SystemTools::CopyADirectory(orig_task_dir.c_str(),
-        copied_task_dir.c_str(), false))
-      {
-      cout << "GetTclTaskDirectory:: Couldn't copy task directory "
-          << orig_task_dir.c_str() << " to " << copied_task_dir.c_str() << endl;
-      vtkErrorMacro("GetTclTaskDirectory:: Couldn't copy task directory " << orig_task_dir.c_str() << " to " << copied_task_dir.c_str());
-      return vtksys::SystemTools::ConvertToOutputPath("");
-      }
-    return copied_task_dir;
+       if (!vtksys::SystemTools::CopyADirectory(orig_task_dir.c_str(),
+          copied_task_dir.c_str(), false))
+       {
+          cout << "GetTclTaskDirectory:: Couldn't copy task directory "
+                << orig_task_dir.c_str() << " to " << copied_task_dir.c_str() << endl;
+          vtkErrorMacro("GetTclTaskDirectory:: Couldn't copy task directory " << orig_task_dir.c_str() << " to " << copied_task_dir.c_str());
+          return vtksys::SystemTools::ConvertToOutputPath("");
+       }
+     } else {
+      std::cout << "GetTclTaskDirectory:: Task files up to date" << endl;
+     }
+     return copied_task_dir;
     }
   else
     {
