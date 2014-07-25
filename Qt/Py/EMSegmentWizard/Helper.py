@@ -74,7 +74,7 @@ class Helper( object ):
     return ['Iterations', 'LabelMap', 'Weights']
 
   @staticmethod
-  def onClickInSliceView( sliceViewInteractorStyle, sliceLogic ):
+  def onClickInSliceView( sliceViewInteractorStyle, sliceWidgetLogic ):
     '''
     Get the last event of a certain sliceView and return it as RAS coordinates.
     '''
@@ -91,7 +91,7 @@ class Helper( object ):
       coordinates.append( 0 )
       coordinates.append( 1 )
 
-      xyToRas = sliceLogic.GetSliceNode().GetXYToRAS()
+      xyToRas = sliceWidgetLogic().GetSliceNode().GetXYToRAS()
 
       rasPos = xyToRas.MultiplyPoint( coordinates )
 
