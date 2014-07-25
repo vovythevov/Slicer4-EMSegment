@@ -592,7 +592,18 @@ const char* vtkSlicerCommonInterface::GetPluginsDirectory()
 #else
 const char* vtkSlicerCommonInterface::GetPluginWithFullPath(const char* pluginName)
 {
-  this->returnString = std::string(vtksys::SystemTools::FindProgram(pluginName));
+  
+  // Not all builds include the cli-module path in the enviornment  
+  std::vector < std::string > additionalPath;
+  std::string cliModulePath;
+  
+  if (vtksys::SystemTools::GetEnv("ITK_AUTOLOAD_PATH", cliModulePath))
+    {
+      cliModulePath += std::string("/../cli-modules/.");
+      additionalPath.push_back(vtksys::SystemTools::CollapseFullPath(cliModulePath.c_str()));
+    }
+
+  this->returnString = std::string(vtksys::SystemTools::FindProgram(pluginName,additionalPath));
 
   if (this->returnString.empty()) {
     vtkErrorMacro("Could not find path to " <<  pluginName); 
