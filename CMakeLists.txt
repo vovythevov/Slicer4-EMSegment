@@ -35,11 +35,7 @@ endif()
 ADD_SUBDIRECTORY(CommandLineApplication)
 
 # --------------------------------------------------------------------------
-if("${Slicer_VERSION_MAJOR}" EQUAL "3")
-  add_subdirectory(KWWidgets)
-else()
-  add_subdirectory(Qt)
-endif()
+add_subdirectory(Qt)
 
 # --------------------------------------------------------------------------
 if(BUILD_TESTING)

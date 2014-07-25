@@ -15,48 +15,24 @@
 //       will be confused.
 //-----------------------------------------------------------------------------
 //BTX
-#ifdef Slicer3_USE_KWWIDGETS
+#define Slicer_HOME_ENVVAR_NAME "SLICER_HOME"
 
-  #define Slicer_HOME_ENVVAR_NAME "Slicer3_HOME"
+// Qt includes
+#include <QString>
+#include <QVariant>
 
-  // Slicer3 includes
-  #include "vtkSlicerApplication.h"
-  #include "KWWidgets/vtkEMSegmentKWDynamicFrame.h"
+// SlicerQt includes
+#include <qSlicerApplication.h>
+#include <qSlicerPythonManager.h>
 
-  // Slicer3 python
-  #ifdef Slicer3_USE_PYTHON
+// MRMLLogic includes
+#include <vtkMRMLRemoteIOLogic.h>
 
-  #include "slicerPython.h"
+// these types do not natively exist in Slicer4,
+// so we define them as voids
+typedef void Tcl_Interp;
+typedef void vtkEMSegmentKWDynamicFrame;
 
-  extern "C" {
-    void init_mytkinter( Tcl_Interp* );
-    void init_slicer(void );
-  }
-
-  #include "vtkTclUtil.h"
-
-  #endif // Slicer3_USE_PYTHON
-
-  //-----------------------------------------------------------------------------
-#else
-  #define Slicer_HOME_ENVVAR_NAME "SLICER_HOME"
-
-  // Qt includes
-  #include <QString>
-  #include <QVariant>
-
-  // SlicerQt includes
-  #include <qSlicerApplication.h>
-  #include <qSlicerPythonManager.h>
-
-  // MRMLLogic includes
-  #include <vtkMRMLRemoteIOLogic.h>
-
-  // these types do not natively exist in Slicer4,
-  // so we define them as voids
-  typedef void Tcl_Interp;
-  typedef void vtkEMSegmentKWDynamicFrame;
-#endif
 //ETX
 
 // SlicerBaseLogic includes
