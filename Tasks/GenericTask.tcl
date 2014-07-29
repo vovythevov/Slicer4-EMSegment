@@ -87,7 +87,7 @@ namespace eval EMSegmenterPreProcessingTcl {
         } else {
             #TODO,FIXME: need a elseif here
             # Transform node - check also for bspline
-            set NAME "_[$Node GetID].mat"
+            set NAME "_[$Node GetID].h5"
         }
 
         if { $NAME != "" } {
@@ -112,9 +112,9 @@ namespace eval EMSegmenterPreProcessingTcl {
         if { $type == "Volume" } {
             set NAME .nrrd
         } elseif { $type == "LinearTransform"  } {
-            set NAME .mat
+            set NAME .h5
         } elseif { $type == "BSplineTransform"  } {
-            set NAME .mat
+            set NAME .h5
         } elseif { $type == "Text"  } {
             set NAME .txt
         } elseif { $type == "ITKDeformationField"  } {
