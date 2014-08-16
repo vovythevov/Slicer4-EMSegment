@@ -263,7 +263,9 @@ int DefineTargetVolume ( int useDefaultTarget,  std::vector<std::string>  target
           try
             {
               // load image into scene
-              vtkMRMLVolumeNode* volumeNode = EMSLogic->AddArchetypeScalarVolume(targetVolumeFileNames[imageIndex].c_str(),targetVolumeFileNames[imageIndex].c_str(), appLogic, mrmlScene, centered);
+          std::string targetName = vtksys::SystemTools::GetFilenameWithoutExtension(targetVolumeFileNames[imageIndex].c_str());
+
+              vtkMRMLVolumeNode* volumeNode = EMSLogic->AddArchetypeScalarVolume(targetVolumeFileNames[imageIndex].c_str(),targetName.c_str(), appLogic, mrmlScene, centered);
 
               if (!volumeNode)
                 {
