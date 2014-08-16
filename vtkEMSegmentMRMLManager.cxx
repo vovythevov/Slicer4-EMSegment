@@ -3293,7 +3293,7 @@ vtkMRMLEMSAtlasNode* vtkEMSegmentMRMLManager::CloneAtlasNode(vtkMRMLEMSAtlasNode
   // clone the atlas node
   VTK_CREATE(vtkMRMLEMSAtlasNode, clonedAtlas);
   clonedAtlas->CopyWithScene(atlasNode);
-  vtksys_stl::string postFix = vtksys_stl::string("(") +  vtksys_stl::string(name) + vtksys_stl::string(")");
+  vtksys_stl::string postFix = vtksys_stl::string("_") +  vtksys_stl::string(name);
   vtksys_stl::string newName = vtksys_stl::string(atlasNode->GetName()) + postFix;
   clonedAtlas->SetName(newName.c_str());
   clonedAtlas->CloneVolumes(atlasNode,postFix.c_str());
@@ -3315,7 +3315,7 @@ vtkMRMLEMSVolumeCollectionNode* vtkEMSegmentMRMLManager::CloneVolumeCollectionNo
   // clone the atlas node
   VTK_CREATE(vtkMRMLEMSVolumeCollectionNode, clonedCollectionNode);
   clonedCollectionNode->CopyWithScene(collectionNode);
-  vtksys_stl::string postFix = vtksys_stl::string("(") +  vtksys_stl::string(name) + vtksys_stl::string(")");
+  vtksys_stl::string postFix = vtksys_stl::string("_") +  vtksys_stl::string(name);
   vtksys_stl::string newName = vtksys_stl::string(collectionNode->GetName()) + postFix;
   clonedCollectionNode->SetName(newName.c_str());
   clonedCollectionNode->CloneVolumes(collectionNode,postFix.c_str());
