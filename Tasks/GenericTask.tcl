@@ -73,14 +73,16 @@ namespace eval EMSegmenterPreProcessingTcl {
 
     #------------------------------------------------------
     # returns filename when no error occurs
-    proc CreateTemporaryFileNameForNode { Node } {
+    proc CreateTemporaryFileNameForNode { Node {Ext ""} } {
 #        variable GUI
         variable LOGIC
 
         set filename ""
         set NAME ""
 
-        if { [$Node GetClassName] == "vtkMRMLScalarVolumeNode" } {
+        if { "$Ext" != "" } {
+            set NAME "_[$Node GetID].$Ext"
+    } elseif { [$Node GetClassName] == "vtkMRMLScalarVolumeNode" } {
             set NAME "_[$Node GetID].nrrd"
         } elseif { [$Node GetClassName] == "vtkMRMLScene" } {
             set NAME "_[file tail [$Node GetURL]]"
@@ -837,26 +839,33 @@ namespace eval EMSegmenterPreProcessingTcl {
         set tmpTransformFileName [WriteDataToTemporaryDir $transformationNode Transform]
         if { $tmpTransformFileName == "" } { return "" }
 
-        set tmpInputVolumeFileName [WriteImageDataToTemporaryDir $inputVolumeNode]
-        if { $tmpInputVolumeFileName == "" } { return "" }
+        # set tmpInputVolumeFileName [WriteImageDataToTemporaryDir $inputVolumeNode]
+        # if { $tmpInputVolumeFileName == "" } { return "" }
 
         set tmpReferenceVolumeFileName [WriteImageDataToTemporaryDir $referenceVolumeNode]
         if { $tmpReferenceVolumeFileName == "" } { return "" }
 
         set DFNode [$mrmlManager CreateVolumeScalarNode $referenceVolumeNode "deformVolume"]
+        set deformationFieldFilename [ CreateTemporaryFileNameForNode $DFNode vtk ]
 
-        set deformationFieldFilename [ CreateTemporaryFileNameForNode $DFNode ]
-
-        set CMDdeform "\"[$LOGIC GetPluginWithFullPath BSplineToDeformationField]\""
-        set CMDdeform "$CMDdeform --refImage \"$tmpReferenceVolumeFileName\""
-        set CMDdeform "$CMDdeform --tfm \"$tmpTransformFileName\""
-        set CMDdeform "$CMDdeform --defImage \"$deformationFieldFilename\""
+        # Did not work 
+        set CMDdeform "\"[$LOGIC GetPluginWithFullPath BRAINSTransformConvert]\""
+        set CMDdeform "$CMDdeform --referenceVolume  \"$tmpReferenceVolumeFileName\""
+        set CMDdeform "$CMDdeform --inputTransform  \"$tmpTransformFileName\""
+        set CMDdeform "$CMDdeform --outputTransformType DisplacementField"  
+        set CMDdeform "$CMDdeform --displacementVolume \"$deformationFieldFilename\""
+       
+        # Old STyle does not work anymore
+        # set CMDdeform "\"[$LOGIC GetPluginWithFullPath BSplineToDeformationField]\""
+        # set CMDdeform "$CMDdeform --refImage \"$tmpReferenceVolumeFileName\""
+        # set CMDdeform "$CMDdeform --tfm \"$tmpTransformFileName\""
+        # set CMDdeform "$CMDdeform --defImage \"$deformationFieldFilename\""
 
         $LOGIC PrintText "TCL: Executing $CMDdeform"
         if { [catch { eval exec $CMDdeform } errmsg] } {
-            $LOGIC PrintText "TCL: ---- $errmsg ----"
-            $LOGIC PrintText "Information about it: $::errorInfo"
-            return ""
+           $LOGIC PrintText "TCL: ---- $errmsg ----"
+           $LOGIC PrintText "Information about it: $::errorInfo"
+           return ""
         }
 
         # clean up
@@ -2073,9 +2082,9 @@ namespace eval EMSegmenterPreProcessingTcl {
                 $LOGIC PrintText "TCL: RegisterAtlas: calcDFVolumeNode START"
 
                 if { ($deformableType != 0) && ($affineType != 0) } {
-                    # BRAINStransformNode is a BSplineNode - here returns the location of a file 
-                    set transformNode [calcDFVolumeNode $movingAtlasVolumeNode $fixedTargetVolumeNode $BRAINStransformNode]
-                    set transformNodeType "DeformVolumeTransform"
+                   # BRAINStransformNode is a BSplineNode - here returns the location of a file 
+                   set transformNode [calcDFVolumeNode $movingAtlasVolumeNode $fixedTargetVolumeNode $BRAINStransformNode]
+                   set transformNodeType "DeformVolumeTransform"
                 } else {
                     # use slow method - transformNode is still a node ! 
                     set transformNode $BRAINStransformNode
