@@ -309,7 +309,7 @@ namespace eval EMSegmenterAutoSampleTcl {
                 }
             }
             set EMSegment(GaussCurveCalc,Mean,$channelID) [expr double($EMSegment(GaussCurveCalc,Mean,$channelID))/ double($EMSegment(GaussCurveCalc,Sum))]
-
+  
             # This is just for info purposes
             # We have to subtract 1 bc we added 1 to the ROI
             set EMSegment(GaussCurveCalc,GreyMin,$channelID) [expr $MinBorder($channelID) -1]
@@ -333,6 +333,10 @@ namespace eval EMSegmenterAutoSampleTcl {
 
             if { $EMSegment(GaussCurveCalc,Sum) > 1 } {
                 set EMSegment(GaussCurveCalc,Covariance,$channelID,$channelID)  [expr $EMSegment(GaussCurveCalc,Covariance,$channelID,$channelID)/ double($EMSegment(GaussCurveCalc,Sum) - 1)]
+                if { $EMSegment(GaussCurveCalc,Covariance,$channelID,$channelID) < 0.0001 } {
+                   EMSegmentPrint $LOGIC "WARNING: Covariance entry ($channelID,$channelID) set to 0.001 as its value is too close to zero and thus inverse of covariance cannot be computed" 0
+                   set EMSegment(GaussCurveCalc,Covariance,$channelID,$channelID) 0.0001 
+        }
             } else {
                 EMSegmentPrint $LOGIC "WARNING: Covariance set to 0.0001, Does the atlas contain only zero values?" 0
                 set EMSegment(GaussCurveCalc,Covariance,$channelID,$channelID) 0.0001
@@ -404,7 +408,7 @@ namespace eval EMSegmenterAutoSampleTcl {
                     if { $EMSegment(GaussCurveCalc,Sum) > 1} {
                         set EMSegment(GaussCurveCalc,Covariance,$i,$j) [expr $EMSegment(GaussCurveCalc,Covariance,$i,$j) / double($EMSegment(GaussCurveCalc,Sum) - 1)]
                     } else {
-                        EMSegmentPrint $LOGIC "WARNING: Covariance set to 0.0001, Does the atlas contain only zero values?" 0
+                        EMSegmentPrint $LOGIC "WARNING: Covariance entry ($i,$j) set to 0.0001, Does the atlas contain only zero values?" 0
                         set EMSegment(GaussCurveCalc,Covariance,$i,$j) 0.0001
                     }
                     set EMSegment(GaussCurveCalc,Covariance,$j,$i) $EMSegment(GaussCurveCalc,Covariance,$i,$j)
