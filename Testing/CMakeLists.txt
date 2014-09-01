@@ -758,7 +758,7 @@ add_test(
       --registrationAffineType
       -1
       --registrationDeformableType
-      -1
+      0
       )
     set_tests_properties(
       EMSegCL_Task_HumanEye_${registrationpackage}_${size}
