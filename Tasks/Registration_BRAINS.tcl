@@ -157,7 +157,7 @@
         }
 
         if { $deformableType == [$mrmlManager GetRegistrationTypeFromString RegistrationTest] } {
-            set CMD "$CMD --numberOfIterations 3    --numberOfSamples 100"
+            set CMD "$CMD --numberOfIterations 3    --numberOfSamples 100   --costFunctionConvergenceFactor 5e+13"
         } elseif { $deformableType == [$mrmlManager GetRegistrationTypeFromString RegistrationFast] } {
             set CMD "$CMD --numberOfIterations 500  --numberOfSamples 30000"
         } elseif { $deformableType == [$mrmlManager GetRegistrationTypeFromString RegistrationSlow] } {
