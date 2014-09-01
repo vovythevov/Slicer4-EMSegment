@@ -298,6 +298,9 @@ template  <class T> int EMLocalAlgorithm<T>::InitializeClass(vtkImageEMLocalSupe
         
         std::cerr << std::endl;  
         SuccessFlag = 0;
+
+           vtkIndent indent;
+           ((vtkImageEMLocalClass*) ClassList[i])->PrintSelf(std::cerr,indent);
         }
 
 #if (0)
