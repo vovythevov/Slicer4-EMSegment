@@ -329,7 +329,8 @@ int LoadUserDefinedAtlas (std::vector<std::string> atlasVolumeFileNames,  vtkEMS
             try
               {
                 // load image into scene
-                vtkMRMLVolumeNode* volumeNode = EMSLogic->AddArchetypeScalarVolume( atlasVolumeFileNames[imageIndex].c_str(), atlasVolumeFileNames[imageIndex].c_str(), appLogic, mrmlScene, centered);
+                std::string atlasName = vtksys::SystemTools::GetFilenameWithoutExtension(atlasVolumeFileNames[imageIndex].c_str());
+                vtkMRMLVolumeNode* volumeNode = EMSLogic->AddArchetypeScalarVolume( atlasVolumeFileNames[imageIndex].c_str(), atlasName.c_str(), appLogic, mrmlScene, centered);
                 if (!volumeNode)
                   {
                     std::cerr << "ERROR: failed to load image." << endl;
