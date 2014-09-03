@@ -2081,15 +2081,16 @@ namespace eval EMSegmenterPreProcessingTcl {
                 }
                 $LOGIC PrintText "TCL: RegisterAtlas: calcDFVolumeNode START"
 
-                if { ($deformableType != 0) && ($affineType != 0) } {
-                   # BRAINStransformNode is a BSplineNode - here returns the location of a file 
-                   set transformNode [calcDFVolumeNode $movingAtlasVolumeNode $fixedTargetVolumeNode $BRAINStransformNode]
-                   set transformNodeType "DeformVolumeTransform"
-                } else {
+                # calcDFVolumeNode does not work 
+                #if { ($deformableType != 0) && ($affineType != 0) } {
+                #   # BRAINStransformNode is a BSplineNode - here returns the location of a file 
+                #   set transformNode [calcDFVolumeNode $movingAtlasVolumeNode $fixedTargetVolumeNode $BRAINStransformNode]
+                #   set transformNodeType "DeformVolumeTransform"
+                #} else {
                     # use slow method - transformNode is still a node ! 
                     set transformNode $BRAINStransformNode
                     set transformNodeType "BSplineTransform"
-                }
+                #}
                 $LOGIC PrintText "TCL: RegisterAtlas: calcDFVolumeNode DONE"
                 if { $transformNode == "" } {
                     PrintError "RegisterAtlas: Deformation Field Transform node is null"
