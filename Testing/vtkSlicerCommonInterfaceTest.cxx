@@ -5,6 +5,12 @@
 #include "vtkEMSegmentMRMLManager.h"
 #include "vtkMRMLEMSGlobalParametersNode.h"
 
+// ITK includes
+#include <itkConfigure.h>
+#if ITK_VERSION_MAJOR > 3
+  #include <itkFactoryRegistration.h>
+#endif
+
 // EMSegment/CLI includes
 #include "EMSegmentAPIHelper.h"
 #include "EMSegmentCommandLineFct.h"
@@ -15,6 +21,10 @@
 // test the tcl adapter provided by the Slicer Common Interface
 int main(int argc, char** argv)
 {
+#if ITK_VERSION_MAJOR > 3
+  itk::itkFactoryRegistration();
+#endif
+
   //
   // ==== Parse CommandLine ================
   //
