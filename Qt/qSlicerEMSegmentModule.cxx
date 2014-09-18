@@ -179,5 +179,8 @@ void qSlicerEMSegmentModule::setMRMLScene(vtkMRMLScene* _mrmlScene)
   vtkEMSegmentLogic * emsegmentLogic =
       vtkEMSegmentLogic::SafeDownCast(this->logic());
   Q_ASSERT(emsegmentLogic);
-  emsegmentLogic->InitializeEventListeners();
+  if (_mrmlScene)
+    {
+    emsegmentLogic->InitializeEventListeners();
+    }
 }

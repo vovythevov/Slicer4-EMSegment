@@ -117,7 +117,8 @@ class qSlicerEMSegmentModuleWidget:
     if mrmlScene != self.__logic.GetMRMLScene():
       self.__logic.SetMRMLScene(mrmlScene)
       self.__logic.RegisterNodes()
-      self.__logic.InitializeEventListeners()
+      if mrmlScene:
+        self.__logic.InitializeEventListeners()
     self.__logic.GetMRMLManager().SetMRMLScene(mrmlScene)
 
   def GetDynamicFrame( self ):
