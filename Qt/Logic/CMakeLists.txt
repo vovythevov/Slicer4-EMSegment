@@ -4,6 +4,18 @@ project(vtkSlicerEMSegmentModuleLogic)
 # See CMake/SlicerMacroBuildModuleLogic.cmake for details
 #
 
+
+# --------------------------------------------------------------------------
+set(${PROJECT_NAME}_ITK_COMPONENTS
+  ${EMSegment_BASE_ITK_COMPONENTS}
+  )
+find_package(ITK 4.6 NO_MODULE COMPONENTS ${${PROJECT_NAME}_ITK_COMPONENTS} REQUIRED)
+set(ITK_NO_IO_FACTORY_REGISTER_MANAGER 1) # See Libs/ITKFactoryRegistration/CMakeLists.txt
+list(APPEND ITK_LIBRARIES ITKFactoryRegistration)
+list(APPEND ITK_INCLUDE_DIRS ${ITKFactoryRegistration_INCLUDE_DIRS})
+include(${ITK_USE_FILE})
+
+# --------------------------------------------------------------------------
 SET(module_logic_name "${PROJECT_NAME}")
 
 # The header '${PROJECT_NAME}Export.h' will be automatically configured.
@@ -22,8 +34,7 @@ SET(module_logic_SRCS
 
 # Additional Target libraries
 SET(module_logic_target_libraries
-  #EMSegmentMRML
-  #EMSegmentRegistration
+  ${ITK_LIBRARIES}
   vtkSlicerVolumesModuleLogic
   )
 

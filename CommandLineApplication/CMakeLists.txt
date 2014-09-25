@@ -20,7 +20,17 @@ if(NOT Slicer3_SOURCE_DIR AND NOT Slicer_SOURCE_DIR)
 endif()
 
 # --------------------------------------------------------------------------
-set(CommandLineApplication_LIBRARIES ${VTK_LIBRARIES})
+set(${PROJECT_NAME}_ITK_COMPONENTS
+  ITKCommon
+  )
+find_package(ITK 4.6 NO_MODULE COMPONENTS ${${PROJECT_NAME}_ITK_COMPONENTS} REQUIRED)
+set(ITK_NO_IO_FACTORY_REGISTER_MANAGER 1) # See Libs/ITKFactoryRegistration/CMakeLists.txt
+list(APPEND ITK_LIBRARIES ITKFactoryRegistration)
+list(APPEND ITK_INCLUDE_DIRS ${ITKFactoryRegistration_INCLUDE_DIRS})
+include(${ITK_USE_FILE})
+
+# --------------------------------------------------------------------------
+set(CommandLineApplication_LIBRARIES ${VTK_LIBRARIES} ${ITK_LIBRARIES})
 
 # --------------------------------------------------------------------------
 set(CommandLineApplication_INCLUDE_DIRS

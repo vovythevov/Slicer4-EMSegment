@@ -6,6 +6,46 @@
 # Also, define the appropriate include_directories for these source files
 #
 
+set(EMSegment_Algorithm_ITK_COMPONENTS
+  ITKCommon
+  ITKIOImageBase
+  ITKImageIntensity
+  ITKOptimizers
+  ITKSmoothing
+  ITKVTK
+  )
+
+set(EMSegment_Registration_ITK_COMPONENTS
+  ITKCommon
+  ITKIOImageBase
+  ITKImageFunction
+  ITKOptimizers
+  ITKRegistrationCommon
+  ITKTransform
+  ITKVTK
+  )
+
+set(EMSegment_Tasks_ITK_COMPONENTS
+  ITKCommon
+  ITKConnectedComponents
+  ITKIOGDCM
+  ITKIOImageBase
+  ITKImageFilterBase
+  ITKImageFunction
+  ITKImageGrid
+  ITKImageIntensity
+  ITKSmoothing
+  ITKThresholding
+  ITKTransform
+  )
+
+set(EMSegment_BASE_ITK_COMPONENTS
+  ${EMSegment_Algorithm_ITK_COMPONENTS}
+  ${EMSegment_Registration_ITK_COMPONENTS}
+  ${EMSegment_Tasks_ITK_COMPONENTS}
+  )
+list(REMOVE_DUPLICATES EMSegment_BASE_ITK_COMPONENTS)
+
 set(EMSegment_BASE_SRCS 
   # MRML
   ${CMAKE_CURRENT_SOURCE_DIR}/MRML/vtkMRMLEMSNode.cxx
