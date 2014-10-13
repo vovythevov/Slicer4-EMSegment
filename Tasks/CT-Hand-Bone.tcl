@@ -439,7 +439,11 @@ namespace eval EMSegmenterPreProcessingTcl {
         set addResults [vtkImageData New]
         set addFilter [vtkImageMathematics New]
         $addFilter SetOperationToAdd
-        $addFilter SetInput1 $addResults
+        if {[$LOGIC GetVTKVersion] <= 5  } {
+            $addFilter SetInput1 $addResults
+    } else {
+            $addFilter SetInputData 0 $addResults
+    }
 
         set numInputs 0
 
@@ -458,7 +462,11 @@ namespace eval EMSegmenterPreProcessingTcl {
 
             $LOGIC PrintText "TCLCT:  Adding [$leafAtlasNode GetName ] from class [[ $mrmlManager GetTreeNode $ID] GetName] "
             if { $numInputs > 0 } {
-                $addFilter SetInput2 [$leafAtlasNode GetImageData]
+                if {[$LOGIC GetVTKVersion] <= 5  } {
+                   $addFilter SetInput2 [$leafAtlasNode GetImageData]
+        } else {
+                   $addFilter SetInputData 1 [$leafAtlasNode GetImageData]
+        } 
                 $addFilter Update
                 $addResults DeepCopy [$addFilter GetOutput]
             } else {
@@ -479,24 +487,41 @@ namespace eval EMSegmenterPreProcessingTcl {
         # Need to do that for unsigned types
         set castInFilter [vtkImageCast New]
         $castInFilter SetOutputScalarTypeToFloat
-        $castInFilter SetInput $addResults
+        if {[$LOGIC GetVTKVersion] <= 5  } {
+           $castInFilter SetInput $addResults
+    } else {
+           $castInFilter SetInputData $addResults
+    }
         $castInFilter Update
 
         set subFilter [vtkImageMathematics New]
         $subFilter SetOperationToAddConstant
         $subFilter SetConstantC -$MAX
-        $subFilter SetInput1 [$castInFilter GetOutput]
+        if {[$LOGIC GetVTKVersion] <= 5  } {
+           $subFilter SetInput1 [$castInFilter GetOutput]
+    } else {
+           $subFilter SetInputConnection 0 [$castInFilter GetOutputPort]
+    }
         $subFilter Update
 
         set mulFilter [vtkImageMathematics New]
         $mulFilter SetOperationToMultiplyByK
         $mulFilter SetConstantK -1.0
-        $mulFilter SetInput1 [$subFilter GetOutput]
+        if {[$LOGIC GetVTKVersion] <= 5  } {
+           $mulFilter SetInput1 [$subFilter GetOutput]
+    } else {
+           $mulFilter SetInputConnection 0 [$subFilter GetOutputPort]
+    }
+
         $mulFilter Update
 
         set castOutFilter [ vtkImageCast New]
         $castOutFilter SetOutputScalarType [$addResults GetScalarType]
-        $castOutFilter SetInput [$mulFilter  GetOutput]
+        if {[$LOGIC GetVTKVersion] <= 5  } {
+            $castOutFilter SetInput [$mulFilter  GetOutput]
+    } else {
+            $castOutFilter SetInputConnection [$mulFilter  GetOutputPort]
+    }
         $castOutFilter Update
 
         $bgAtlasData DeepCopy [$castOutFilter GetOutput]
