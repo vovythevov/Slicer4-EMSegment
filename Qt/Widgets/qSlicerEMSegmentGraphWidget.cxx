@@ -191,8 +191,10 @@ void qSlicerEMSegmentGraphWidgetPrivate::addClass(vtkIdType classID)
 void qSlicerEMSegmentGraphWidgetPrivate::updateClass(vtkIdType classID, int input)
 {
   Q_Q(qSlicerEMSegmentGraphWidget);
-  vtkPlotGaussian* plot = this->ClassPlotList[input][classID];
   int index = this->volumeIndex(this->volumeID(input));
+  if (index < 0) return;
+
+  vtkPlotGaussian* plot = this->ClassPlotList[input][classID];
   plot->SetMean(q->mrmlManager()->GetTreeNodeDistributionLogMeanWithCorrection(classID, index));
   plot->SetCovariance(q->mrmlManager()->GetTreeNodeDistributionLogCovarianceWithCorrection(classID, index, index));
   plot->SetProbability(q->mrmlManager()->GetTreeNodeClassProbability(classID));

@@ -491,9 +491,9 @@ MoveNthTargetInputChannel(int fromIndex, int toIndex)
 double vtkMRMLEMSTreeParametersLeafNode::GetLogMean(int index) 
 {
   int size = int(this->LogMean.size());
-  if (size <= index)
+  if ((index < 0) || (size <= index))
     {
-      vtkErrorMacro("Index (" << index << ") surpasses size of logMean (" << size << ") !");
+      vtkErrorMacro("Index (" << index << ") is negative or surpasses size of logMean (" << size << ") !");
       return -1;
     }
   return this->LogMean[index];
@@ -504,9 +504,9 @@ void
 vtkMRMLEMSTreeParametersLeafNode::
 SetLogMean(int index, double value)
 {
-  if (int(this->LogMean.size()) <= index)
+  if ((index < 0) || (int(this->LogMean.size()) <= index))
     {
-      vtkErrorMacro("Index (" << index << ") surpasses size of logMean (" << int(this->LogMean.size()) << ") !");
+      vtkErrorMacro("Index (" << index << ") is negative or surpasses size of logMean (" << int(this->LogMean.size()) << ") !");
       return;
     }
 
@@ -521,9 +521,9 @@ SetLogMean(int index, double value)
 //-----------------------------------------------------------------------------
 double vtkMRMLEMSTreeParametersLeafNode::GetLogMeanCorrection(int index) 
 {
-    if (int(this->LogMeanCorrection.size()) <= index)
+  if ( (index < 0) || (int(this->LogMeanCorrection.size()) <= index) )
     {
-      vtkErrorMacro("Index (" << index << ") surpasses size of logMeanCorrection (" << int(this->LogMeanCorrection.size()) << ") !");
+      vtkErrorMacro("Index (" << index << ") is negative or surpasses size of logMeanCorrection (" << int(this->LogMeanCorrection.size()) << ") !");
       return 0;
     }
   return this->LogMeanCorrection[index];
@@ -536,9 +536,9 @@ void
 vtkMRMLEMSTreeParametersLeafNode::
 SetLogMeanCorrection(int index, double value)
 {
-    if (int(this->LogMeanCorrection.size()) <= index)
+  if ((index < 0) ||  (int(this->LogMeanCorrection.size()) <= index))
     {
-      vtkErrorMacro("Index (" << index << ") surpasses size of logMeanCorrection (" << int(this->LogMeanCorrection.size()) << ") !");
+      vtkErrorMacro("Index (" << index << ") is negative or surpasses size of logMeanCorrection (" << int(this->LogMeanCorrection.size()) << ") !");
       return;
     }
 
