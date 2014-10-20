@@ -159,9 +159,9 @@
         if { $deformableType == [$mrmlManager GetRegistrationTypeFromString RegistrationTest] } {
             set CMD "$CMD --numberOfIterations 3    --numberOfSamples 100   --costFunctionConvergenceFactor 5e+13"
         } elseif { $deformableType == [$mrmlManager GetRegistrationTypeFromString RegistrationFast] } {
-            set CMD "$CMD --numberOfIterations 500  --numberOfSamples 30000"
+            set CMD "$CMD --numberOfIterations 500  --numberOfSamples 0 --samplingPercentage 0.003 "
         } elseif { $deformableType == [$mrmlManager GetRegistrationTypeFromString RegistrationSlow] } {
-            set CMD "$CMD --numberOfIterations 1500 --numberOfSamples 300000"
+            set CMD "$CMD --numberOfIterations 1500 --numberOfSamples 0 --samplingPercentage 0.02 "
         } elseif { $deformableType } {
             PrintError "BRAINSRegistration: Unknown deformableType: $deformableType"
             return ""
