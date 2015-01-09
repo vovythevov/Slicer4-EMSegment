@@ -737,15 +737,11 @@ RegisterImagesInternal3()
               << std::endl;
 #if ITK_VERSION_MAJOR < 4
     const double timeStart = clock->GetTimeStamp();
-#else
-    const double timeStart = clock->GetTimeInSeconds();
-#endif
-
     multiResRegistration->StartRegistration();
-
-#if ITK_VERSION_MAJOR < 4
     const double timeStop = clock->GetTimeStamp();
 #else
+    const double timeStart = clock->GetTimeInSeconds();
+    multiResRegistration->Update();
     const double timeStop = clock->GetTimeInSeconds();
 #endif
     const double timeLength = (timeStop - timeStart);
