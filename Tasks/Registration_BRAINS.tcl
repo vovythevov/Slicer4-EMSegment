@@ -173,7 +173,6 @@
             set CMD "$CMD --useBSpline"
             set CMD "$CMD --splineGridSize 6,6,6"
             set CMD "$CMD --maxBSplineDisplacement 0"
-            set CMD "$CMD --useCachingOfBSplineWeightsMode ON"
         }
         set CMD "$CMD --initializeTransformMode useCenterOfHeadAlign"
         set CMD "$CMD --minimumStepLength 0.005"
@@ -193,7 +192,6 @@
         set CMD "$CMD --failureExitCode -1"
 
 #        set CMD "$CMD --medianFilterSize 0,0,0"
-#        set CMD "$CMD --useExplicitPDFDerivativesMode AUTO"
 #        set CMD "$CMD --relaxationFactor 0.5"
 #        set CMD "$CMD --maximumStepLength 0.2"
 #        set CMD "$CMD --costFunctionConvergenceFactor 1e+9"

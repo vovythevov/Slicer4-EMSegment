@@ -1030,7 +1030,6 @@ namespace eval EMSegmenterPreProcessingTcl {
                 set CMD "$CMD --maskProcessingMode NOMASK"
                 set CMD "$CMD --numberOfHistogramBins 40"
                 set CMD "$CMD --numberOfMatchPoints 10"
-                set CMD "$CMD --useCachingOfBSplineWeightsMode ON"
                 set CMD "$CMD --costMetric MMI"
 
 
