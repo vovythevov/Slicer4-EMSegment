@@ -2,7 +2,7 @@
 <Selection
   id="vtkMRMLSelectionNode1"  name="vtkMRMLSelectionNode1"  hideFromEditors="true"  selectable="true"  selected="false"  activeVolumeID="NULL"  secondaryVolumeID="NULL"  activeLabelVolumeID="NULL"  activeFiducialListID="NULL"  activeROIListID="NULL"  activeCameraID="NULL"  activeViewID="NULL"  activeLayoutID="NULL"></Selection>
  <Interaction
-  id="vtkMRMLInteractionNode1"  name="vtkMRMLInteractionNode1"  hideFromEditors="true"  selectable="true"  selected="false"  currentInteractionMode="ViewTransform"  lastInteractionMode="ViewTransform" ></Interaction>
+  id="vtkMRMLInteractionNode1"  name="vtkMRMLInteractionNode1"  hideFromEditors="true"  selectable="true"  selected="false"  currentInteractionMode="ViewTransform"  placeModePersistence="false"  lastInteractionMode="ViewTransform" ></Interaction>
  <EMSAtlas
   id="vtkMRMLEMSAtlasNode1"  name="vtkMRMLEMSAtlasNode1"  hideFromEditors="false"  selectable="true"  selected="false"  NodeIDs=""   NumberOfTrainingSamples="82"  ></EMSAtlas>
  <EMSWorkingData

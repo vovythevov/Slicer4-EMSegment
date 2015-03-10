@@ -2,7 +2,7 @@
 <Selection
   id="vtkMRMLSelectionNode1"  name="vtkMRMLSelectionNode1"  hideFromEditors="true"  selectable="true"  selected="false"  activeVolumeID="NULL"  secondaryVolumeID="NULL"  activeLabelVolumeID="NULL"  activeFiducialListID="NULL"  activeROIListID="NULL"  activeCameraID="NULL"  activeViewID="NULL"  activeLayoutID="NULL"></Selection>
  <Interaction
-  id="vtkMRMLInteractionNode1"  name="vtkMRMLInteractionNode1"  hideFromEditors="true"  selectable="true"  selected="false"  currentInteractionMode="ViewTransform"  lastInteractionMode="ViewTransform" ></Interaction>
+  id="vtkMRMLInteractionNode1"  name="vtkMRMLInteractionNode1"  hideFromEditors="true"  selectable="true"  selected="false"  currentInteractionMode="ViewTransform"  placeModePersistence="false"  lastInteractionMode="ViewTransform" ></Interaction>
  <VolumeArchetypeStorage
   id="vtkMRMLVolumeArchetypeStorageNode1"  name="vtkMRMLVolumeArchetypeStorageNode1"  hideFromEditors="true"  selectable="true"  selected="false"  fileName="VolumeData/targetT1Normed_small.mhd"  useCompression="1"  readState="0"  writeState="0"  centerImage="1"  singleFile="0"  UseOrientationFromFile="1" ></VolumeArchetypeStorage>
  <VolumeDisplay
