@@ -152,14 +152,15 @@ proc CMTKRegistration { fixedVolumeNode movingVolumeNode outVolumeNode backgroun
 
     ## CMTK specific arguments
 
-    set CMD "$REGISTRATION_PACKAGE_FOLDER/registration"
+    set CMD "$REGISTRATION_PACKAGE_FOLDER/registrationx"
 
     if { $affineType == [$mrmlManager GetRegistrationTypeFromString RegistrationTest] } {
         set CMD "$CMD --dofs 0"
     } elseif { $affineType == [$mrmlManager GetRegistrationTypeFromString RegistrationFast] } {
         set CMD "$CMD --accuracy 0.5 --initxlate --exploration 8.0 --dofs 6 --dofs 9"
     } elseif { $affineType == [$mrmlManager GetRegistrationTypeFromString RegistrationSlow] } {
-        set CMD "$CMD --accuracy 0.1 --initxlate --exploration 8.0 --dofs 6 --dofs 9"
+        # set CMD "$CMD --accuracy 0.1 --initxlate --exploration 8.0 --dofs 6 --dofs 9"
+         set CMD "$CMD --dofs 6,9,12 --auto-multi-levels 5 --ncc --init com"
     } else {
         PrintError "CMTKRegistration: Unknown affineType: $affineType"
         return ""
@@ -197,17 +198,19 @@ proc CMTKRegistration { fixedVolumeNode movingVolumeNode outVolumeNode backgroun
         set outTransformDirName $outNonLinearTransformDirName
 
         set CMD "$CMD --verbose"
-        set CMD "$CMD --fast"
-        if { $deformableType == [$mrmlManager GetRegistrationTypeFromString RegistrationTest] } {
+         if { $deformableType == [$mrmlManager GetRegistrationTypeFromString RegistrationTest] } {
+            set CMD "$CMD --fast"
             set CMD "$CMD --delta-f-threshold 1"
         } elseif { $deformableType == [$mrmlManager GetRegistrationTypeFromString RegistrationFast] } {
+            set CMD "$CMD --fast"
             set CMD "$CMD --grid-spacing 40 --refine 1"
             set CMD "$CMD --energy-weight 5e-2"
             set CMD "$CMD --accuracy 1 --coarsest 6"
         } elseif { $deformableType == [$mrmlManager GetRegistrationTypeFromString RegistrationSlow] } {
-            set CMD "$CMD --grid-spacing 40 --refine 4"
-            set CMD "$CMD --energy-weight 5e-2"
-            set CMD "$CMD --exploration 16 --accuracy 0.1 --coarsest 6"
+            #set CMD "$CMD --grid-spacing 40 --refine 4"
+            #set CMD "$CMD --energy-weight 5e-2"
+            #set CMD "$CMD --exploration 16 --accuracy 0.1 --coarsest 6"
+            set CMD "$CMD -e 16 --coarsest 4 --sampling 2 --accuracy 0.1 --grid-spacing 40 --refine 4 --delay-refine --energy-weight 1e-3"
         } else {
             PrintError "CMTKRegistration: Unknown deformableType: $deformableType"
             return ""
