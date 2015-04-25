@@ -353,12 +353,12 @@ QStandardItem* qSlicerEMSegmentAnatomicalTreeWidgetPrivate::insertTreeRow(
     labelComboBox->setMRMLScene(q->mrmlScene());
 
 
-    cout << "qSlicerEMSegmentAnatomicalTreeWidgetPrivate::insertTreeRow: Start slow" << endl; 
+    // cout << "qSlicerEMSegmentAnatomicalTreeWidgetPrivate::insertTreeRow: Start slow" << endl; 
     // The reason for it being slow is due to qMRMLLabelComboBox::updateWidgetFromMRML() which both of these functions call 
     labelComboBox->setMRMLColorNode(this->CurrentColorTableNode);
-    cout << "...." << endl; 
+    // cout << "...." << endl; 
     labelComboBox->setLabelValueVisible(true);
-    cout << "qSlicerEMSegmentAnatomicalTreeWidgetPrivate::insertTreeRow: End slow" << endl; 
+    // cout << "qSlicerEMSegmentAnatomicalTreeWidgetPrivate::insertTreeRow: End slow" << endl; 
     labelComboBox->setCurrentColor(q->mrmlManager()->GetTreeNodeIntensityLabel(treeNodeId));
   
      this->TreeView->setIndexWidget( this->TreeModel->indexFromItem(labelItem), labelComboBox);

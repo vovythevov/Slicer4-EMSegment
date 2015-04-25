@@ -122,7 +122,7 @@ namespace eval EMSegmenterAutoSampleTcl {
             if {$y} {set text "${text}| "}
             for {set x 0} {$x < $NumInputChannel} {incr x} {set text "${text}[format %.3f $EMSegment(GaussCurveCalc,Covariance,$y,$x)]  "}
         }
-        EMSegmentPrint $LOGIC  "$text\n\n" 0
+        # EMSegmentPrint $LOGIC  "$text\n\n" 0
         return 0
     }
 
@@ -163,6 +163,7 @@ namespace eval EMSegmenterAutoSampleTcl {
             Histogram SetInputData $ProbVolume
         }
         Histogram Update
+        EMSegmentPrint $LOGIC " " 0
         EMSegmentPrint $LOGIC "Minimum: [ lindex [Histogram GetMin] 0 ] " 0 
         set Min [expr int([lindex [Histogram GetMin] 0])]
         set EMSegment(GaussCurveCalc,MaxProb) [expr int([lindex [Histogram GetMax] 0])]
