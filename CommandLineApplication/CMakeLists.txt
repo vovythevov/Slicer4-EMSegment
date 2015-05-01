@@ -99,6 +99,16 @@ else()
 
 endif()
 
+set(CLP_MODULE IslandRemoval)
+
+SEMMacroBuildCLI(
+    NAME ${CLP_MODULE}
+    TARGET_LIBRARIES ${CommandLineApplication_LIBRARIES}
+    EXECUTABLE_ONLY
+    INCLUDE_DIRECTORIES ${Slicer_ModuleLogic_INCLUDE_DIRS}
+)
+
+
 # --------------------------------------------------------------------------
 #
 # EMSegmentTclInterpreter

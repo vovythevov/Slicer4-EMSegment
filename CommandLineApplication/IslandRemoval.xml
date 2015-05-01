@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<executable>
+  <category>Filter</category>
+  <title>Island Removal Filter</title>
+  <description><![CDATA[Removes island smaller than threshold by assigning them to the label associated with the majority of neighboring voxels.]]></description>
+  <version>1.0</version>
+  <documentation-url>http://wiki.slicer.org/slicerWiki/index.php/Documentation/4.4/Modules/IslandRemoval</documentation-url>
+  <license>slicer3</license>
+  <contributor>Kilian M Pohl (SRI/Stanford)</contributor>
+  <acknowledgements></acknowledgements>
+  <parameters>
+    <label>IO</label>
+    <description><![CDATA[Input/output parameters]]></description>
+    <image>
+      <name>InputVolume</name>
+      <label>Input Volume</label>
+      <channel>input</channel>
+      <index>0</index>
+      <description><![CDATA[Volume containing the input label map.]]></description>
+    </image>
+    <image>
+      <name>OutputVolume</name>
+      <label>Output Volume</label>
+      <channel>output</channel>
+      <index>1</index>
+      <description><![CDATA[Label map with islands removed.]]></description>
+    </image>
+  </parameters>
+  <parameters>
+    <label>Parameters</label>
+    <integer>
+      <name>MinIslandSize</name>
+      <label>minimum Island Size</label>
+      <flag>-m</flag>
+      <longflag>--min</longflag>
+      <description><![CDATA[Islands smaller than this size will be removed.]]></description>
+      <default>10</default>
+    </integer>
+    <boolean>
+      <name>Neighborhood2D</name>
+      <label>Neighborhood2D</label>
+      <flag>-n</flag>
+      <longflag>--neighborhood2D</longflag>
+      <description><![CDATA[If set then uses 2D instead of 3D neighborhood to define connectivity.]]></description>
+      <default>true</default>
+    </boolean>
+  </parameters>
+</executable>
