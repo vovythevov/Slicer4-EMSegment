@@ -6,7 +6,7 @@
 #include "vtkMRMLEMSAtlasNode.h"
 #include <vtksys/stl/algorithm>
 #include <vtksys/stl/string>
-#include "vtkMRMLScalarVolumeNode.h"
+#include <vtkMRMLLabelMapVolumeNode.h>
 // for some reason it was otherwise not wrapping it in tcl
 // maybe take it out later 
 
@@ -429,16 +429,16 @@ GetAlignedSubParcellationNode()
 
 
 //-----------------------------------------------------------------------------
-vtkMRMLScalarVolumeNode*
+vtkMRMLLabelMapVolumeNode*
 vtkMRMLEMSWorkingDataNode::
 GetOutputSegmentationNode()
 {
-  vtkMRMLScalarVolumeNode* node = NULL;
+  vtkMRMLLabelMapVolumeNode* node = NULL;
   if (this->GetScene() && this->GetOutputSegmentationNodeID() )
     {
     vtkMRMLNode* snode = 
       this->GetScene()->GetNodeByID(this->OutputSegmentationNodeID);
-    node = vtkMRMLScalarVolumeNode::SafeDownCast(snode);
+    node = vtkMRMLLabelMapVolumeNode::SafeDownCast(snode);
     }
   return node;
 }

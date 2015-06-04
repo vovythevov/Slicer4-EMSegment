@@ -25,6 +25,7 @@
 
 // MRML includes
 #include <vtkMRMLLabelMapVolumeDisplayNode.h>
+#include <vtkMRMLLabelMapVolumeNode.h>
 #include <vtkMRMLScalarVolumeNode.h>
 #include <vtkMRMLScalarVolumeDisplayNode.h>
 #include <vtkMRMLScene.h>
@@ -3266,7 +3267,7 @@ vtkMRMLEMSWorkingDataNode* vtkEMSegmentMRMLManager::GetWorkingDataNode()
 }
 
 //----------------------------------------------------------------------------
-vtkMRMLScalarVolumeNode*
+vtkMRMLLabelMapVolumeNode*
 vtkEMSegmentMRMLManager::
 GetOutputVolumeNode()
 {
@@ -4129,7 +4130,7 @@ int vtkEMSegmentMRMLManager::CheckTemplateMRMLStructure(vtkMRMLEMSTemplateNode *
   if (!guiFlag)
     {
        // check output volume
-      vtkMRMLScalarVolumeNode *outVolume = workingNode->GetOutputSegmentationNode();
+      vtkMRMLLabelMapVolumeNode *outVolume = workingNode->GetOutputSegmentationNode();
       if (outVolume == NULL)
       {
         vtkErrorMacro("Output Segmentation is NULL.");

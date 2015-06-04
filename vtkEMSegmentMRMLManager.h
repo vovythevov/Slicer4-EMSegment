@@ -15,7 +15,8 @@ class vtkMRMLEMSTreeParametersParentNode;
 class vtkMRMLEMSWorkingDataNode;
 #if defined(Slicer_USE_PYTHONQT)
 class vtkMRMLColorLogic;
-#endif 
+#endif
+class vtkMRMLLabelMapVolumeNode;
 class vtkMRMLScalarVolumeNode;
 class vtkMRMLVolumeNode;
 class vtkMRMLEMSVolumeCollectionNode;
@@ -488,7 +489,7 @@ public:
   virtual vtkMRMLEMSVolumeCollectionNode*   GetSubParcellationInputNode();
   virtual vtkMRMLEMSAtlasNode*              GetAtlasAlignedNode();
 
-  virtual vtkMRMLScalarVolumeNode*          GetOutputVolumeNode();
+  virtual vtkMRMLLabelMapVolumeNode*        GetOutputVolumeNode();
 
   virtual vtkMRMLEMSGlobalParametersNode*   GetGlobalParametersNode();
   virtual vtkMRMLEMSTreeNode*               GetTreeRootNode();

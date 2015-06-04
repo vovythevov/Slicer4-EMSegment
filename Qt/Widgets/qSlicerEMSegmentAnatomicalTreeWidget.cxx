@@ -408,7 +408,7 @@ QStandardItem* qSlicerEMSegmentAnatomicalTreeWidgetPrivate::insertTreeRow(
       }
     qMRMLNodeComboBox * parcellationMapComboBox = new qMRMLNodeComboBox;
     QStringList nodeTypes;
-    nodeTypes << "vtkMRMLScalarVolumeNode";
+    nodeTypes << "vtkMRMLLabelMapVolumeNode";
     // Set treeNodeId property so that "onProbabilityMapChanged" can retrieve it
     parcellationMapComboBox->setProperty("treeNodeId", QVariant(treeNodeId));
     parcellationMapComboBox->setNodeTypes(nodeTypes);
@@ -417,7 +417,6 @@ QStandardItem* qSlicerEMSegmentAnatomicalTreeWidgetPrivate::insertTreeRow(
     parcellationMapComboBox->setRemoveEnabled(false);
     parcellationMapComboBox->setNoneEnabled(true);
     parcellationMapComboBox->setEditEnabled(false);
-    parcellationMapComboBox->addAttribute("vtkMRMLScalarVolumeNode", "LabelMap", QVariant(1));
     parcellationMapComboBox->setMRMLScene(q->mrmlScene());
     if (volumeNode)
       {

@@ -6,7 +6,7 @@
 #include "vtkMRMLScene.h"
 
 class vtkMRMLEMSAtlasNode;
-class vtkMRMLScalarVolumeNode;
+class vtkMRMLLabelMapVolumeNode;
 class vtkMRMLEMSVolumeCollectionNode;
 
 class VTK_EMSEGMENT_EXPORT vtkMRMLEMSWorkingDataNode :  public vtkMRMLNode 
@@ -102,7 +102,7 @@ public:
 
   vtkGetStringMacro(OutputSegmentationNodeID);
   vtkSetReferenceStringMacro(OutputSegmentationNodeID);
-  vtkMRMLScalarVolumeNode* GetOutputSegmentationNode();
+  vtkMRMLLabelMapVolumeNode* GetOutputSegmentationNode();
 
   // For legacy - to be complient with older mrml files  - please do not add functions for these variables 
   vtkGetStringMacro(InputAtlasNodeID);

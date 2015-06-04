@@ -25,6 +25,7 @@
 #include <vtkSlicerVolumesLogic.h>
 
 // MRML includes
+#include <vtkMRMLLabelMapVolumeNode.h>
 #include <vtkMRMLScalarVolumeNode.h>
 #include <vtkMRMLVolumeArchetypeStorageNode.h>
 
@@ -2306,8 +2307,7 @@ void vtkEMSegmentLogic::CreateOutputVolumeNode()
   //  vtkMRMLScalarVolumeNode* outputNode = volLogic->CreateLabelVolume (this->GetMRMLScene(), vNode, "EM_MAP");
 
   // My version
-  VTK_CREATE(vtkMRMLScalarVolumeNode, outputNode);
-  outputNode->SetLabelMap(1);
+  VTK_CREATE(vtkMRMLLabelMapVolumeNode, outputNode);
   std::string uname = this->GetMRMLScene()->GetUniqueNameByString("EM_Map");
   outputNode->SetName(uname.c_str());
   this->GetMRMLScene()->AddNode(outputNode);
@@ -2344,7 +2344,7 @@ int vtkEMSegmentLogic::StartSegmentationWithoutPreprocessingAndSaving()
     vtkErrorMacro( << ErrorMsg );
     return EXIT_FAILURE;
     }
-  vtkMRMLScalarVolumeNode *outVolume =
+  vtkMRMLLabelMapVolumeNode *outVolume =
       this->GetMRMLManager()->GetOutputVolumeNode();
   if (outVolume == NULL)
     {
@@ -2505,11 +2505,6 @@ int vtkEMSegmentLogic::StartSegmentationWithoutPreprocessingAndSaving()
   outVolume->SetAndObserveImageData(postProcessing);
   // make sure the output volume is a labelmap
 
-  if (!outVolume->GetLabelMap())
-    {
-    vtkWarningMacro("Changing output image to labelmap");
-    outVolume->LabelMapOn();
-    }
 
   // std::cout << "=== Define Display Node  === " << std::endl;
 

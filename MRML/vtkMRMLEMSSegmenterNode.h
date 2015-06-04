@@ -6,7 +6,7 @@
 #include "vtkEMSegment.h"
 class vtkMRMLEMSTemplateNode;
 class vtkMRMLEMSWorkingDataNode;
-class vtkMRMLScalarVolumeNode;
+class vtkMRMLLabelMapVolumeNode;
 
 
 //
@@ -56,7 +56,7 @@ public:
   vtkMRMLEMSTemplateNode* GetTemplateNode();
 
   vtkGetStringMacro(OutputVolumeNodeID);
-  vtkMRMLScalarVolumeNode* GetOutputVolumeNode();
+  vtkMRMLLabelMapVolumeNode* GetOutputVolumeNode();
 
   vtkGetStringMacro         (WorkingDataNodeID);
   vtkMRMLEMSWorkingDataNode* GetWorkingDataNode();

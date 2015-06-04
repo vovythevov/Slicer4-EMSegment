@@ -38,7 +38,7 @@
 #include <vtkMRMLEMSTargetNode.h>
 
 // MRML includes
-#include <vtkMRMLScalarVolumeNode.h>
+#include <vtkMRMLLabelMapVolumeNode.h>
 
 #include <vtkMRMLEMSWorkingDataNode.h>
 
@@ -254,11 +254,10 @@ void qSlicerEMSegmentDefineInputChannelsStep::onExit(
   // Make sure output volume is defined
   if(!this->mrmlManager()->GetOutputVolumeMRMLID())
     {
-    vtkMRMLScalarVolumeNode* outputVolumeNode =
-        vtkMRMLScalarVolumeNode::SafeDownCast(
-            qMRMLNodeFactory::createNode(this->mrmlScene(), "vtkMRMLScalarVolumeNode"));
+    vtkMRMLLabelMapVolumeNode* outputVolumeNode =
+        vtkMRMLLabelMapVolumeNode::SafeDownCast(
+            qMRMLNodeFactory::createNode(this->mrmlScene(), "vtkMRMLLabelMapVolumeNode"));
     outputVolumeNode->SetName("EMSegment1"); // TODO Should name be changed to something meaningful ?
-    outputVolumeNode->LabelMapOn();
     this->mrmlManager()->SetOutputVolumeMRMLID(outputVolumeNode->GetID());
     }
 

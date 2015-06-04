@@ -15,6 +15,7 @@
 #include "vtkMRMLEMSVolumeCollectionNode.h"
 
 // MRML includes
+#include <vtkMRMLLabelMapVolumeNode.h>
 #include <vtkMRMLVolumeArchetypeStorageNode.h>
 #include <vtkMRMLScalarVolumeNode.h>
 
@@ -46,9 +47,7 @@ AddNewScalarArchetypeVolume(vtkMRMLScene* mrmlScene,
                             int labelMap,
                             const char* volname)
 {
-  vtkMRMLScalarVolumeNode  *scalarNode   = vtkMRMLScalarVolumeNode::New();
-  scalarNode->SetLabelMap(labelMap);
-  vtkMRMLVolumeNode        *volumeNode   = scalarNode;
+  vtkMRMLLabelMapVolumeNode  *volumeNode   = vtkMRMLLabelMapVolumeNode::New();
 
   // i/o mechanism
   vtkMRMLVolumeArchetypeStorageNode *storageNode =
@@ -74,9 +73,9 @@ AddNewScalarArchetypeVolume(vtkMRMLScene* mrmlScene,
 
   volumeNode->SetAndObserveStorageNodeID(storageNode->GetID());
 
-  if (scalarNode)
+  if (volumeNode)
     {
-      scalarNode->Delete();
+      volumeNode->Delete();
     }
   if (storageNode)
     {

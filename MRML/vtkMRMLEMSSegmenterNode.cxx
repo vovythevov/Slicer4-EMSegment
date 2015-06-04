@@ -2,7 +2,7 @@
 #include <sstream>
 #include <vtkObjectFactory.h>
 #include "vtkMRMLScene.h"
-#include "vtkMRMLScalarVolumeNode.h"
+#include "vtkMRMLLabelMapVolumeNode.h"
 #include "vtkMRMLEMSWorkingDataNode.h"
 #include "vtkMRMLEMSTemplateNode.h"
 
@@ -220,16 +220,16 @@ GetTemplateNode()
 }
 
 //-----------------------------------------------------------------------------
-vtkMRMLScalarVolumeNode*
+vtkMRMLLabelMapVolumeNode*
 vtkMRMLEMSSegmenterNode::
 GetOutputVolumeNode()
 {
-  vtkMRMLScalarVolumeNode* node = NULL;
+  vtkMRMLLabelMapVolumeNode* node = NULL;
   if (this->GetScene() && this->GetOutputVolumeNodeID() )
     {
     vtkMRMLNode* snode = 
       this->GetScene()->GetNodeByID(this->OutputVolumeNodeID);
-    node = vtkMRMLScalarVolumeNode::SafeDownCast(snode);
+    node = vtkMRMLLabelMapVolumeNode::SafeDownCast(snode);
     }
   return node;
 }

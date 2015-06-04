@@ -65,9 +65,6 @@ void qSlicerEMSegmentRunSegmentationStepPrivate::setupUi(
 {
   this->Ui_qSlicerEMSegmentRunSegmentationStep::setupUi(step);
 
-  // Set attributes on the qMRMLNodeComboBox to select the output label map
-  this->OutputLabelMapComboBox->addAttribute("vtkMRMLScalarVolumeNode", "LabelMap", "1");
-
   // Setup connections
   QObject::connect(this->Display2DVOIButton, SIGNAL(clicked(bool)),
                    this, SLOT(display2DVOI(bool)));
@@ -151,10 +148,8 @@ void qSlicerEMSegmentRunSegmentationStepPrivate::updateWidgetFromMRML()
   // Output label map
   if (!q->mrmlManager()->GetOutputVolumeMRMLID())
     {
-    qMRMLNodeFactory::AttributeType attributes;
-    attributes.insert("LabelMap", "1");
     qMRMLNodeFactory::createNode(
-        q->mrmlScene(), "vtkMRMLScalarVolumeNode", attributes);
+        q->mrmlScene(), "vtkMRMLLabelMapVolumeNode");
     }
 
   this->OutputLabelMapComboBox->setCurrentNode(q->mrmlManager()->GetOutputVolumeMRMLID());
