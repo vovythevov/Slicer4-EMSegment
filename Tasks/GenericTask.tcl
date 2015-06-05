@@ -82,7 +82,9 @@ namespace eval EMSegmenterPreProcessingTcl {
 
         if { "$Ext" != "" } {
             set NAME "_[$Node GetID].$Ext"
-    } elseif { [$Node GetClassName] == "vtkMRMLScalarVolumeNode" } {
+        } elseif { [$Node GetClassName] == "vtkMRMLScalarVolumeNode" } {
+            set NAME "_[$Node GetID].nrrd"
+        } elseif { [$Node GetClassName] == "vtkMRMLLabelMapVolumeNode" } {
             set NAME "_[$Node GetID].nrrd"
         } elseif { [$Node GetClassName] == "vtkMRMLScene" } {
             set NAME "_[file tail [$Node GetURL]]"
