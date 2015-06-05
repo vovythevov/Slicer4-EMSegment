@@ -47,7 +47,15 @@ AddNewScalarArchetypeVolume(vtkMRMLScene* mrmlScene,
                             int labelMap,
                             const char* volname)
 {
-  vtkMRMLLabelMapVolumeNode  *volumeNode   = vtkMRMLLabelMapVolumeNode::New();
+  vtkMRMLVolumeNode  *volumeNode = 0;
+  if (labelMap)
+    {
+      volumeNode = vtkMRMLLabelMapVolumeNode::New();
+    }
+  else
+    {
+      volumeNode = vtkMRMLScalarVolumeNode::New();
+    }
 
   // i/o mechanism
   vtkMRMLVolumeArchetypeStorageNode *storageNode =
