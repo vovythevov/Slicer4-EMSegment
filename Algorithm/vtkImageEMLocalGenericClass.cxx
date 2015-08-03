@@ -15,6 +15,9 @@
 #include "vtkObjectFactory.h"
 #include "vtkImageData.h"
 
+// STD includes
+#include <algorithm>
+
 //------------------------------------------------------------------------
 vtkImageEMLocalGenericClass* vtkImageEMLocalGenericClass::New()
 {
