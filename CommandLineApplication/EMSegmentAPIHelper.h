@@ -9,7 +9,7 @@ extern "C" int Vtkteem_Init(Tcl_Interp *interp);
 extern "C" int Vtkitk_Init(Tcl_Interp *interp);
 extern "C" int Slicerbaselogic_Init(Tcl_Interp *interp);
 extern "C" int Mrml_Init(Tcl_Interp *interp);
-extern "C" int Mrmlcli_Init(Tcl_Interp *interp); 
+extern "C" int Mrmlcli_Init(Tcl_Interp *interp);
 extern "C" int Commandlinemodule_Init(Tcl_Interp *interp);
 #endif
 
@@ -27,8 +27,8 @@ extern "C" int Commandlinemodule_Init(Tcl_Interp *interp);
   }
 
 
-vtksys_stl::string tgGetSLICER_HOME(char** argv)  
-{ 
+vtksys_stl::string tgGetSLICER_HOME(char** argv)
+{
   vtksys_stl::string slicerHome = "";
   if ( !vtksys::SystemTools::GetEnv(Slicer_HOME_ENVVAR_NAME, slicerHome) )
     {
@@ -37,12 +37,12 @@ vtksys_stl::string tgGetSLICER_HOME(char** argv)
       if ( !vtksys::SystemTools::FindProgramPath(argv[0], programPath, errorMessage) ) return slicerHome;
 
       slicerHome = vtksys::SystemTools::GetFilenamePath(programPath.c_str()) + "/../../../";
-    } 
+    }
   return slicerHome;
 }
 
-int tgSetSLICER_HOME(char** argv)  
-{ 
+int tgSetSLICER_HOME(char** argv)
+{
   vtksys_stl::string slicerHome = "";
   if ( !vtksys::SystemTools::GetEnv(Slicer_HOME_ENVVAR_NAME, slicerHome) )
     {
@@ -51,13 +51,13 @@ int tgSetSLICER_HOME(char** argv)
 
       if ( !vtksys::SystemTools::FindProgramPath(argv[0], programPath, errorMessage) ) return 1;
 
-      std::string homeEnv = Slicer_HOME_ENVVAR_NAME"=";
+      std::string homeEnv = Slicer_HOME_ENVVAR_NAME "=";
       homeEnv += vtksys::SystemTools::GetFilenamePath(programPath.c_str()) + "/../../../";
-   
+
       cout << "Set environment: " << homeEnv.c_str() << endl;
       vtksys::SystemTools::PutEnv(const_cast <char *> (homeEnv.c_str()));
     } else {
-    cout << Slicer_HOME_ENVVAR_NAME" found: " << slicerHome << endl;
+    cout << Slicer_HOME_ENVVAR_NAME " found: " << slicerHome << endl;
   }
   return 0;
 }
@@ -78,7 +78,7 @@ Tcl_Interp* CreateTclInterp(int argc, char** argv, vtkSlicerCommonInterface *sli
   Emsegment_Init(interp);
   Slicerbaselogic_Init(interp);
   Mrml_Init(interp);
-  Mrmlcli_Init(interp); 
+  Mrmlcli_Init(interp);
   Vtkteem_Init(interp);
   Vtkitk_Init(interp);
   Commandlinemodule_Init(interp);
@@ -109,14 +109,14 @@ std::string StripBackslashes(const std::string& s)
 vtkSlicerApplicationLogic* InitializeApplication(vtkSlicerCommonInterface *slicerCommon, int argc, char** argv)
 {
   // SLICER_HOME
-  cout << "Setting "Slicer_HOME_ENVVAR_NAME" ..." << endl;
+  cout << "Setting " Slicer_HOME_ENVVAR_NAME " ..." << endl;
   std::string slicerHome = tgGetSLICER_HOME(argv);
   if(!slicerHome.size())
     {
       cout << "Error: Cannot find executable" << endl;
       return NULL;
     }
-  cout << Slicer_HOME_ENVVAR_NAME" is " << slicerHome << endl;
+  cout << Slicer_HOME_ENVVAR_NAME " is " << slicerHome << endl;
 
   slicerCommon->PromptBeforeExitOff();
 
@@ -139,14 +139,14 @@ vtkSlicerApplicationLogic* InitializeApplication(vtkSlicerCommonInterface *slice
   slicerBinDir = vtksys::SystemTools::CollapseFullPath(slicerBinDir.c_str());
   slicerCommon->SetApplicationBinDir(slicerBinDir.c_str());
 
-  // Make generic later 
+  // Make generic later
   slicerCommon->EvaluateTcl("set ::env(KILIS_MODULE) KilisSandbox");
   //std::string CMD = std::string("set ::env(" + Slicer_HOME_ENVVAR_NAME + ") ") + slicerHome + "/..";
   //slicerCommon->EvaluateTcl(CMD.c_str());
   std::string CMD = "";
-  CMD = "set argv { "; 
+  CMD = "set argv { ";
   for (int i = 2 ; i < argc ; i++) CMD += std::string(argv[i]) + " ";
-  CMD += " }  "; 
+  CMD += " }  ";
   slicerCommon->EvaluateTcl(CMD.c_str());
   return  appLogic;
 }
