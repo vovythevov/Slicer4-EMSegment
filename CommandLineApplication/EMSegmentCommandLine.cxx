@@ -286,7 +286,7 @@ int main(int argc, char** argv)
       // =================== Atlas ====================
       if (!useDefaultAtlas)
         {
-          if (LoadUserDefinedAtlas (atlasVolumeFileNames, EMSLogic, mrmlScene, appLogic, verbose, !loadAtlasNonCentered))
+          if (LoadUserDefinedAtlas (atlasVolumeFileNames, EMSLogic, mrmlScene, appLogic, verbose, loadAtlasNonCentered))
             {
               throw std::runtime_error("ERROR: failed to load user specified atlas ");
             }
