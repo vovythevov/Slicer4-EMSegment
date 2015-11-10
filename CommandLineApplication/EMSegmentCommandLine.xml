@@ -48,10 +48,20 @@
     <directory multiple="false">
       <name>intermediateResultsDirectory</name>
       <longflag>intermediateResultsDirectory</longflag>
-      <description>Directory where EMSegmenter will write intermediate data (e.g., aligned atlas data).</description>
+      <description>write intermediate data (e.g., aligned atlas data).</description>
       <label>Intermediate Results Directory</label>      
       <channel>input</channel>
     </directory>
+
+    <boolean>
+      <name>writeIntermediateResults</name>
+      <longflag>writeIntermediateResults</longflag>
+      <description>Write out intermediate data (e.g., aligned atlas data).</description>
+      <label>Write Out Intermediate Results </label>      
+      <default>false</default>
+    </boolean>
+
+
 
   </parameters>
 
@@ -118,6 +128,14 @@
       <longflag>keepTempFiles</longflag>
       <description>If flag is set then at the end of command the temporary files are not removed</description>
       <label>Keep Temporary Files</label>
+      <default>false</default>
+    </boolean>
+
+    <boolean>
+      <name>autoBoundaryDetection</name>
+      <longflag>autoBoundaryDetection</longflag>
+      <description>If flag is set then the method will automatically determine the boundary box which includes non-zero voxels in the input images. This speed things up when working with skull stripped images</description>
+      <label>Automatically Detect Boundary Box</label>
       <default>false</default>
     </boolean>
 

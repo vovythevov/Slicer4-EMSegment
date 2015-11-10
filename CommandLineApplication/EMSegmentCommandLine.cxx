@@ -63,7 +63,6 @@ int main(int argc, char** argv)
   bool useDefaultTarget         = targetVolumeFileNames.empty();
   bool useDefaultAtlas          = atlasVolumeFileNames.empty();
   bool useDefaultOutput         = resultVolumeFileName.empty();
-  bool writeIntermediateResults = !intermediateResultsDirectory.empty();
   bool segmentationSucceeded    = true;
 
   if (verbose) std::cout << "Starting EMSegment Command Line." << std::endl;
@@ -98,7 +97,7 @@ int main(int argc, char** argv)
 
   //
   // make sure files exist
-  if (writeIntermediateResults &&
+  if (!intermediateResultsDirectory.empty() &&
       !vtksys::SystemTools::FileExists(intermediateResultsDirectory.c_str()))
     {
       std::cout << "Warning: intermediate results directory does not exist. "
@@ -369,24 +368,26 @@ int main(int argc, char** argv)
                   << std::endl;
       }
 
-      // set intermediate results directory
       if (writeIntermediateResults)
         {
           emMRMLManager->SetSaveIntermediateResults(true);
-          std::string absolutePath = vtksys::SystemTools::
-            CollapseFullPath(intermediateResultsDirectory.c_str());
-          emMRMLManager->
-            SetSaveWorkingDirectory(absolutePath.c_str());
-          std::cout << "Intermediate results will be written to: "
-                    << absolutePath << std::endl;
         }
 
       // ================== Segmentation Boundary  ==================
-      int segmentationBoundaryMin[3];
-      int segmentationBoundaryMax[3];
-      emMRMLManager->GetSegmentationBoundaryMin(segmentationBoundaryMin);
-      emMRMLManager->GetSegmentationBoundaryMax(segmentationBoundaryMax);
-      if (verbose) std::cout
+      if (autoBoundaryDetection) {
+        if (verbose) {
+           std::cout << "Automatic Boundary Detection" << std::endl;
+    }
+    AutomaticBoundaryDetection(emMRMLManager);
+      }
+
+      if (verbose) {
+                int segmentationBoundaryMin[3];
+                int segmentationBoundaryMax[3];
+                emMRMLManager->GetSegmentationBoundaryMin(segmentationBoundaryMin);
+                emMRMLManager->GetSegmentationBoundaryMax(segmentationBoundaryMax);
+
+                std::cout
                      << "Default ROI is ["
                      << segmentationBoundaryMin[0] << ", "
                      << segmentationBoundaryMin[1] << ", "
@@ -394,7 +395,7 @@ int main(int argc, char** argv)
                      << segmentationBoundaryMax[0] << ", "
                      << segmentationBoundaryMax[1] << ", "
                      << segmentationBoundaryMax[2] << "]" << std::endl;
-
+      }
       if (verbose) {
         std::cout << "=============== Print EMSegmentMRMLManager" << std::endl;
         // emMRMLManager->PrintInfo(std::cout);
@@ -420,6 +421,18 @@ int main(int argc, char** argv)
           // ================== Preprocessing ==================
           if (RunPreprocessing( EMSLogic, EMSLogicTcl,  emMRMLManagerTcl, slicerCommon, emMRMLManager, verbose) ) {
             throw std::runtime_error("");
+          }
+
+          // Set intermediate results directory
+          // That way the tcl files are always sourced from the same directory (defined in the mrml file)
+          //  and only the results are really written in the intermediate results 
+          // If defined before preprocessing then the tcl, mrml and atlas files are always copied first into the intermediate directories
+          if (!intermediateResultsDirectory.empty()) {
+            std::string absolutePath = vtksys::SystemTools::
+              CollapseFullPath(intermediateResultsDirectory.c_str());
+              emMRMLManager->SetSaveWorkingDirectory(absolutePath.c_str());
+              std::cout << "Intermediate results will be written to: "
+                    << absolutePath << std::endl;
           }
 
           // ================== Segmentation ==================

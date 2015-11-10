@@ -37,6 +37,9 @@
 // VTKSYS includes
 #include <vtksys/SystemTools.hxx>
 
+//need for new automatic clip function 
+#include "vtkImageClipAutomatic.h"
+
 // -------------------------------------------------------------------------------------------
 // does not actually read an image from disk, this is intended for
 // creating an image that you will later want to write to
@@ -680,3 +683,32 @@ void GenerateEmptyMRMLScene(const char* filename)
   emLogic->Delete();
 }
 
+void AutomaticBoundaryDetection(vtkEMSegmentMRMLManager* emMRMLManager) {
+   vtkImageData* targetInputImage=emMRMLManager->GetTargetInputNode()->GetNthVolumeNode(0)->GetImageData();
+        int originalDim[3];
+        targetInputImage->GetDimensions(originalDim);       
+        vtkImageClipAutomatic* CLIP = vtkImageClipAutomatic::New();
+        int minBound[3];
+        int maxBound[3];
+    CLIP->DetermineOutputWholeExtent(targetInputImage,minBound[0],maxBound[0],minBound[1],maxBound[1],minBound[2],maxBound[2]); 
+        CLIP->Delete();
+  
+        for (int i= 0; i < 3; i++) {
+          // Boundary starts at 1 not 0 !
+          // Also add 3 voxels around the minimum boundary to avoid boundary artifacts
+      if (minBound[i] > 3 ) {
+        minBound[i] -=2;
+      }  else {
+            minBound[i] =1;
+      }
+  
+          if (maxBound[i] > (originalDim[i]-4)) {
+        maxBound[i] = originalDim[i];
+      }  else {
+            maxBound[i] = maxBound[i]+4;
+      } 
+     }  
+
+        emMRMLManager->SetSegmentationBoundaryMin(minBound);
+        emMRMLManager->SetSegmentationBoundaryMax(maxBound);
+ } 

@@ -77,5 +77,8 @@ bool CompareResultsToStandard(std::string resultStandardVolumeFileName, /*int di
 // -------------------------------------------------------------------------------------------
 void GenerateEmptyMRMLScene(const char* filename);
 
+void AutomaticBoundaryDetection(vtkEMSegmentMRMLManager* emMRMLManager); 
+
+
 #endif
 
