@@ -840,7 +840,6 @@ add_test(
        -1
        --registrationDeformableType
        -1
-       --loadAtlasNonCentered
        --atlasVolumeFileNames
        ${EMSegment_TESTDATA_DIR}/MRI-Human-Brain/${size}_atlas_skulneck.nrrd,${EMSegment_TESTDATA_DIR}/MRI-Human-Brain/${size}_atlas_air.nrrd,${EMSegment_TESTDATA_DIR}/MRI-Human-Brain/${size}_atlas_csf.nrrd,${EMSegment_TESTDATA_DIR}/MRI-Human-Brain/${size}_atlas_greymatter.nrrd,${EMSegment_TESTDATA_DIR}/MRI-Human-Brain/${size}_atlas_whitematter.nrrd,${EMSegment_TESTDATA_DIR}/MRI-Human-Brain/${size}_atlas_t1_stripped.nrrd
        )
