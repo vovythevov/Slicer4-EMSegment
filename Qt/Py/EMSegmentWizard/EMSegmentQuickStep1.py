@@ -47,7 +47,7 @@ class EMSegmentQuickStep1( EMSegmentStep ) :
 
     inputChannelGroupBoxLayout = qt.QFormLayout( inputChannelGroupBox )
 
-    self.__inputChannelList = slicer.modulewidget.qSlicerEMSegmentInputChannelListWidget()
+    self.__inputChannelList = slicer.qSlicerEMSegmentInputChannelListWidget()
     self.__inputChannelList.setMRMLManager( self.mrmlManager() )
     inputChannelGroupBoxLayout.addWidget( self.__inputChannelList )
 
@@ -158,7 +158,7 @@ class EMSegmentQuickStep1( EMSegmentStep ) :
     if not self.__initialized:
 
       # use default taskfile
-      taskFileShort = slicer.modulelogic.vtkMRMLEMSGlobalParametersNode.GetDefaultTaskTclFileName()
+      taskFileShort = slicer.vtkMRMLEMSGlobalParametersNode.GetDefaultTaskTclFileName()
 
       self.mrmlManager().CreateAndObserveNewParameterSet()
       templateNodes = slicer.mrmlScene.GetNodesByClass( 'vtkMRMLEMSTemplateNode' )

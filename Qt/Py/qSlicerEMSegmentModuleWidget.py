@@ -20,7 +20,7 @@ class qSlicerEMSegmentModuleWidget:
     self.__logic = None
 
     if not parent:
-      self.__logic = slicer.modulelogic.vtkEMSegmentLogic()
+      self.__logic = slicer.vtkEMSegmentLogic()
       self.setup()
       self.parent.setMRMLScene( slicer.mrmlScene )
       # after setup, be ready for events
