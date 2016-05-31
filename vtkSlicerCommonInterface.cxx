@@ -118,13 +118,12 @@ vtkSlicerCommonInterface::~vtkSlicerCommonInterface()
     // Update current application directory, so that *PythonD modules can be loaded
     ctkScopedCurrentDir scopedCurrentDir(emsegmentModulePath);
 
-    QString emsegmentModulePythonPath = emsegmentModulePath + "/Python";
-    std::cout << "emsegmentModulePythonPath:" << qPrintable(emsegmentModulePythonPath) << std::endl;
+    std::cout << "emsegmentModulePath:" << qPrintable(emsegmentModulePath) << std::endl;
     app->pythonManager()->executeString(QString(
       "from slicer.util import importVTKClassesFromDirectory;"
-      "importVTKClassesFromDirectory('%1', 'slicer', filematch='vtkSlicer%2ModuleLogic.py');"
-      "importVTKClassesFromDirectory('%1', 'slicer', filematch='vtkSlicer%2ModuleMRML.py');"
-      ).arg(emsegmentModulePythonPath).arg("EMSegment"));
+      "importVTKClassesFromDirectory('%1', 'slicer', filematch='vtkSlicer%2ModuleLogicPython.*');"
+      "importVTKClassesFromDirectory('%1', 'slicer', filematch='vtkSlicer%2ModuleMRMLPython.*');"
+      ).arg(emsegmentModulePath).arg("EMSegment"));
 
     }
 #endif
