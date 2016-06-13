@@ -298,9 +298,9 @@ ComputeReorientationInformation(const vtkMatrix4x4* IJKToXYZ,
                                 double* spacingForChangeInformationFilter)
 {
   // origin is easy...
-  originForChangeInformationFilter[0] = (*IJKToXYZ)[0][3];
-  originForChangeInformationFilter[1] = (*IJKToXYZ)[1][3];
-  originForChangeInformationFilter[2] = (*IJKToXYZ)[2][3];
+  originForChangeInformationFilter[0] = IJKToXYZ->GetElement(0, 3);
+  originForChangeInformationFilter[1] = IJKToXYZ->GetElement(1, 3);
+  originForChangeInformationFilter[2] = IJKToXYZ->GetElement(2, 3);
 
   // figure out spacing and permutation.  Assumes one nonzero entry
   // per row/column of directions matrix.
@@ -308,7 +308,7 @@ ComputeReorientationInformation(const vtkMatrix4x4* IJKToXYZ,
     {
     for (int r = 0; r < 3; ++r)
       {
-      double t = (*IJKToXYZ)[r][c];
+      double t = IJKToXYZ->GetElement(r, c);
       if (t != 0)
         {
         filteredAxesForPermuteFilter[r]      = c;

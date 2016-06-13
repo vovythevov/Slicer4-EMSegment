@@ -27,9 +27,9 @@ class vtkMRMLStorableNode;
 
 class vtkMRMLScene;
 
-#include <vtksys/stl/string>
-#include <vtksys/stl/map>
-#include <vtksys/stl/vector>
+#include <string>
+#include <map>
+#include <vector>
 
 class VTK_EMSEGMENT_EXPORT vtkEMSegmentMRMLManager : 
   public vtkObject
@@ -538,8 +538,8 @@ public:
   virtual void SetTclTaskFilename(const char* fileName);
 
   //BTX
-  vtksys_stl::string TurnDefaultMRMLFileIntoTaskName(const char* fileName);
-  vtksys_stl::string TurnDefaultTclFileIntoPreprocessingName(const char* fileName);
+  std::string TurnDefaultMRMLFileIntoTaskName(const char* fileName);
+  std::string TurnDefaultTclFileIntoPreprocessingName(const char* fileName);
   //ETX
 
   virtual int          IDMapContainsMRMLNodeID(const char* MRMLNodeID);
@@ -555,7 +555,7 @@ public:
   void SetStorageNodeToNULL(vtkMRMLStorableNode* sNode) ;
 
 //BTX
-  void ImportMRMLFile(const char *mrmlFile,  vtksys_stl::string errMSG);  
+  void ImportMRMLFile(const char *mrmlFile,  std::string errMSG);
 //ETX
   // interface to ImportMRMLFile without the errMSG
   void ImportMRMLFile(const char *mrmlFile);
@@ -591,7 +591,7 @@ private:
   virtual void      UpdateIntensityDistributionFromSample(vtkIdType nodeID);
 
   //BTX
-  vtksys_stl::string TurnDefaultFileIntoName(vtksys_stl::string taskName);
+  std::string TurnDefaultFileIntoName(std::string taskName);
  //ETX
 
 
@@ -633,10 +633,10 @@ private:
   vtkIdType NextVTKNodeID;
 
   //BTX
-  typedef vtksys_stl::map<vtkIdType, vtksys_stl::string>  VTKToMRMLMapType;
-  VTKToMRMLMapType                                VTKNodeIDToMRMLNodeIDMap;
-  typedef vtksys_stl::map<vtksys_stl::string, vtkIdType>  MRMLToVTKMapType;
-  MRMLToVTKMapType                                MRMLNodeIDToVTKNodeIDMap;
+  typedef std::map<vtkIdType, std::string>  VTKToMRMLMapType;
+  VTKToMRMLMapType                          VTKNodeIDToMRMLNodeIDMap;
+  typedef std::map<std::string, vtkIdType>  MRMLToVTKMapType;
+  MRMLToVTKMapType                          MRMLNodeIDToVTKNodeIDMap;
 
   std::vector<std::vector<double> > GetTreeNodeDistributionLogCovariance(vtkIdType nodeID);
   std::vector<std::vector<double> > GetTreeNodeDistributionLogCovarianceCorrection(vtkIdType nodeID);

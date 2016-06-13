@@ -459,8 +459,8 @@ bool vtkEMSegmentLogic::IsVolumeGeometryEqual(vtkMRMLVolumeNode* lhs, vtkMRMLVol
     for (int c = 0; c < 4; ++c)
       {
       // Otherwise small errors will cause that they are not equal but should be ignored !
-      if (double(int((*matrixLHS)[r][c] * 100000) / 100000.0) != double(int(
-          (*matrixRHS)[r][c] * 100000) / 100000.0))
+      if (double(int(matrixLHS->GetElement(r, c) * 100000) / 100000.0) != double(int(
+          matrixRHS->GetElement(r, c) * 100000) / 100000.0))
         {
         equalMatrix = false;
         break;
@@ -2202,7 +2202,7 @@ void vtkEMSegmentLogic::AddDefaultTasksToList(const char* FilePath, std::vector<
 
   for (int i = 0; i < numberOfFiles; i++)
     {
-    vtksys_stl::string filename = dir->GetFile(i);
+    std::string filename = dir->GetFile(i);
 
     // do nothing if file is ".", ".."
     if (strcmp(filename.c_str(), ".") && strcmp(filename.c_str(), ".."))
@@ -2210,9 +2210,9 @@ void vtkEMSegmentLogic::AddDefaultTasksToList(const char* FilePath, std::vector<
       //  {
       //  continue;
       //  }
-      vtksys_stl::string tmpFullFileName = vtksys_stl::string(FilePath)
-          + vtksys_stl::string("/") + filename.c_str();
-      vtksys_stl::string fullFileName =
+      std::string tmpFullFileName = std::string(FilePath)
+          + std::string("/") + filename.c_str();
+      std::string fullFileName =
           vtksys::SystemTools::ConvertToOutputPath(tmpFullFileName.c_str());
 
       // if it has a .mrml extension but is a directory, do nothing
@@ -2224,7 +2224,7 @@ void vtkEMSegmentLogic::AddDefaultTasksToList(const char* FilePath, std::vector<
             ".mrml") && (filename.compare(0, 1, "_")))
           {
           // Generate Name of Task from File name
-          vtksys_stl::string taskName =
+          std::string taskName =
               this->MRMLManager->TurnDefaultMRMLFileIntoTaskName(
                   filename.c_str());
           // make sure that file is not already in the list
@@ -2251,7 +2251,7 @@ void vtkEMSegmentLogic::AddDefaultTasksToList(const char* FilePath, std::vector<
             vtkMRMLEMSGlobalParametersNode::GetDefaultTaskTclFileName()))
           {
           // Generate Name of Task from File name
-          vtksys_stl::string taskName =
+          std::string taskName =
               this->MRMLManager->TurnDefaultTclFileIntoPreprocessingName(
                   filename.c_str());
           // make sure that file is not already in the list
@@ -3091,7 +3091,7 @@ int vtkEMSegmentLogic::SourceTclFile(const char *tclFile)
 // It works under Slicer 3 but not under Slicer 4 for the Tcl Interpreter (when running in Generic.tcl)
 int vtkEMSegmentLogic::SourceFileInTaskDirectory(const char *tclFile)
 {
-  vtksys_stl::string file(this->DefineTclFullPathName(tclFile));
+  std::string file(this->DefineTclFullPathName(tclFile));
   return this->SourceTclFile(file.c_str());
 }
 
@@ -3406,7 +3406,7 @@ void vtkEMSegmentLogic::RunAtlasCreator(vtkMRMLAtlasCreatorNode *node)
 {
 
   std::string pythonCommand = "";
-  vtksys_stl::string module_path = std::string(
+  std::string module_path = std::string(
       this->GetSlicerCommonInterface()->GetBinDirectory());
   module_path += std::string("/../lib/Slicer3/Modules/AtlasCreator/");
 

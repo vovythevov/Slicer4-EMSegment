@@ -1,7 +1,7 @@
 #include "vtkSlicerCommonInterface.h"
 #include <sstream>
 #include <vtksys/SystemTools.hxx>
-#include <vtksys/stl/string>
+#include <string>
 
 #ifdef Slicer3_USE_KWWIDGETS
 extern "C" int Emsegment_Init(Tcl_Interp *interp);
@@ -27,9 +27,9 @@ extern "C" int Commandlinemodule_Init(Tcl_Interp *interp);
   }
 
 
-vtksys_stl::string tgGetSLICER_HOME(char** argv)
+std::string tgGetSLICER_HOME(char** argv)
 {
-  vtksys_stl::string slicerHome = "";
+  std::string slicerHome = "";
   if ( !vtksys::SystemTools::GetEnv(Slicer_HOME_ENVVAR_NAME, slicerHome) )
     {
       std::string programPath;
@@ -43,7 +43,7 @@ vtksys_stl::string tgGetSLICER_HOME(char** argv)
 
 int tgSetSLICER_HOME(char** argv)
 {
-  vtksys_stl::string slicerHome = "";
+  std::string slicerHome = "";
   if ( !vtksys::SystemTools::GetEnv(Slicer_HOME_ENVVAR_NAME, slicerHome) )
     {
       std::string programPath;

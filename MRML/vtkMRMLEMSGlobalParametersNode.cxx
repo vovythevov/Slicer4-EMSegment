@@ -4,8 +4,7 @@
 #include <algorithm>
 #include <vtkObjectFactory.h>
 #include <iterator>
-
-#include <vtksys/stl/string>
+#include <string>
 
 //-----------------------------------------------------------------------------
 vtkMRMLEMSGlobalParametersNode* 
@@ -120,7 +119,7 @@ void vtkMRMLEMSGlobalParametersNode::WriteXML(ostream& of, int nIndent)
      << (this->WorkingDirectory ? this->WorkingDirectory : "NULL") << "\" ";
   
     {
-    vtksys_stl::stringstream ss;
+    std::stringstream ss;
     ss << this->SegmentationBoundaryMin[0] << " " 
        << this->SegmentationBoundaryMin[1] << " " 
        << this->SegmentationBoundaryMin[2];
@@ -128,7 +127,7 @@ void vtkMRMLEMSGlobalParametersNode::WriteXML(ostream& of, int nIndent)
     }
   
     {
-    vtksys_stl::stringstream ss;
+    std::stringstream ss;
     ss << this->SegmentationBoundaryMax[0] << " " 
        << this->SegmentationBoundaryMax[1] << " " 
        << this->SegmentationBoundaryMax[2];
@@ -199,7 +198,7 @@ void vtkMRMLEMSGlobalParametersNode::ReadXMLAttributes(const char** attrs)
     
     if (!strcmp(key, "NumberOfTargetInputChannels"))
       {
-        vtksys_stl::stringstream ss;
+        std::stringstream ss;
         ss << val;
     int n ;
         ss >> n;
@@ -207,7 +206,7 @@ void vtkMRMLEMSGlobalParametersNode::ReadXMLAttributes(const char** attrs)
       }
     else if (!strcmp(key, "EnableTargetToTargetRegistration"))
       {
-        vtksys_stl::stringstream ss;
+        std::stringstream ss;
         ss << val;
         ss >> this->EnableTargetToTargetRegistration;
       }
@@ -217,7 +216,7 @@ void vtkMRMLEMSGlobalParametersNode::ReadXMLAttributes(const char** attrs)
       }
     else if (!strcmp(key, "SegmentationBoundaryMin"))
       {
-      vtksys_stl::stringstream ss;
+      std::stringstream ss;
       ss << val;
       for (unsigned int i = 0; i < 3; ++i)
         {
@@ -230,7 +229,7 @@ void vtkMRMLEMSGlobalParametersNode::ReadXMLAttributes(const char** attrs)
       }
     else if (!strcmp(key, "SegmentationBoundaryMax"))
       {
-      vtksys_stl::stringstream ss;
+      std::stringstream ss;
       ss << val;
       for (unsigned int i = 0; i < 3; ++i)
         {
@@ -243,33 +242,33 @@ void vtkMRMLEMSGlobalParametersNode::ReadXMLAttributes(const char** attrs)
       }
     else if (!strcmp(key, "RegistrationAffineType"))
       {
-      vtksys_stl::stringstream ss;
+      std::stringstream ss;
       ss << val;
       ss >> this->RegistrationAffineType;
       }
     else if (!strcmp(key, "RegistrationDeformableType"))
       {
-      vtksys_stl::stringstream ss;
+      std::stringstream ss;
       ss << val;
       ss >> this->RegistrationDeformableType;
       }
     else if (!strcmp(key, "RegistrationInterpolationType"))
       {
-      vtksys_stl::stringstream ss;
+      std::stringstream ss;
       ss << val;
       ss >> this->RegistrationInterpolationType;
       }
     else if (!strcmp(key, "RegistrationPackageType"))
       {
-      vtksys_stl::stringstream ss;
+      std::stringstream ss;
       ss << val;
       ss >> this->RegistrationPackageType;
       }
     else if (!strcmp(key, "RegistrationAtlasVolumeKey"))
       {
-        vtksys_stl::stringstream ss;
+        std::stringstream ss;
         ss << val;
-        vtksys_stl::string s;
+        std::string s;
 
         while (ss >> s)
         {
@@ -282,31 +281,31 @@ void vtkMRMLEMSGlobalParametersNode::ReadXMLAttributes(const char** attrs)
       }
     else if (!strcmp(key, "SaveIntermediateResults"))
       {
-        vtksys_stl::stringstream ss;
+        std::stringstream ss;
         ss << val;
         ss >> this->SaveIntermediateResults;
       }
     else if (!strcmp(key, "SaveSurfaceModels"))
       {
-         vtksys_stl::stringstream ss;
+         std::stringstream ss;
          ss << val;
          ss >> this->SaveSurfaceModels;
       }
     else if (!strcmp(key, "MultithreadingEnabled"))
       {
-      vtksys_stl::stringstream ss;
+      std::stringstream ss;
       ss << val;
       ss >> this->MultithreadingEnabled;
       }
     else if (!strcmp(key, "UpdateIntermediateData"))
       {
-      vtksys_stl::stringstream ss;
+      std::stringstream ss;
       ss << val;
       ss >> this->UpdateIntermediateData;
       }
     else if (!strcmp(key, "EnableSubParcellation")) 
       {
-        vtksys_stl::stringstream ss;
+        std::stringstream ss;
         ss << val;
         int n ;
         ss >> n;
@@ -314,7 +313,7 @@ void vtkMRMLEMSGlobalParametersNode::ReadXMLAttributes(const char** attrs)
       }
     else if (!strcmp(key, "MinimumIslandSize"))
       {
-        vtksys_stl::stringstream ss;
+        std::stringstream ss;
         ss << val;
         int n ;
         ss >> n;
@@ -322,7 +321,7 @@ void vtkMRMLEMSGlobalParametersNode::ReadXMLAttributes(const char** attrs)
       } 
     else if (!strcmp(key, "Island2DFlag"))
       {
-        vtksys_stl::stringstream ss;
+        std::stringstream ss;
         ss << val;
         int n ;
         ss >> n;
@@ -330,7 +329,7 @@ void vtkMRMLEMSGlobalParametersNode::ReadXMLAttributes(const char** attrs)
       } 
     else if (!strcmp(key, "AMFSmoothing"))
       {
-        vtksys_stl::stringstream ss;
+        std::stringstream ss;
         ss << val;
         int n ;
         ss >> n;
@@ -342,9 +341,9 @@ void vtkMRMLEMSGlobalParametersNode::ReadXMLAttributes(const char** attrs)
       }
     else if (!strcmp(key, "InputChannelNames"))
       {
-        vtksys_stl::stringstream ss;
+        std::stringstream ss;
         ss << val;
-        vtksys_stl::string name;
+        std::string name;
         int index = 0;
         while (ss >> name)
          {
@@ -359,7 +358,7 @@ void vtkMRMLEMSGlobalParametersNode::ReadXMLAttributes(const char** attrs)
       }
     else if (!strcmp(key, "TemplateSaveAfterSegmentation"))
       {
-         vtksys_stl::stringstream ss;
+         std::stringstream ss;
          ss << val;
          ss >> this->TemplateSaveAfterSegmentation;
       }

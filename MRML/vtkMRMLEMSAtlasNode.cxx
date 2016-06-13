@@ -4,8 +4,6 @@
 #include <algorithm>
 #include <vtkObjectFactory.h>
 
-#include <vtksys/ios/sstream>
-
 vtkMRMLEMSAtlasNode* 
 vtkMRMLEMSAtlasNode::
 New()
@@ -69,7 +67,7 @@ void vtkMRMLEMSAtlasNode::ReadXMLAttributes(const char** attrs)
     
     if (!strcmp(key, "NumberOfTrainingSamples"))
       {
-      vtksys_stl::stringstream ss;
+      std::stringstream ss;
       ss << val;
       ss >> this->NumberOfTrainingSamples;
       }

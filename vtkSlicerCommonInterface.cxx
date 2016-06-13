@@ -330,7 +330,7 @@ void vtkSlicerCommonInterface::RegisterObjectWithTcl(vtkObject* obj, const char*
 #else
 #define PathSep ":"
 #endif
-  vtksys_stl::string slicerHome;
+  std::string slicerHome;
   if (!vtksys::SystemTools::GetEnv(Slicer_HOME_ENVVAR_NAME, slicerHome))
     {
     slicerHome = std::string(this->GetBinDirectory()) + "/..";

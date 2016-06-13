@@ -69,8 +69,8 @@ AddNewScalarArchetypeVolume(vtkMRMLScene* mrmlScene,
   // set the volume's name
   if (volname == NULL)
     {
-      const vtksys_stl::string fname(filename);
-      vtksys_stl::string name = vtksys::SystemTools::GetFilenameName(fname);
+      const std::string fname(filename);
+      std::string name = vtksys::SystemTools::GetFilenameName(fname);
       volumeNode->SetName(name.c_str());
     }
   else

@@ -1973,7 +1973,7 @@ SetTreeNodeSpatialPriorVolumeID(vtkIdType nodeID,
     }
 
       // use tree node label (or mrml id if label is not specified)
-      vtksys_stl::string priorVolumeName;
+      std::string priorVolumeName;
       priorVolumeName = n->GetID();
 
       // add key value pair to atlas
@@ -2076,7 +2076,7 @@ SetTreeNodeSubParcellationVolumeID(vtkIdType nodeID,
     }
 
       // use tree node label (or mrml id if label is not specified)
-      vtksys_stl::string priorVolumeName;
+      std::string priorVolumeName;
       priorVolumeName = n->GetID();
 
       // add key value pair to subParcellation
@@ -2498,7 +2498,7 @@ SetRegistrationAtlasVolumeID(vtkIdType volumeID)
   //  cout << "SetRegistrationAtlasVolumeID " << volumeID << endl;
 
   // for now there can be only one atlas image for registration
-  vtksys_stl::string registrationVolumeName = "atlas_registration_image";
+  std::string registrationVolumeName = "atlas_registration_image";
 
   // map to MRML ID
   const char* mrmlID = this->MapVTKNodeIDToMRMLNodeID(volumeID);
@@ -3294,8 +3294,8 @@ vtkMRMLEMSAtlasNode* vtkEMSegmentMRMLManager::CloneAtlasNode(vtkMRMLEMSAtlasNode
   // clone the atlas node
   VTK_CREATE(vtkMRMLEMSAtlasNode, clonedAtlas);
   clonedAtlas->CopyWithScene(atlasNode);
-  vtksys_stl::string postFix = vtksys_stl::string("_") +  vtksys_stl::string(name);
-  vtksys_stl::string newName = vtksys_stl::string(atlasNode->GetName()) + postFix;
+  std::string postFix = std::string("_") +  std::string(name);
+  std::string newName = std::string(atlasNode->GetName()) + postFix;
   clonedAtlas->SetName(newName.c_str());
   clonedAtlas->CloneVolumes(atlasNode,postFix.c_str());
 
@@ -3316,8 +3316,8 @@ vtkMRMLEMSVolumeCollectionNode* vtkEMSegmentMRMLManager::CloneVolumeCollectionNo
   // clone the atlas node
   VTK_CREATE(vtkMRMLEMSVolumeCollectionNode, clonedCollectionNode);
   clonedCollectionNode->CopyWithScene(collectionNode);
-  vtksys_stl::string postFix = vtksys_stl::string("_") +  vtksys_stl::string(name);
-  vtksys_stl::string newName = vtksys_stl::string(collectionNode->GetName()) + postFix;
+  std::string postFix = std::string("_") +  std::string(name);
+  std::string newName = std::string(collectionNode->GetName()) + postFix;
   clonedCollectionNode->SetName(newName.c_str());
   clonedCollectionNode->CloneVolumes(collectionNode,postFix.c_str());
 
@@ -3351,8 +3351,8 @@ SynchronizeAtlasNode(vtkMRMLEMSAtlasNode* templateNode,
     }
 
    // replace each image with a cloned image
-   vtksys_stl::string postFix = vtksys_stl::string("(") +  vtksys_stl::string(name) + vtksys_stl::string(")");
-   vtksys_stl::string newName = vtksys_stl::string(templateNode->GetName()) + postFix;
+   std::string postFix = std::string("(") +  std::string(name) + std::string(")");
+   std::string newName = std::string(templateNode->GetName()) + postFix;
 
    changingNode->SetName(newName.c_str());
    changingNode->CloneVolumes(templateNode,postFix.c_str());
@@ -3383,8 +3383,8 @@ void vtkEMSegmentMRMLManager::SynchronizeVolumeCollectionNode(vtkMRMLEMSVolumeCo
     }
 
   // replace each image with a cloned image
-  vtksys_stl::string postFix = vtksys_stl::string("(") +  vtksys_stl::string(name) + vtksys_stl::string(")");
-  vtksys_stl::string newName = vtksys_stl::string(templateNode->GetName()) + postFix;
+  std::string postFix = std::string("(") +  std::string(name) + std::string(")");
+  std::string newName = std::string(templateNode->GetName()) + postFix;
   changingNode->SetName(newName.c_str());
   changingNode->CloneVolumes(templateNode,postFix.c_str());
 }
@@ -4855,29 +4855,29 @@ void  vtkEMSegmentMRMLManager::SetTclTaskFilename(const char* fileName)
 }
 
 //----------------------------------------------------------------------------
-vtksys_stl::string vtkEMSegmentMRMLManager::TurnDefaultTclFileIntoPreprocessingName(const char* fileName)
+std::string vtkEMSegmentMRMLManager::TurnDefaultTclFileIntoPreprocessingName(const char* fileName)
 {
-  vtksys_stl::string taskName(fileName);
+  std::string taskName(fileName);
   taskName.resize(taskName.size() -  4);
 
   return TurnDefaultFileIntoName(taskName);
 }
 
 //----------------------------------------------------------------------------
-vtksys_stl::string vtkEMSegmentMRMLManager::TurnDefaultMRMLFileIntoTaskName(const char* fileName)
+std::string vtkEMSegmentMRMLManager::TurnDefaultMRMLFileIntoTaskName(const char* fileName)
 {
-  vtksys_stl::string taskName(fileName);
+  std::string taskName(fileName);
   taskName.resize(taskName.size() -  5);
 
   return TurnDefaultFileIntoName(taskName);
 }
 
 //----------------------------------------------------------------------------
-vtksys_stl::string vtkEMSegmentMRMLManager::TurnDefaultFileIntoName(vtksys_stl::string taskName  )
+std::string vtkEMSegmentMRMLManager::TurnDefaultFileIntoName(std::string taskName  )
 {
 
   size_t found=taskName.find_first_of("-");
-  while (found!=vtksys_stl::string::npos)
+  while (found!=std::string::npos)
   {
     taskName[found]=' ';
     found=taskName.find_first_of("-",found+1);
@@ -5210,20 +5210,20 @@ void vtkEMSegmentMRMLManager::TurnFromParentToLeafNode(vtkMRMLEMSTreeNode* treeN
 void vtkEMSegmentMRMLManager::ImportMRMLFile(const char *mrmlFile)
 {
 
-  vtksys_stl::string errMSG = "";
+  std::string errMSG = "";
   this->ImportMRMLFile(mrmlFile,errMSG);
 
 }
 
 //----------------------------------------------------------------------------
-void vtkEMSegmentMRMLManager::ImportMRMLFile(const char *mrmlFile,  vtksys_stl::string errMSG)
+void vtkEMSegmentMRMLManager::ImportMRMLFile(const char *mrmlFile,  std::string errMSG)
 {
 
   this->MRMLScene->SetURL(mrmlFile);
 
   if (!this->MRMLScene->Import())
     {
-      errMSG = vtksys_stl::string("Could not load mrml file ") + vtksys_stl::string( mrmlFile);
+      errMSG = std::string("Could not load mrml file ") + std::string( mrmlFile);
       vtkErrorMacro(<< errMSG.c_str());
       return;
     }

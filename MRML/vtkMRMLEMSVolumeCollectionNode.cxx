@@ -5,7 +5,7 @@
 #include <vtkObjectFactory.h>
 #include <algorithm>
 #include "vtkMRMLScalarVolumeNode.h"
-#include <vtksys/stl/string>
+#include <string>
 
 vtkMRMLEMSVolumeCollectionNode* 
 vtkMRMLEMSVolumeCollectionNode::
@@ -60,12 +60,12 @@ void vtkMRMLEMSVolumeCollectionNode::ReadXMLAttributes(const char** attrs)
     
     if (!strcmp(key, "VolumeNodeIDs") || !strcmp(key, "NodeIDs"))
       {
-      vtksys_stl::stringstream ss;
+      std::stringstream ss;
       ss << val;
-      vtksys_stl::string k1;
-      vtksys_stl::string k2;
-      vtksys_stl::string v1;
-      vtksys_stl::string v2;
+      std::string k1;
+      std::string k2;
+      std::string v1;
+      std::string v2;
       
       while (ss >> k1 && ss >> v1 && ss >> k2 && ss >> v2)
         {
@@ -101,11 +101,11 @@ void vtkMRMLEMSVolumeCollectionNode::CloneVolumes(const vtkMRMLNode *rhs, const 
       return;
     }
 
-    vtksys_stl::string cloneName(vnode->GetName());
+    std::string cloneName(vnode->GetName());
     
     if (addPostFix) 
       {
-    cloneName +=  vtksys_stl::string(addPostFix);
+    cloneName +=  std::string(addPostFix);
       }
     // If you change name later than it is not correctly shown in the volume list of the viewers  
     vtkMRMLScalarVolumeNode* clonedVolume = volumeLogic->CloneVolume(this->GetScene(),vnode, cloneName.c_str());

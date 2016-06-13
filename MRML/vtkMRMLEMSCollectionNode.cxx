@@ -2,7 +2,7 @@
 #include <sstream>
 #include "vtkMRMLScene.h"
 #include <algorithm>
-#include <vtksys/stl/string>
+#include <string>
 #include <vtkObjectFactory.h>
 
 vtkMRMLEMSCollectionNode* 
@@ -92,7 +92,7 @@ void vtkMRMLEMSCollectionNode
   for (KeyIterator i = this->KeyList.begin(); i != this->KeyList.end(); ++i)
     {
     std::string mrmlID = this->KeyToNodeIDMap[*i];
-    if (oldID && newID && mrmlID == vtksys_stl::string(oldID))
+    if (oldID && newID && mrmlID == std::string(oldID))
       {
       // update volID to name map
       this->NodeIDToKeyMap.erase(oldID);
@@ -143,12 +143,12 @@ void vtkMRMLEMSCollectionNode::ReadXMLAttributes(const char** attrs)
     
     if (!strcmp(key, "NodeIDs"))
       {
-      vtksys_stl::stringstream ss;
+      std::stringstream ss;
       ss << val;
-      vtksys_stl::string k1;
-      vtksys_stl::string k2;
-      vtksys_stl::string v1;
-      vtksys_stl::string v2;
+      std::string k1;
+      std::string k2;
+      std::string v1;
+      std::string v2;
       
       while (ss >> k1 && ss >> v1 && ss >> k2 && ss >> v2)
         {
@@ -210,7 +210,7 @@ vtkMRMLEMSCollectionNode::
 SetNthNodeID(int n, const char* volumeNodeID)
 {
   KeyIterator i = this->KeyList.begin();
-  vtksys_stl::advance(i, n);
+  std::advance(i, n);
   this->KeyToNodeIDMap[*i] = volumeNodeID;
   this->Scene->AddReferencedNodeID(volumeNodeID, this);
   // cout << "setnth this->Scene->AddReferencedNodeID " << volumeNodeID << " " << this << endl;
@@ -277,7 +277,7 @@ vtkMRMLEMSCollectionNode::
 RemoveNthNode(int n)
 {
   KeyIterator i = this->KeyList.begin();
-  vtksys_stl::advance(i, n);
+  std::advance(i, n);
   std::string key    = *i;
   std::string mrmlID = this->KeyToNodeIDMap[key];
 
@@ -333,7 +333,7 @@ GetNthNodeID(int n) const
       return NULL;
     }
   KeyIterator i = this->KeyList.begin();
-  vtksys_stl::advance(i, n);
+  std::advance(i, n);
   return this->KeyToNodeIDMap[*i].c_str();
 }
 
@@ -342,7 +342,7 @@ vtkMRMLEMSCollectionNode::
 GetNthKey(int n) const
 {
   KeyIterator i = this->KeyList.begin();
-  vtksys_stl::advance(i, n);
+  std::advance(i, n);
   return (*i).c_str();
 }
 
@@ -369,9 +369,9 @@ MoveNthNode(int n, int toIndex)
 
   KeyIterator start    = this->KeyList.begin();
   KeyIterator iterFrom = start;
-  vtksys_stl::advance(iterFrom, n);
+  std::advance(iterFrom, n);
   KeyIterator iterTo   = start;
-  vtksys_stl::advance(iterTo, toIndex);
+  std::advance(iterTo, toIndex);
 
   std::string keyFrom = *iterFrom;
 

@@ -4,8 +4,8 @@
 #include "vtkMRMLEMSVolumeCollectionNode.h"
 #include <vtkObjectFactory.h>
 #include "vtkMRMLEMSAtlasNode.h"
-#include <vtksys/stl/algorithm>
-#include <vtksys/stl/string>
+#include <algorithm>
+#include <string>
 #include <vtkMRMLLabelMapVolumeNode.h>
 // for some reason it was otherwise not wrapping it in tcl
 // maybe take it out later 
@@ -252,7 +252,7 @@ void vtkMRMLEMSWorkingDataNode::ReadXMLAttributes(const char** attrs)
       }
     else if (!strcmp(key, "InputTargetNodeIsValid"))
       {
-    vtksys_stl::stringstream ss;
+    std::stringstream ss;
     ss << val;
     ss >> this->InputTargetNodeIsValid;
       }
@@ -262,19 +262,19 @@ void vtkMRMLEMSWorkingDataNode::ReadXMLAttributes(const char** attrs)
       }
     else if (!strcmp(key, "AlignedTargetNodeIsValid"))
       {
-    vtksys_stl::stringstream ss;
+    std::stringstream ss;
     ss << val;
     ss >> this->AlignedTargetNodeIsValid;
       }
     else if (!strcmp(key, "InputAtlasNodeIsValid"))
       {
-    vtksys_stl::stringstream ss;
+    std::stringstream ss;
     ss << val;
     ss >> this->InputAtlasNodeIsValid;
       }
     else if (!strcmp(key, "AlignedAtlasNodeIsValid"))
       {
-    vtksys_stl::stringstream ss;
+    std::stringstream ss;
     ss << val;
     ss >> this->AlignedAtlasNodeIsValid;
       }

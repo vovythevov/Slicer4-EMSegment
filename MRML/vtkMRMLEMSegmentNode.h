@@ -44,9 +44,9 @@ public:
   // Description:
   // Get/Set a parameter for the module.
 //BTX
-  void SetParameter(const vtksys_stl::string& name, 
-                    const vtksys_stl::string& value);
-  const vtksys_stl::string* GetParameter(const vtksys_stl::string &name) const;
+  void SetParameter(const std::string& name, 
+                    const std::string& value);
+  const std::string* GetParameter(const std::string &name) const;
 //ETX  
 
   void SetParameter(const char *name, const char *value);
@@ -58,7 +58,7 @@ public:
 protected:
 
 //BTX
-  vtksys_stl::map<vtksys_stl::string, vtksys_stl::string> Parameters;
+  std::map<std::string, std::string> Parameters;
 //ETX
   char *Value;
 

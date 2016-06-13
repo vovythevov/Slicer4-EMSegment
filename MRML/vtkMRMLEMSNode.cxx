@@ -3,7 +3,6 @@
 #include <vtkObjectFactory.h>
 #include "vtkMRMLScene.h"
 
-#include <vtksys/ios/sstream>
 #include "vtkMRMLEMSSegmenterNode.h"
 
 //-----------------------------------------------------------------------------
@@ -142,7 +141,7 @@ void vtkMRMLEMSNode::ReadXMLAttributes(const char** attrs)
     else if (!strcmp(key, "SaveTemplateAfterSegmentation"))
       {
       cout << "WARNING: vtkMRMLEMSNode::ReadXMLAttributes:EMSNode is outdated since Slicer 3.6.3  - please update your MRML file" << endl;
-      vtksys_stl::stringstream ss;
+      std::stringstream ss;
       ss << val;
       ss >> this->SaveTemplateAfterSegmentation;
       }

@@ -4,8 +4,6 @@
 #include <vtkObjectFactory.h>
 #include <algorithm>
 
-#include <vtksys/ios/sstream>
-
 //-----------------------------------------------------------------------------
 vtkMRMLEMSTreeParametersLeafNode* 
 vtkMRMLEMSTreeParametersLeafNode::
@@ -150,23 +148,23 @@ void vtkMRMLEMSTreeParametersLeafNode::ReadXMLAttributes(const char** attrs)
     
     if (!strcmp(key, "PrintQuality"))
       {
-      vtksys_stl::stringstream ss;
+      std::stringstream ss;
       ss << val;
       ss >> this->PrintQuality;
       }
     else if (!strcmp(key, "IntensityLabel"))
       {
-      vtksys_stl::stringstream ss;
+      std::stringstream ss;
       ss << val;
       ss >> this->IntensityLabel;
       }
     else if (!strcmp(key, "LogMean"))
       {
       // read data into a temporary vector
-      vtksys_stl::stringstream ss;
+      std::stringstream ss;
       ss << val;
       double d;
-      vtksys_stl::vector<double> tmpVec;
+      std::vector<double> tmpVec;
       while (ss >> d)
         {
         tmpVec.push_back(d);
@@ -179,7 +177,7 @@ void vtkMRMLEMSTreeParametersLeafNode::ReadXMLAttributes(const char** attrs)
         }
       
       // copy data
-      vtksys_stl::copy(tmpVec.begin(), tmpVec.end(), this->LogMean.begin());
+      std::copy(tmpVec.begin(), tmpVec.end(), this->LogMean.begin());
       }
     else if (!strcmp(key, "LogCovariance"))
       {
@@ -194,10 +192,10 @@ void vtkMRMLEMSTreeParametersLeafNode::ReadXMLAttributes(const char** attrs)
         }
 
       // read data into a temporary vector
-      vtksys_stl::stringstream ss;
+      std::stringstream ss;
       ss << valStr;
       double d;
-      vtksys_stl::vector<double> tmpVec;
+      std::vector<double> tmpVec;
       while (ss >> d)
         {
         tmpVec.push_back(d);
@@ -224,10 +222,10 @@ void vtkMRMLEMSTreeParametersLeafNode::ReadXMLAttributes(const char** attrs)
     else if (!strcmp(key, "LogMeanCorrection"))
       {
       // read data into a temporary vector
-      vtksys_stl::stringstream ss;
+      std::stringstream ss;
       ss << val;
       double d;
-      vtksys_stl::vector<double> tmpVec;
+      std::vector<double> tmpVec;
       while (ss >> d)
         {
         tmpVec.push_back(d);
@@ -240,7 +238,7 @@ void vtkMRMLEMSTreeParametersLeafNode::ReadXMLAttributes(const char** attrs)
         }
       
       // copy data
-      vtksys_stl::copy(tmpVec.begin(), tmpVec.end(), this->LogMeanCorrection.begin());
+      std::copy(tmpVec.begin(), tmpVec.end(), this->LogMeanCorrection.begin());
       }
     else if (!strcmp(key, "LogCovarianceCorrection"))
       {
@@ -255,10 +253,10 @@ void vtkMRMLEMSTreeParametersLeafNode::ReadXMLAttributes(const char** attrs)
         }
 
       // read data into a temporary vector
-      vtksys_stl::stringstream ss;
+      std::stringstream ss;
       ss << valStr;
       double d;
-      vtksys_stl::vector<double> tmpVec;
+      std::vector<double> tmpVec;
       while (ss >> d)
         {
         tmpVec.push_back(d);
@@ -284,14 +282,14 @@ void vtkMRMLEMSTreeParametersLeafNode::ReadXMLAttributes(const char** attrs)
       }
     else if (!strcmp(key, "DistributionSpecificationMethod"))
       {
-      vtksys_stl::stringstream ss;
+      std::stringstream ss;
       ss << val;
       ss >> this->DistributionSpecificationMethod;
       }
     else if (!strcmp(key, "DistributionSamplePointsRAS"))
       {
       this->DistributionSamplePointsRAS.clear();
-      vtksys_stl::stringstream ss;
+      std::stringstream ss;
       ss << val;
       std::vector<double> point(3);
       while (ss >> point[0] >> point[1] >> point[2])
@@ -402,9 +400,9 @@ SetNumberOfTargetInputChannels(unsigned int n)
       
     // resize LogMean, don\"t preserve data!
     this->LogMean.resize(n);
-    vtksys_stl::fill(this->LogMean.begin(), this->LogMean.end(), 0.0);
+    std::fill(this->LogMean.begin(), this->LogMean.end(), 0.0);
     this->LogMeanCorrection.resize(n);
-    vtksys_stl::fill(this->LogMeanCorrection.begin(), this->LogMeanCorrection.end(), 0.0);
+    std::fill(this->LogMeanCorrection.begin(), this->LogMeanCorrection.end(), 0.0);
 
     // resize LogCovariance, don't preserve data!
     this->LogCovariance.clear();

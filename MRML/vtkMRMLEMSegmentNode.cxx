@@ -74,7 +74,7 @@ void vtkMRMLEMSegmentNode::WriteXML(ostream& of, int nIndent)
     of << " ModuleName = \"" << this->ModuleName << "\" ";
     }
 
-  vtksys_stl::map<vtksys_stl::string, vtksys_stl::string>::iterator iter;
+  std::map<std::string, std::string>::iterator iter;
 
   for (iter=this->Parameters.begin(); iter != this->Parameters.end(); iter++)
     {
@@ -96,14 +96,14 @@ void vtkMRMLEMSegmentNode::ReadXMLAttributes(const char** atts)
 
     if ( !strcmp(attName, "ModuleName") )
       {
-      vtksys_stl::stringstream ss;
+      std::stringstream ss;
       ss << attValue;
       ss >> this->ModuleName;
       }
     else
       {
-      vtksys_stl::string sname(attName);
-      vtksys_stl::string svalue(attValue);
+      std::string sname(attName);
+      std::string svalue(attValue);
       this->SetParameter(sname, svalue);
       }
     }
@@ -131,7 +131,7 @@ void vtkMRMLEMSegmentNode::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "ModuleName: " 
      << (this->GetModuleName() ? this->GetModuleName() : "(none)") << "\n";
 
-  vtksys_stl::map<vtksys_stl::string, vtksys_stl::string>::iterator iter;
+  std::map<std::string, std::string>::iterator iter;
 
   for (iter=this->Parameters.begin(); iter != this->Parameters.end(); iter++)
     {
@@ -142,11 +142,11 @@ void vtkMRMLEMSegmentNode::PrintSelf(ostream& os, vtkIndent indent)
 //----------------------------------------------------------------------------
 void
 vtkMRMLEMSegmentNode
-::SetParameter(const vtksys_stl::string& name, const vtksys_stl::string& value)
+::SetParameter(const std::string& name, const std::string& value)
 {
   // Set the default value of the named parameter with the value
   // specified
-  const vtksys_stl::string *currentValue = this->GetParameter(name);
+  const std::string *currentValue = this->GetParameter(name);
   if (currentValue == NULL || (currentValue != NULL && value != *currentValue))
     {
     this->Parameters[name] = value;
@@ -156,9 +156,9 @@ vtkMRMLEMSegmentNode
 
 
 //----------------------------------------------------------------------------
-const vtksys_stl::string *
+const std::string *
 vtkMRMLEMSegmentNode
-::GetParameter(const vtksys_stl::string& name) const
+::GetParameter(const std::string& name) const
 {
   if ( this->Parameters.find(name) == this->Parameters.end() )
     {
@@ -181,8 +181,8 @@ void
 vtkMRMLEMSegmentNode
 ::SetParameter(const char *name, const char *value)
 {
-  vtksys_stl::string sname(name);
-  vtksys_stl::string svalue(value);
+  std::string sname(name);
+  std::string svalue(value);
   this->SetParameter(sname, svalue);
 }
 
@@ -191,7 +191,7 @@ void
 vtkMRMLEMSegmentNode
 ::RequestParameter(const char *name)
 {
-  vtksys_stl::string sname(name);
-  const vtksys_stl::string *svaluep = this->GetParameter(sname);
+  std::string sname(name);
+  const std::string *svaluep = this->GetParameter(sname);
   this->SetValue (svaluep->c_str());
 }

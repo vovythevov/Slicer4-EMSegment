@@ -3,8 +3,6 @@
 #include "vtkMRMLScene.h"
 #include <vtkObjectFactory.h>
 
-#include <vtksys/ios/sstream>
-
 //-----------------------------------------------------------------------------
 vtkMRMLEMSTreeParametersParentNode* 
 vtkMRMLEMSTreeParametersParentNode::
@@ -147,127 +145,127 @@ void vtkMRMLEMSTreeParametersParentNode::ReadXMLAttributes(const char** attrs)
 
     if (!strcmp(key, "Alpha"))
       {
-      vtksys_stl::stringstream ss;
+      std::stringstream ss;
       ss << val;
       ss >> this->Alpha;
       }
     else if (!strcmp(key, "PrintBias"))
       {
-      vtksys_stl::stringstream ss;
+      std::stringstream ss;
       ss << val;
       ss >> this->PrintBias;
       }
     else if (!strcmp(key, "BiasCalculationMaxIterations"))
       {
-      vtksys_stl::stringstream ss;
+      std::stringstream ss;
       ss << val;
       ss >> this->BiasCalculationMaxIterations;
       }
     else if (!strcmp(key, "SmoothingKernelWidth"))
       {
-      vtksys_stl::stringstream ss;
+      std::stringstream ss;
       ss << val;
       ss >> this->SmoothingKernelWidth;
       }
     else if (!strcmp(key, "SmoothingKernelSigma"))
       {
-      vtksys_stl::stringstream ss;
+      std::stringstream ss;
       ss << val;
       ss >> this->SmoothingKernelSigma;
       }
     else if (!strcmp(key, "BiasCorrectionType"))
       {
-      vtksys_stl::stringstream ss;
+      std::stringstream ss;
       ss << val;
       ss >> this->BiasCorrectionType;
       }
     else if (!strcmp(key, "UseLLS_Recompute_Means"))
       {
-      vtksys_stl::stringstream ss;
+      std::stringstream ss;
       ss << val;
       ss >> this->UseLLS_Recompute_Means;
       }
     else if (!strcmp(key, "StopEMType"))
       {
-      vtksys_stl::stringstream ss;
+      std::stringstream ss;
       ss << val;
       ss >> this->StopEMType;
       }
     else if (!strcmp(key, "StopEMMaxIterations"))
       {
-      vtksys_stl::stringstream ss;
+      std::stringstream ss;
       ss << val;
       ss >> this->StopEMMaxIterations;
       }
     else if (!strcmp(key, "StopEMValue"))
       {
-      vtksys_stl::stringstream ss;
+      std::stringstream ss;
       ss << val;
       ss >> this->StopEMValue;
       }
     else if (!strcmp(key, "StopMFAType"))
       {
-      vtksys_stl::stringstream ss;
+      std::stringstream ss;
       ss << val;
       ss >> this->StopMFAType;
       }
     else if (!strcmp(key, "StopMFAMaxIterations"))
       {
-      vtksys_stl::stringstream ss;
+      std::stringstream ss;
       ss << val;
       ss >> this->StopMFAMaxIterations;
       }
     else if (!strcmp(key, "StopMFAValue"))
       {
-      vtksys_stl::stringstream ss;
+      std::stringstream ss;
       ss << val;
       ss >> this->StopMFAValue;
       }
     else if (!strcmp(key, "PrintFrequency"))
       {
-      vtksys_stl::stringstream ss;
+      std::stringstream ss;
       ss << val;
       ss >> this->PrintFrequency;
       }
     else if (!strcmp(key, "PrintLabelMap"))
       {
-      vtksys_stl::stringstream ss;
+      std::stringstream ss;
       ss << val;
       ss >> this->PrintLabelMap;
       }
     else if (!strcmp(key, "PrintEMLabelMapConvergence"))
       {
-      vtksys_stl::stringstream ss;
+      std::stringstream ss;
       ss << val;
       ss >> this->PrintEMLabelMapConvergence;
       }
     else if (!strcmp(key, "PrintEMWeightsConvergence"))
       {
-      vtksys_stl::stringstream ss;
+      std::stringstream ss;
       ss << val;
       ss >> this->PrintEMWeightsConvergence;
       }
     else if (!strcmp(key, "PrintMFALabelMapConvergence"))
       {
-      vtksys_stl::stringstream ss;
+      std::stringstream ss;
       ss << val;
       ss >> this->PrintMFALabelMapConvergence;
       }
     else if (!strcmp(key, "PrintMFAWeightsConvergence"))
       {
-      vtksys_stl::stringstream ss;
+      std::stringstream ss;
       ss << val;
       ss >> this->PrintMFAWeightsConvergence;
       }
     else if (!strcmp(key, "MFA2DFlag"))
       {
-      vtksys_stl::stringstream ss;
+      std::stringstream ss;
       ss << val;
       ss >> this->MFA2DFlag;
       }
     else if (!strcmp(key, "GenerateBackgroundProbability"))
       {
-      vtksys_stl::stringstream ss;
+      std::stringstream ss;
       ss << val;
       ss >> this->GenerateBackgroundProbability;
       }
