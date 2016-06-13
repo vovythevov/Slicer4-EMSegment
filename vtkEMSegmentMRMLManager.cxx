@@ -3895,44 +3895,80 @@ RegisterMRMLNodesWithScene()
   // For legacy purpose
   // -----------------------
   VTK_CREATE(vtkMRMLEMSNode, emsNode);
-  this->GetMRMLScene()->RegisterNodeClass(emsNode);
+  if(!this->GetMRMLScene()->GetClassNameByTag(emsNode->GetNodeTagName()))
+    {
+    this->GetMRMLScene()->RegisterNodeClass(emsNode);
+    }
 
   VTK_CREATE(vtkMRMLEMSSegmenterNode, emsSegmenterNode);
-  this->GetMRMLScene()->RegisterNodeClass(emsSegmenterNode);
+  if(!this->GetMRMLScene()->GetClassNameByTag(emsSegmenterNode->GetNodeTagName()))
+    {
+    this->GetMRMLScene()->RegisterNodeClass(emsSegmenterNode);
+    }
 
   VTK_CREATE(vtkMRMLEMSTargetNode, emsTargetNode);
-  this->GetMRMLScene()->RegisterNodeClass(emsTargetNode);
+  if(!this->GetMRMLScene()->GetClassNameByTag(emsTargetNode->GetNodeTagName()))
+    {
+    this->GetMRMLScene()->RegisterNodeClass(emsTargetNode);
+    }
 
   // -----------------------
   // Updated Structure
   // -----------------------
 
   VTK_CREATE(vtkMRMLEMSTemplateNode, emsTemplateNode);
-  this->GetMRMLScene()->RegisterNodeClass(emsTemplateNode);
+  if(!this->GetMRMLScene()->GetClassNameByTag(emsTemplateNode->GetNodeTagName()))
+    {
+    this->GetMRMLScene()->RegisterNodeClass(emsTemplateNode);
+    }
 
   VTK_CREATE(vtkMRMLEMSGlobalParametersNode, emsGlobalParametersNode);
-  this->GetMRMLScene()->RegisterNodeClass(emsGlobalParametersNode);
+  if(!this->GetMRMLScene()->GetClassNameByTag(emsGlobalParametersNode->GetNodeTagName()))
+    {
+    this->GetMRMLScene()->RegisterNodeClass(emsGlobalParametersNode);
+    }
 
   VTK_CREATE(vtkMRMLEMSTreeNode, emsTreeNode);
-  this->GetMRMLScene()->RegisterNodeClass(emsTreeNode);
+  if(!this->GetMRMLScene()->GetClassNameByTag(emsTreeNode->GetNodeTagName()))
+    {
+    this->GetMRMLScene()->RegisterNodeClass(emsTreeNode);
+    }
 
   VTK_CREATE(vtkMRMLEMSTreeParametersNode, emsTreeParametersNode);
-  this->GetMRMLScene()->RegisterNodeClass(emsTreeParametersNode);
+  if(!this->GetMRMLScene()->GetClassNameByTag(emsTreeParametersNode->GetNodeTagName()))
+    {
+    this->GetMRMLScene()->RegisterNodeClass(emsTreeParametersNode);
+    }
 
   VTK_CREATE(vtkMRMLEMSTreeParametersParentNode, emsTreeParametersParentNode);
-  this->GetMRMLScene()->RegisterNodeClass(emsTreeParametersParentNode);
+  if(!this->GetMRMLScene()->GetClassNameByTag(emsTreeParametersParentNode->GetNodeTagName()))
+    {
+    this->GetMRMLScene()->RegisterNodeClass(emsTreeParametersParentNode);
+    }
 
   VTK_CREATE(vtkMRMLEMSTreeParametersLeafNode, emsTreeParametersLeafNode);
-  this->GetMRMLScene()->RegisterNodeClass(emsTreeParametersLeafNode);
+  if(!this->GetMRMLScene()->GetClassNameByTag(emsTreeParametersLeafNode->GetNodeTagName()))
+    {
+    this->GetMRMLScene()->RegisterNodeClass(emsTreeParametersLeafNode);
+    }
 
   VTK_CREATE(vtkMRMLEMSAtlasNode, emsAtlasNode);
-  this->GetMRMLScene()->RegisterNodeClass(emsAtlasNode);
+  if(!this->GetMRMLScene()->GetClassNameByTag(emsAtlasNode->GetNodeTagName()))
+    {
+    this->GetMRMLScene()->RegisterNodeClass(emsAtlasNode);
+    }
 
   VTK_CREATE(vtkMRMLEMSVolumeCollectionNode, emsVolumeCollectionNode);
-  this->GetMRMLScene()->RegisterNodeClass(emsVolumeCollectionNode);
+  if(!this->GetMRMLScene()->GetClassNameByTag(emsVolumeCollectionNode->GetNodeTagName()))
+    {
+    this->GetMRMLScene()->RegisterNodeClass(emsVolumeCollectionNode);
+    }
 
   VTK_CREATE(vtkMRMLEMSWorkingDataNode, emsWorkingDataNode);
-  this->GetMRMLScene()->RegisterNodeClass(emsWorkingDataNode);
+  if(!this->GetMRMLScene()->GetClassNameByTag(emsWorkingDataNode->GetNodeTagName()))
+    {
+    this->GetMRMLScene()->RegisterNodeClass(emsWorkingDataNode);
+    }
 }
 
 //-----------------------------------------------------------------------------
