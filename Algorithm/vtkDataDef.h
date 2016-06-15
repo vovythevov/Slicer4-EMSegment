@@ -25,6 +25,7 @@
 /// Stucture and function needed for convolution
 /// ----------------------------------------------------
 
+#ifndef __VTK_WRAP__
 //
 //BTX - begin tcl exclude
 //
@@ -343,5 +344,6 @@ protected:
 //
 //ETX - end tcl exclude
 //
+#endif // __VTK_WRAP__
 
 #endif

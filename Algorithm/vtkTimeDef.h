@@ -17,6 +17,7 @@
 
 #include "vtkEMSegment.h"
 #include "vtkObject.h"
+#ifndef __VTK_WRAP__
 //BTX
 #ifndef _WIN32
 #include <stdio.h>
@@ -100,6 +101,7 @@ protected:
 
 };
 
+#endif // __VTK_WRAP__
 #endif
 //ETX
 

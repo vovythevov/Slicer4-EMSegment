@@ -42,6 +42,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #define EMLOCALREGISTRATION_MAX_PENALITY float(1.0e20)
 
+#ifndef __VTK_WRAP__
 //BTX
 // --------------------------------------
 // Threader Structure
@@ -494,5 +495,6 @@ inline void EMLocalRegistrationCostFunction_DefineROI_ProbDataValues(EMLocalRegi
 //
 
 
+#endif //__VTK_WRAP__
 #endif
 //ETX
