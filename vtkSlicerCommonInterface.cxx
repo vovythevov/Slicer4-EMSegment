@@ -114,6 +114,10 @@ vtkSlicerCommonInterface::~vtkSlicerCommonInterface()
     QString emsegmentModulePath = QString::fromStdString(
         vtkSlicerApplicationLogic::GetModuleSlicerXYLibDirectory(argv[0]));
     emsegmentModulePath.append("/" Slicer_QTLOADABLEMODULES_SUBDIR);
+    if(!app->intDir().isEmpty())
+      {
+      emsegmentModulePath.append("/" + app->intDir());
+      }
     app->pythonManager()->appendPythonPath(emsegmentModulePath);
     // Update current application directory, so that *PythonD modules can be loaded
     ctkScopedCurrentDir scopedCurrentDir(emsegmentModulePath);
