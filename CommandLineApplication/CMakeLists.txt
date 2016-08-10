@@ -9,13 +9,14 @@ MARK_AS_ADVANCED(CMAKE_BACKWARDS_COMPATIBILITY)
  
 # --------------------------------------------------------------------------
 # Find appropriate package so that this project can be built standalone
-if(NOT Slicer3_SOURCE_DIR AND NOT Slicer_SOURCE_DIR)
+if(NOT Slicer3_SOURCE_DIR)
   if(EXISTS "${Slicer3_DIR}")
     find_package(Slicer3 REQUIRED)
     include(${Slicer3_USE_FILE})
     slicer3_set_default_install_prefix_for_external_projects()
   elseif(EXISTS "${SlicerExecutionModel_DIR}")
     find_package(SlicerExecutionModel REQUIRED GenerateCLP)
+    include(${SlicerExecutionModel_USE_FILE})
   endif()
 endif()
 
